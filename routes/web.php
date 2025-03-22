@@ -4,6 +4,12 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Controllers\NasabahController;
+use App\Http\Controllers\BarangGadaiController;
+use App\Http\Controllers\TransaksiGadaiController;
+use App\Http\Controllers\LelangBarangController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\NotifikasiController;
 
 
 
@@ -39,6 +45,13 @@ Route::middleware(['auth'])->group(function () {
             return view('components.dashboard.superadmin');
         })->name('dashboard.superadmin');
     });
+
+    Route::resource('nasabah', NasabahController::class);
+    Route::resource('barang_gadai', BarangGadaiController::class);
+    Route::resource('transaksi_gadai', TransaksiGadaiController::class);
+    Route::resource('lelang_barang', LelangBarangController::class);
+    Route::resource('laporan', LaporanController::class);
+    Route::resource('notifikasi', NotifikasiController::class);
 
     // Route untuk profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
