@@ -23,14 +23,20 @@ Route::middleware(['auth'])->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
-    // Route untuk admin
+    // Route untuk admin (batasi akses untuk Superadmin)
     Route::get('/dashboard/admin', function () {
-        return view('components.dashboard.admin'); // Perbaikan pada path view
+        if (auth()->user()->role === 'Superadmin') {
+            abort(403, 'Unauthorized action.');
+        }
+        return view('components.dashboard.admin');
     })->name('dashboard.admin');
 
-    // Route untuk superadmin
+    // Route untuk superadmin (batasi akses untuk Admin)
     Route::get('/dashboard/superadmin', function () {
-        return view('components.dashboard.superadmin'); // Perbaikan pada path view
+        if (auth()->user()->role === 'Admin') {
+            abort(403, 'Unauthorized action.');
+        }
+        return view('components.dashboard.superadmin');
     })->name('dashboard.superadmin');
 
     // Route untuk profil
@@ -38,5 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
 
 require __DIR__.'/auth.php';
