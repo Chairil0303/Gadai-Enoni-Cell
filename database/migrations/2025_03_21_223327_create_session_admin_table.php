@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('session_admin', function (Blueprint $table) {
         $table->id('id_session');
-        $table->unsignedBigInteger('id_pengguna');
+        $table->unsignedBigInteger('id_users');
         $table->dateTime('waktu_login');
         $table->dateTime('waktu_logout')->nullable();
         $table->boolean('status_session');
-        $table->foreign('id_pengguna')->references('id_pengguna')->on('pengguna')->onDelete('cascade');
+        $table->foreign('id_users')->references('id_users')->on('users')->onDelete('cascade');
         $table->timestamps();
     });
     }
