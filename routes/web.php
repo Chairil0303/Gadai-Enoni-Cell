@@ -2,12 +2,12 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/login');
 });
 
-use App\Http\Controllers\Auth\LoginController;
 
 // Route untuk login
 Route::post('/login', [LoginController::class, 'login'])->name('login');
