@@ -3,6 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Middleware\RoleMiddleware;
+
+
 
 Route::get('/', function () {
     return redirect('/login');
@@ -24,14 +27,18 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
     // Route untuk admin
-    Route::get('/dashboard/admin', function () {
-        return view('components.dashboard.admin'); // Perbaikan pada path view
-    })->name('dashboard.admin');
+    Route::middleware(RoleMiddleware::class . ':Admin')->group(function () {
+        Route::get('/dashboard/admin', function () {
+            return view('components.dashboard.admin');
+        })->name('dashboard.admin');
+    });
 
     // Route untuk superadmin
-    Route::get('/dashboard/superadmin', function () {
-        return view('components.dashboard.superadmin'); // Perbaikan pada path view
-    })->name('dashboard.superadmin');
+    Route::middleware(RoleMiddleware::class . ':Superadmin')->group(function () {
+        Route::get('/dashboard/superadmin', function () {
+            return view('components.dashboard.superadmin');
+        })->name('dashboard.superadmin');
+    });
 
     // Route untuk profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
