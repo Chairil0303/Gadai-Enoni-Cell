@@ -30,4 +30,19 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Cabang::class, 'id_cabang', 'id_cabang');
     }
+
+
+    use Notifiable;
+
+    // Cek jika user adalah superadmin
+    public function isSuperadmin()
+    {
+        return $this->role === 'Superadmin';
+    }
+
+    // Cek jika user adalah admin
+    public function isAdmin()
+    {
+        return $this->role === 'Admin';
+    }
 }
