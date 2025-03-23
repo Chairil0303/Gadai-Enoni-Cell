@@ -1,4 +1,6 @@
 {{-- The Master doesn't talk, he acts. --}}
+
+
 <table class="w-full border-collapse border border-gray-300 shadow-md mt-4">
     <thead class="bg-gray-200 text-gray-700">
         <tr>
@@ -17,11 +19,23 @@
             <td class="border border-gray-300 px-4 py-2">{{ $cabang->alamat }}</td>
             <td class="border border-gray-300 px-4 py-2">{{ $cabang->kontak }}</td>
             <td class="border border-gray-300 px-4 py-2 text-center">
-                <a href="{{ route('superadmin.cabang.edit', $cabang->id_cabang) }}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</a>
-<button wire:click="delete({{ $cabang->id_cabang }})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" onclick="return confirm('Hapus cabang ini?')">Hapus</button>
+                <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                    <a href="{{ route('superadmin.cabang.edit', $cabang->id_cabang) }}" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Edit</a>
+                </button>
+                <button wire:click="delete({{ $cabang->id_cabang }})" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                        onclick="return confirm('Hapus cabang ini?')">
+                    Hapus
+                </button>
+
             </td>
         </tr>
         @endforeach
     </tbody>
 </table>
+
+<script>
+    window.addEventListener('refreshTable', () => {
+        location.reload(); // Bisa diganti dengan solusi lain jika tidak ingin full reload
+    });
+</script>
 
