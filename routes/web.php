@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
         })->name('dashboard.superadmin');
     });
 
+    // route untuk view
     Route::resource('nasabah', NasabahController::class);
     Route::resource('barang_gadai', BarangGadaiController::class);
     Route::resource('transaksi_gadai', TransaksiGadaiController::class);
