@@ -57,6 +57,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
 
+    Route::prefix('superadmin')->group(function () {
+    Route::get('/nasabah', [NasabahController::class, 'index'])->name('superadmin.nasabah.index');
+    Route::get('/nasabah/create', [NasabahController::class, 'create'])->name('superadmin.nasabah.create');
+    Route::post('/nasabah', [NasabahController::class, 'store'])->name('superadmin.nasabah.store');
+    Route::get('/nasabah/{id}/edit', [NasabahController::class, 'edit'])->name('superadmin.nasabah.edit');
+    Route::put('/nasabah/{id}', [NasabahController::class, 'update'])->name('superadmin.nasabah.update');
+    Route::delete('/nasabah/{id}', [NasabahController::class, 'destroy'])->name('superadmin.nasabah.destroy');
+});
+
     // route untuk view
     Route::resource('nasabah', NasabahController::class);
     Route::resource('barang_gadai', BarangGadaiController::class);
