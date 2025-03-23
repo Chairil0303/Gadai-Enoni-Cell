@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white text-center">
+                <div class="card-header bg-success text-white text-center">
                     <h4><i class="fas fa-plus-circle"></i> Tambah Cabang</h4>
                 </div>
                 <div class="card-body">
@@ -29,9 +29,14 @@
                             <div class="form-text">Gunakan format nomor yang valid.</div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-save"></i> Simpan Cabang
-                        </button>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ route('superadmin.cabang.store') }}" class="no-underline btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Kembali
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Simpan Cabang
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

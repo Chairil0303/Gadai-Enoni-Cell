@@ -20,7 +20,7 @@
             <td class="border border-gray-300 px-4 py-2">{{ $cabang->kontak }}</td>
             <td class="border border-gray-300 px-4 py-2 text-center">
                 <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-                    <a href="{{ route('superadmin.cabang.edit', $cabang->id_cabang) }}" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Edit</a>
+                    <a href="{{ route('superadmin.cabang.edit', $cabang->id_cabang) }}" class="no-underline bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Edit</a>
                 </button>
                 <button wire:click="delete({{ $cabang->id_cabang }})" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
                         onclick="return confirm('Hapus cabang ini?')">
