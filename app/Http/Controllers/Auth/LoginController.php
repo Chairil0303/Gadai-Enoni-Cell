@@ -32,11 +32,18 @@ class LoginController extends Controller
         return redirect('/dashboard/superadmin');
     } elseif ($user->role === 'Admin') {
         session()->flash('success', 'Selamat datang, Admin!');
-        return redirect('/dashboard/admin');
+        return redirect('/dashboard/admin'. $user->cabang_id);
     }
 
     session()->flash('success', 'Selamat datang di Dashboard!');
     return redirect('/dashboard');
+}
+public function index()
+{
+    $user = auth()->user();
+    $cabang = $user->cabang ? $user->cabang->nama_cabang : 'Default Cabang';
+
+    return view('dashboard.admin', compact('cabang'));
 }
 
 }

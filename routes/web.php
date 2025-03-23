@@ -10,6 +10,7 @@ use App\Http\Controllers\TransaksiGadaiController;
 use App\Http\Controllers\LelangBarangController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\Superadmin\CabangController;
 
 
 
@@ -47,6 +48,15 @@ Route::middleware(['auth'])->group(function () {
         })->name('dashboard.superadmin');
     });
 
+    // cabang controller
+    Route::middleware(['auth', 'role:Superadmin'])->prefix('superadmin')->group(function () {
+        Route::resource('cabang', \App\Http\Controllers\Superadmin\CabangController::class);
+    });
+    Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
+        Route::get('/dashboard/{id}', [App\Http\Controllers\Admin\DashboardController::class, 'index']);
+    });
+
+
     // route untuk view
     Route::resource('nasabah', NasabahController::class);
     Route::resource('barang_gadai', BarangGadaiController::class);
@@ -55,6 +65,26 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('laporan', LaporanController::class);
     Route::resource('notifikasi', NotifikasiController::class);
 
+    // route superadmin
+
+
+    Route::middleware('auth')->group(function () {
+        Route::get('/superadmin/cabang', [CabangController::class, 'index'])->name('cabang.index');
+    });
+    Route::middleware('auth')->prefix('superadmin')->group(function () {
+        Route::get('/cabang/create', [CabangController::class, 'create'])->name('superadmin.cabang.create');
+    });
+    Route::middleware('auth')->prefix('superadmin')->group(function () {
+        Route::get('cabang/{cabang}/edit', [CabangController::class, 'edit'])->name('superadmin.cabang.edit');
+        Route::put('cabang/{cabang}', [CabangController::class, 'update'])->name('superadmin.cabang.update');
+    });
+
+    Route::middleware('auth')->prefix('superadmin')->group(function () {
+    Route::post('/cabang', [CabangController::class, 'store'])->name('superadmin.cabang.store');
+    });
+    Route::middleware('auth')->group(function () {
+        Route::delete('/superadmin/cabang/{cabang}', [CabangController::class, 'destroy'])->name('cabang.destroy');
+    });
 
     // Route untuk profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

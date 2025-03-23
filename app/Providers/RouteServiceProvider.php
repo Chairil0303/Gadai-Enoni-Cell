@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use App\Models\Cabang;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -27,6 +28,8 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
         });
+        parent::boot();
+        Route::model('cabang', Cabang::class);
     }
 
     /**

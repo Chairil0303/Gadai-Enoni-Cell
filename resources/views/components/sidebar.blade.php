@@ -12,8 +12,8 @@
 
         {{-- Khusus Superadmin --}}
         @if(auth()->user()->isSuperadmin())
-        <li><a href="{{ route('notifikasi.index') }}" class="block p-3 hover:bg-gray-700">📢 Notifikasi</a></li>
         <li><a href="{{ route('nasabah.index') }}" class="block p-3 hover:bg-gray-700">👤 Nasabah</a></li>
+        <li><a href="{{ route('cabang.index') }}" class="block p-3 hover:bg-gray-700">Cabang</a></li>
         <li><a href="{{ route('barang_gadai.index') }}" class="block p-3 hover:bg-gray-700">📦 Barang Gadai</a></li>
         <li><a href="{{ route('transaksi_gadai.index') }}" class="block p-3 hover:bg-gray-700">💰 Transaksi Gadai</a></li>
         <li><a href="{{ route('lelang_barang.index') }}" class="block p-3 hover:bg-gray-700">⚖️ Lelang</a></li>
