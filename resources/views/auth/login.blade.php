@@ -150,7 +150,19 @@
             </div>
         </form>
     </div>
-
+    @if ($errors->any())
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Login Gagal',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                confirmButtonText: 'OK',
+                timer: 5000
+            });
+        });
+    </script>
+@endif
     <!-- Font Awesome untuk icon -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </x-guest-layout>
