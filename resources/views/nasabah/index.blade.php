@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-success text-white">
                     <h4><i class="fas fa-users"></i> Data Nasabah
                         <a href="{{ route('superadmin.nasabah.create') }}" class="btn btn-light btn-sm float-end">
                             <i class="fas fa-plus"></i> Tambah Nasabah
