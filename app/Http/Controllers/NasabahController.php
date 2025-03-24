@@ -49,29 +49,30 @@ class NasabahController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $nasabah = Nasabah::findOrFail($id);
+{
+    $nasabah = Nasabah::findOrFail($id);
 
-        $request->validate([
-            'nama' => 'required',
-            'nik' => 'required|unique:nasabah,nik,' . $id . ',id_nasabah',
-            'alamat' => 'required',
-            'telepon' => 'required',
-            'username' => 'required|unique:nasabah,username,' . $id . ',id_nasabah',
-        ]);
+    $request->validate([
+        'nama' => 'required',
+        'nik' => 'required|unique:nasabah,nik,' . $id . ',id_nasabah',
+        'alamat' => 'required',
+        'telepon' => 'required',
+        'username' => 'required|unique:nasabah,username,' . $id . ',id_nasabah',
+    ]);
 
-        $nasabah->update([
-            'nama' => $request->nama,
-            'nik' => $request->nik,
-            'alamat' => $request->alamat,
-            'telepon' => $request->telepon,
-            'status_blacklist' => $request->has('status_blacklist'),
-            'username' => $request->username,
-            'password' => $request->password ? bcrypt($request->password) : $nasabah->password,
-        ]);
+    $nasabah->update([
+        'nama' => $request->nama,
+        'nik' => $request->nik,
+        'alamat' => $request->alamat,
+        'telepon' => $request->telepon,
+        'status_blacklist' => $request->input('status_blacklist', 0),
+        'username' => $request->username,
+        'password' => $request->password ? bcrypt($request->password) : $nasabah->password,
+    ]);
 
-        return redirect()->route('superadmin.nasabah.index')->with('success', 'Nasabah berhasil diperbarui');
-    }
+    return redirect()->route('superadmin.nasabah.index')->with('success', 'Nasabah berhasil diperbarui');
+}
+
 
     public function destroy($id)
     {
