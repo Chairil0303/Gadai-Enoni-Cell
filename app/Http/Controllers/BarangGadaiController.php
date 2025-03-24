@@ -11,12 +11,19 @@ class BarangGadaiController extends Controller
     public function index()
     {
         $userId = auth()->id(); // Ambil ID admin yang sedang login
-        $barangGadai = BarangGadai::with('nasabah', 'kategori')
-                        ->where('id_user', $userId)
-                        ->get();
+
+        if ($userId == 1) {
+            $barangGadai = BarangGadai::with('nasabah', 'kategori')->get();
+        } else {
+            // Jika bukan superadmin, tampilkan hanya data sesuai id_user
+            $barangGadai = BarangGadai::with('nasabah', 'kategori')
+                            ->where('id_user', $userId)
+                            ->get();
+        }
 
         return view('barang_gadai.index', compact('barangGadai'));
     }
+
 
 
     public function create()

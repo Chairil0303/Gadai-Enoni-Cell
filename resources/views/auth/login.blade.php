@@ -134,7 +134,7 @@
             <div class="form-group">
                 <i class="fas fa-user"></i>
                 <label for="username">Username</label>
-                <input id="username" type="text" name="username" required autofocus>
+                <input id="username" type="text" name="username" autocomplete="off" required autofocus>
             </div>
 
             <div class="form-group">
