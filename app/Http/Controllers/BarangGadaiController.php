@@ -10,9 +10,14 @@ class BarangGadaiController extends Controller
 {
     public function index()
     {
-        $barangGadai = BarangGadai::with('nasabah', 'kategori')->get();
+        $userId = auth()->id(); // Ambil ID admin yang sedang login
+        $barangGadai = BarangGadai::with('nasabah', 'kategori')
+                        ->where('id_user', $userId)
+                        ->get();
+
         return view('barang_gadai.index', compact('barangGadai'));
     }
+
 
     public function create()
     {
@@ -31,10 +36,18 @@ class BarangGadaiController extends Controller
             'id_kategori' => 'nullable|exists:kategori_barang,id_kategori',
         ]);
 
-        BarangGadai::create($request->all());
+        BarangGadai::create([
+            'id_user' => auth()->id(), // Isi dengan ID admin yang login
+            'id_nasabah' => $request->id_nasabah,
+            'nama_barang' => $request->nama_barang,
+            'deskripsi' => $request->deskripsi,
+            'status' => $request->status,
+            'id_kategori' => $request->id_kategori,
+        ]);
 
         return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil ditambahkan.');
     }
+
 
     public function show(BarangGadai $barangGadai)
     {
@@ -43,13 +56,22 @@ class BarangGadaiController extends Controller
 
     public function edit(BarangGadai $barangGadai)
     {
+        if ($barangGadai->id_user !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $nasabah = Nasabah::all();
         $kategori = KategoriBarang::all();
         return view('barang_gadai.edit', compact('barangGadai', 'nasabah', 'kategori'));
     }
 
+
     public function update(Request $request, BarangGadai $barangGadai)
     {
+        if ($barangGadai->id_user !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate([
             'id_nasabah' => 'required|exists:nasabah,id_nasabah',
             'nama_barang' => 'required|string|max:255',
@@ -63,9 +85,15 @@ class BarangGadaiController extends Controller
         return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil diperbarui.');
     }
 
+
     public function destroy(BarangGadai $barangGadai)
-    {
-        $barangGadai->delete();
-        return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil dihapus.');
+{
+    if ($barangGadai->id_user !== auth()->id()) {
+        abort(403, 'Unauthorized action.');
     }
+
+    $barangGadai->delete();
+    return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil dihapus.');
+}
+
 }

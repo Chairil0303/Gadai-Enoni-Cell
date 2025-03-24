@@ -18,6 +18,7 @@
             'deskripsi',
             'status',
             'id_kategori',
+            'id_user',
         ];
 
         public function nasabah()
@@ -29,4 +30,9 @@
         {
             return $this->belongsTo(KategoriBarang::class, 'id_kategori', 'id_kategori');
         }
+        public function user()
+        {
+            return $this->belongsTo(User::class, 'id_user');
+        }
+
     }
