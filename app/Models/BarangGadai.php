@@ -4,6 +4,8 @@
 
     use Illuminate\Database\Eloquent\Factories\HasFactory;
     use Illuminate\Database\Eloquent\Model;
+    use Carbon\Carbon;
+
 
     class BarangGadai extends Model
     {
@@ -16,10 +18,27 @@
             'id_nasabah',
             'nama_barang',
             'deskripsi',
+            'tempo', 'tenor',
+            'telat',
+            'imei',
+            'harga_gadai',
             'status',
             'id_kategori',
             'id_user',
         ];
+
+
+        // Getter untuk menghitung sisa hari atau keterlambatan
+        public function getTelatAttribute()
+        {
+            $tempo = Carbon::parse($this->tempo);
+            $hariIni = Carbon::today();
+
+            // Menghitung selisih hari (bisa positif atau negatif)
+            return $hariIni->diffInDays($tempo, false);
+        }
+
+
 
         public function nasabah()
         {

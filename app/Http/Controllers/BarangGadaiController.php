@@ -6,6 +6,7 @@ use App\Models\BarangGadai;
 use App\Models\Nasabah;
 use App\Models\KategoriBarang;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 class BarangGadaiController extends Controller
 {
@@ -42,24 +43,47 @@ class BarangGadaiController extends Controller
 
     public function store(Request $request)
     {
+        // $request->validate([
+        //     'id_nasabah' => 'required|exists:nasabah,id_nasabah',
+        //     'nama_barang' => 'required|string|max:255',
+        //     'deskripsi' => 'nullable|string',
+        //     'status' => 'required|in:Tergadai,Ditebus,Dilelang',
+        //     'id_kategori' => 'nullable|exists:kategori_barang,id_kategori',
+        // ]);
+
+        // Validasi input
         $request->validate([
-            'id_nasabah' => 'required|exists:nasabah,id_nasabah',
-            'nama_barang' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'status' => 'required|in:Tergadai,Ditebus,Dilelang',
-            'id_kategori' => 'nullable|exists:kategori_barang,id_kategori',
+            'id_nasabah'   => 'required|exists:nasabah,id_nasabah',
+            'nama_barang'  => 'required|string|max:255',
+            'deskripsi'    => 'nullable|string',
+            'imei'         => 'required|string|unique:barang_gadai,imei', // Wajib diisi dan unik
+            'tenor'        => 'required|in:7,14,30',
+            'harga_gadai'  => 'required|numeric|min:0',
+            'status'       => 'required|in:Tergadai,Ditebus,Dilelang',
+            'id_kategori'  => 'nullable|exists:kategori_barang,id_kategori',
         ]);
+
+        // Konversi tenor ke integer agar kompatibel dengan Carbon
+            $tenor = (int) $request->tenor;  
+            $tempo = Carbon::now()->addDays($tenor)->format('Y-m-d');
+
 
         BarangGadai::create([
             'id_user' => auth()->id(), // Isi dengan ID admin yang login
-            'id_nasabah' => $request->id_nasabah,
-            'nama_barang' => $request->nama_barang,
-            'deskripsi' => $request->deskripsi,
-            'status' => $request->status,
-            'id_kategori' => $request->id_kategori,
+            'id_nasabah'   => $request->id_nasabah,
+            'nama_barang'  => $request->nama_barang,
+            'deskripsi'    => $request->deskripsi,
+            'imei'         => $request->imei,
+            'tenor'        => $request->tenor,
+            'tempo'        => $tempo, // Menyimpan tanggal jatuh tempo
+            'telat'        => 0, // Default keterlambatan 0
+            'harga_gadai'  => $request->harga_gadai,
+            'status'       => $request->status,
+            'id_kategori'  => $request->id_kategori,
         ]);
 
-        return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil ditambahkan.');
+        // return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil ditambahkan.');
+        return redirect()->route('barang_gadai.index')->with('success', 'Barang Gadai berhasil ditambahkan!');
     }
 
 

@@ -24,7 +24,6 @@
 
                         <div class="row">
                             <div class="col-md-6">
-
                                 <!-- Pilih Nasabah -->
                                 <div class="mb-3">
                                     <label for="id_nasabah" class="form-label"><i class="fas fa-user"></i> Nasabah</label>
@@ -48,9 +47,41 @@
                                     <textarea class="form-control" id="deskripsi" name="deskripsi" placeholder="Masukkan deskripsi barang"></textarea>
                                 </div>
 
+                                <!-- IMEI -->
+                                <div class="mb-3">
+                                    <label for="imei" class="form-label"><i class="fas fa-barcode"></i> IMEI</label>
+                                    <input type="text" class="form-control" id="imei" name="imei" placeholder="Masukkan IMEI" required>
+                                </div>
+
+                                <!-- Tenor -->
+                                <div class="mb-3">
+                                    <label for="tenor" class="form-label"><i class="fas fa-calendar"></i> Tenor (hari)</label>
+                                    <select name="tenor" id="tenor" class="form-control" required>
+                                        <option value="7">7 Hari</option>
+                                        <option value="14">14 Hari</option>
+                                        <option value="30">30 Hari</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="col-md-6">
+                                <!-- Tanggal Jatuh Tempo -->
+                                <!-- <div class="mb-3">
+                                    <label for="tempo" class="form-label"><i class="fas fa-calendar-alt"></i> Tanggal Jatuh Tempo</label>
+                                    <input type="hidden" class="form-control" id="tempo" name="tempo" required>
+                                </div> -->
+
+                                <!-- Hari Keterlambatan -->
+                                <!-- <div class="mb-3">
+                                    <label for="telat" class="form-label"><i class="fas fa-clock"></i> Hari Keterlambatan</label>
+                                    <input type="number" class="form-control" id="telat" name="telat" value="0" min="0" required>
+                                </div> -->
+
+                                <!-- Harga Gadai -->
+                                <div class="mb-3">
+                                    <label for="harga_gadai" class="form-label"><i class="fas fa-money-bill-wave"></i> Harga Gadai</label>
+                                    <input type="number" class="form-control" id="harga_gadai" name="harga_gadai" placeholder="Masukkan harga gadai" required>
+                                </div>
 
                                 <!-- Status Barang -->
                                 <div class="mb-3">
@@ -80,7 +111,6 @@
                                 <a href="{{ route('barang_gadai.index') }}" class="btn btn-secondary w-100 mt-2">
                                     <i class="fas fa-arrow-left"></i> Kembali
                                 </a>
-
                             </div>
                         </div>
 
@@ -90,4 +120,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let tenorSelect = document.getElementById("tenor");
+        let tempoInput = document.getElementById("tempo");
+
+        tenorSelect.addEventListener("change", function () {
+            let tenorValue = parseInt(tenorSelect.value); // Ambil tenor yang dipilih
+            let today = new Date(); // Ambil tanggal hari ini
+            today.setDate(today.getDate() + tenorValue); // Tambahkan tenor ke tanggal saat ini
+
+            let formattedDate = today.toISOString().split("T")[0]; // Format ke YYYY-MM-DD
+            tempoInput.value = formattedDate; // Set nilai input jatuh tempo
+        });
+    });
+</script>
+
 @endsection

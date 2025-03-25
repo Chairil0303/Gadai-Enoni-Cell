@@ -20,10 +20,15 @@
                     <table class="table table-striped table-hover">
                         <thead class="table-dark">
                             <tr>
-                                {{-- <th>id</th> --}}
-                                <th>Nasabah</th>
+                                <th>No Barang</th>
+                                <th>Atas Nama</th>
                                 <th>Nama Barang</th>
                                 <th>Deskripsi</th>
+                                <th>IMEI</th>
+                                <th>Tenor</th>
+                                <th>Tempo</th>
+                                <th>Sisa Hari</th>
+                                <th>Harga Gadai</th>
                                 <th>Status</th>
                                 <th>Kategori</th>
                                 <th>Aksi</th>
@@ -32,17 +37,28 @@
                         <tbody>
                             @foreach($barangGadai as $barang)
                                 <tr>
-                                    {{-- <td>{{ $barang->id_barang }}</td> --}}
+                                    <td>{{ $barang->id_barang }}</td>
                                     <td>{{ $barang->nasabah->nama ?? '-' }}</td>
                                     <td>{{ $barang->nama_barang }}</td>
                                     <td>{{ $barang->deskripsi }}</td>
+                                    <td>{{ $barang->imei ?? '-' }}</td>
+                                    <td>{{ $barang->tenor }} hari</td>
+                                    <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
                                     <td>
-                                        @if($barang->status === 'Tebus')
-                                            <span class="badge bg-success">Tebus</span>
-                                        @elseif($barang->status === 'Lunas')
-                                            <span class="badge bg-primary">Lunas</span>
+                                        @if($barang->telat >= 0)
+                                            {{ $barang->telat }} Hari
                                         @else
-                                            <span class="badge bg-warning">{{ $barang->status }}</span>
+                                            -{{ $barang->telat }} Hari
+                                        @endif
+                                    </td>
+                                    <td>Rp {{ number_format($barang->harga_gadai, 2, ',', '.') }}</td>
+                                    <td>
+                                        @if($barang->status === 'Ditebus')
+                                            <span class="badge bg-success">Ditebus</span>
+                                        @elseif($barang->status === 'Dilelang')
+                                            <span class="badge bg-danger">Dilelang</span>
+                                        @else
+                                            <span class="badge bg-warning">Tergadai</span>
                                         @endif
                                     </td>
                                     <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
