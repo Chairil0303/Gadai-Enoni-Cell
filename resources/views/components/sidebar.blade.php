@@ -3,6 +3,7 @@
         Dashboard
     </div>
     <ul>
+        
         {{-- Semua Role Bisa Akses Notifikasi --}}
         <li>
             <a href="{{ route('notifikasi.index') }}" class="py-3 text-white no-underline block p-2 hover:bg-gray-700">
@@ -41,5 +42,6 @@
                 </a>
             </li>
         @endif
+        
     </ul>
 </div>
