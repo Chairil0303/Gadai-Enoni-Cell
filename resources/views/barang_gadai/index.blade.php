@@ -21,34 +21,35 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>No Barang</th>
+                                <th>Kategori</th>
+                                <th>Tipe Barang</th>
                                 <th>Atas Nama</th>
-                                <th>Nama Barang</th>
-                                <th>Deskripsi</th>
                                 <th>IMEI</th>
+                                <th>Deskripsi</th>
                                 <th>Tenor</th>
                                 <th>Tempo</th>
                                 <th>Sisa Hari</th>
                                 <th>Harga Gadai</th>
                                 <th>Status</th>
-                                <th>Kategori</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($barangGadai as $barang)
-                                <tr>
+                            <tr>
                                     <td>{{ $barang->id_barang }}</td>
-                                    <td>{{ $barang->nasabah->nama ?? '-' }}</td>
+                                    <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
                                     <td>{{ $barang->nama_barang }}</td>
-                                    <td>{{ $barang->deskripsi }}</td>
+                                    <td>{{ $barang->nasabah->nama ?? '-' }}</td>
                                     <td>{{ $barang->imei ?? '-' }}</td>
+                                    <td>{{ $barang->deskripsi }}</td>
                                     <td>{{ $barang->tenor }} hari</td>
                                     <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
                                     <td>
                                         @if($barang->telat >= 0)
-                                            {{ $barang->telat }} Hari
+                                            +{{ $barang->telat }}
                                         @else
-                                            -{{ $barang->telat }} Hari
+                                            -{{ $barang->telat }}
                                         @endif
                                     </td>
                                     <td>Rp {{ number_format($barang->harga_gadai, 2, ',', '.') }}</td>
@@ -61,7 +62,6 @@
                                             <span class="badge bg-warning">Tergadai</span>
                                         @endif
                                     </td>
-                                    <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
                                     <td>
                                         <a href="{{ route('barang_gadai.edit', $barang->id_barang) }}" class="btn btn-warning btn-sm">
                                             <i class="fas fa-edit"></i> Edit

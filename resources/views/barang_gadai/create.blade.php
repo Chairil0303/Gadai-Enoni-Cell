@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md">
             <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white text-center">
+                <div class="card-header bg-success text-white text-center">
                     <h4><i class="fas fa-box"></i> Tambah Barang Gadai</h4>
                 </div>
                 <div class="card-body">
@@ -65,18 +65,6 @@
                             </div>
 
                             <div class="col-md-6">
-                                <!-- Tanggal Jatuh Tempo -->
-                                <!-- <div class="mb-3">
-                                    <label for="tempo" class="form-label"><i class="fas fa-calendar-alt"></i> Tanggal Jatuh Tempo</label>
-                                    <input type="hidden" class="form-control" id="tempo" name="tempo" required>
-                                </div> -->
-
-                                <!-- Hari Keterlambatan -->
-                                <!-- <div class="mb-3">
-                                    <label for="telat" class="form-label"><i class="fas fa-clock"></i> Hari Keterlambatan</label>
-                                    <input type="number" class="form-control" id="telat" name="telat" value="0" min="0" required>
-                                </div> -->
-
                                 <!-- Harga Gadai -->
                                 <div class="mb-3">
                                     <label for="harga_gadai" class="form-label"><i class="fas fa-money-bill-wave"></i> Harga Gadai</label>
@@ -96,7 +84,7 @@
                                 <!-- Kategori Barang -->
                                 <div class="mb-3">
                                     <label for="id_kategori" class="form-label"><i class="fas fa-list"></i> Kategori</label>
-                                    <select name="id_kategori" class="form-control">
+                                    <select name="id_kategori" class="form-control" required>
                                         <option value="">Pilih Kategori</option>
                                         @foreach($kategori as $k)
                                             <option value="{{ $k->id_kategori }}">{{ $k->nama_kategori }}</option>
@@ -105,7 +93,7 @@
                                 </div>
 
                                 <!-- Tombol Aksi -->
-                                <button type="submit" class="btn btn-primary w-100">
+                                <button type="submit" class="btn btn-success w-100">
                                     <i class="fas fa-save"></i> Simpan Barang
                                 </button>
                                 <a href="{{ route('barang_gadai.index') }}" class="btn btn-secondary w-100 mt-2">
