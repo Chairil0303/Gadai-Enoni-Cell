@@ -66,6 +66,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/nasabah/{id}', [NasabahController::class, 'destroy'])->name('superadmin.nasabah.destroy');
 });
 
+
+Route::resource('barang_gadai', BarangGadaiController::class);
+
     // route untuk view
     Route::resource('nasabah', NasabahController::class);
     Route::resource('barang_gadai', BarangGadaiController::class);
