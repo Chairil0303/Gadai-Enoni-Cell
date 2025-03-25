@@ -12,10 +12,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('barang_gadai', function (Blueprint $table) {
-            $table->unsignedBigInteger('id_user')->after('id_barang')->nullable();
-            $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('id_user')->nullable()->after('id_kategori');
+            $table->foreign('id_user')->references('id_users')->on('users')->onDelete('set null');
         });
     }
+
 
 
     /**
@@ -24,7 +25,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('barang_gadai', function (Blueprint $table) {
-            //
+            $table->dropForeign(['id_user']);
+            $table->dropColumn('id_user');
         });
     }
 };

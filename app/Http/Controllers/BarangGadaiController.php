@@ -5,24 +5,31 @@ use Illuminate\Http\Request;
 use App\Models\BarangGadai;
 use App\Models\Nasabah;
 use App\Models\KategoriBarang;
+use Illuminate\Support\Facades\Schema;
 
 class BarangGadaiController extends Controller
 {
     public function index()
-    {
-        $userId = auth()->id(); // Ambil ID admin yang sedang login
+{
+    $userId = auth()->id(); // Ambil ID admin yang sedang login
 
-        if ($userId == 1) {
-            $barangGadai = BarangGadai::with('nasabah', 'kategori')->get();
-        } else {
-            // Jika bukan superadmin, tampilkan hanya data sesuai id_user
+    // Periksa apakah kolom 'id_user' ada di dalam tabel
+    if ($userId == 1) {
+        $barangGadai = BarangGadai::with('nasabah', 'kategori')->get();
+    } else {
+        if (Schema::hasColumn('barang_gadai', 'id_user')) {
+            // Jika kolom id_user ada, filter berdasarkan id_user
             $barangGadai = BarangGadai::with('nasabah', 'kategori')
                             ->where('id_user', $userId)
                             ->get();
+        } else {
+            // Jika kolom tidak ada, tampilkan tabel kosong tanpa error
+            $barangGadai = collect(); // Mengembalikan collection kosong
         }
-
-        return view('barang_gadai.index', compact('barangGadai'));
     }
+
+    return view('barang_gadai.index', compact('barangGadai'));
+}
 
 
 

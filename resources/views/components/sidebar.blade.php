@@ -33,6 +33,9 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('nasabah.index') }}" class="py-3 text-white no-underline block p-2 hover:bg-gray-700">👨‍💼 Nasabah</a>
+            </li>
+            <li>
                 <a href="{{ route('lelang_barang.index') }}" class="py-3 text-white no-underline block p-2 hover:bg-gray-700">
                     ⚖️ Lelang
                 </a>
