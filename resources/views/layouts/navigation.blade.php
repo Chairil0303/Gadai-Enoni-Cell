@@ -22,11 +22,14 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <p class="mt-6 m-6 text-lg/1 text-gray-600">
-                    {{ auth()->user()->cabang->nama_cabang ?? 'Cabang tidak ditemukan' }}, 
-                    {{ auth()->user()->cabang->alamat ?? 'Alamat tidak tersedia' }}
-                    {{ auth()->user()->cabang->kontak ?? 'Nomor tidak tersedia' }}
-                </p>
+                @if(auth()->user()->isadmin())
+                    <p class="mt-6 m-6 text-lg/1 text-gray-600">
+                        {{ auth()->user()->cabang->nama_cabang ?? 'Cabang tidak ditemukan' }},
+                        {{ auth()->user()->cabang->alamat ?? 'Alamat tidak tersedia' }}
+                        {{ auth()->user()->cabang->kontak ?? 'Nomor tidak tersedia' }}
+                    </p>
+                @endif
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
@@ -48,7 +51,6 @@
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
@@ -58,6 +60,7 @@
                     </x-slot>
                 </x-dropdown>
             </div>
+
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
