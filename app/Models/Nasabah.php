@@ -26,7 +26,7 @@ class Nasabah extends Model
         'status_blacklist' => 'boolean',
     ];
 
-    public function user()
+    public function users()
 {
     return $this->belongsTo(User::class, 'username', 'username');
 }
