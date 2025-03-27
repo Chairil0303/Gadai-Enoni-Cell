@@ -38,15 +38,7 @@
                             </div>
                             <div class="col-md-6">
                                 
-                                <div class="mb-3">
-                                    <label for="username" class="form-label"><i class="fas fa-user-circle"></i> Username</label>
-                                    <input type="text" autocomplete="off" class="form-control" id="username" name="username" placeholder="Masukkan username" required>
-                                </div>
-        
-                                <div class="mb-3">
-                                    <label for="password" class="form-label"><i class="fas fa-lock"></i> Password</label>
-                                    <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan password" required>
-                                </div>
+                                
         
                                 <div class="mb-3 form-check">
                                     <input type="checkbox" class="form-check-input" id="status_blacklist" name="status_blacklist">

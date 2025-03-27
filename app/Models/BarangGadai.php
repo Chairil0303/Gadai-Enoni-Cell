@@ -12,9 +12,11 @@
         use HasFactory;
 
         protected $table = 'barang_gadai'; // Sesuaikan dengan nama tabel di database
-        protected $primaryKey = 'id_barang'; // Sesuaikan dengan primary key
+        protected $primaryKey = 'no_bon'; // Sesuaikan dengan primary key
+        public $incrementing = false; // Karena `no_bon` bukan auto-increment
 
         protected $fillable = [
+            'no_bon',
             'id_nasabah',
             'nama_barang',
             'deskripsi',

@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (!Schema::hasTable('lelang_barang')) {
         Schema::create('lelang_barang', function (Blueprint $table) {
-        $table->id('id_lelang');
-        $table->unsignedBigInteger('id_barang');
-        $table->date('tanggal_lelang');
-        $table->decimal('harga_awal', 15, 2);
-        $table->enum('status_penjualan', ['Belum Terjual', 'Terjual']);
-        $table->foreign('id_barang')->references('id_barang')->on('barang_gadai')->onDelete('cascade');
-        $table->timestamps();
-    });
+            $table->id('id_lelang');
+            $table->bigInteger('no_bon')->unsigned();
+            $table->date('tanggal_lelang');
+            $table->decimal('harga_awal', 15, 2);
+            $table->enum('status_penjualan', ['Belum Terjual', 'Terjual']);
+            $table->timestamps();
+        });
+    }
     }
 
     /**

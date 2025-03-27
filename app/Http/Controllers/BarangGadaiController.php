@@ -35,8 +35,14 @@ class BarangGadaiController extends Controller
     public function create()
     {
         $nasabah = Nasabah::all();
-        $kategori = KategoriBarang::all();
-        return view('barang_gadai.create', compact('nasabah', 'kategori'));
+       $kategori = KategoriBarang::all(); // Ambil semua data kategori
+
+        if ($kategori->isEmpty()) {
+            dd('Data kategori kosong!'); // Debugging
+        }
+        dd($kategori);
+
+        return view('transaksi_gadai.create', compact('kategori'));
     }
 
     public function store(Request $request)
@@ -67,7 +73,9 @@ class BarangGadaiController extends Controller
 
 
         BarangGadai::create([
+
             'id_user' => auth()->id(), // Isi dengan ID admin yang login
+            'no_bon' => $request->no_bon,
             'id_nasabah'   => $request->id_nasabah,
             'nama_barang'  => $request->nama_barang,
             'deskripsi'    => $request->deskripsi,

@@ -36,9 +36,7 @@ class NasabahController extends Controller
             'nama' => 'required',
             'nik' => 'required|unique:nasabah,nik',
             'alamat' => 'required',
-            'telepon' => 'required',
-            'username' => 'required|unique:users,username',
-            'password' => 'required|min:6',
+            'telepon' => 'required'
         ]);
 
         // Buat akun user untuk login
