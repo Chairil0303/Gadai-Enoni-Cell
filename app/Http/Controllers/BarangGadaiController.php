@@ -11,26 +11,24 @@ use Carbon\Carbon;
 class BarangGadaiController extends Controller
 {
     public function index()
-{
-    $userId = auth()->id(); // Ambil ID admin yang sedang login
+    {
+        $userId = auth()->id();
 
-    // Periksa apakah kolom 'id_user' ada di dalam tabel
-    if ($userId == 1) {
-        $barangGadai = BarangGadai::with('nasabah', 'kategori')->get();
-    } else {
-        if (Schema::hasColumn('barang_gadai', 'id_user')) {
-            // Jika kolom id_user ada, filter berdasarkan id_user
-            $barangGadai = BarangGadai::with('nasabah', 'kategori')
-                            ->where('id_user', $userId)
-                            ->get();
+        if ($userId == 1) {
+            $barangGadai = BarangGadai::with('nasabah.user', 'kategori')->get();
         } else {
-            // Jika kolom tidak ada, tampilkan tabel kosong tanpa error
-            $barangGadai = collect(); // Mengembalikan collection kosong
+            if (Schema::hasColumn('barang_gadai', 'id_user')) {
+                $barangGadai = BarangGadai::with('nasabah.user', 'kategori')
+                                ->where('id_user', $userId)
+                                ->get();
+            } else {
+                $barangGadai = collect(); // Jika kolom tidak ada, kembalikan koleksi kosong
+            }
         }
+
+        return view('barang_gadai.index', compact('barangGadai'));
     }
 
-    return view('barang_gadai.index', compact('barangGadai'));
-}
 
 
 
@@ -64,7 +62,7 @@ class BarangGadaiController extends Controller
         ]);
 
         // Konversi tenor ke integer agar kompatibel dengan Carbon
-            $tenor = (int) $request->tenor;  
+            $tenor = (int) $request->tenor;
             $tempo = Carbon::now()->addDays($tenor)->format('Y-m-d');
 
 
