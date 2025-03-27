@@ -46,5 +46,10 @@ class User extends Authenticatable
         return $this->role === 'Admin';
     }
 
+    public function isNasabah()
+    {
+        return $this->role === 'Nasabah';
+    }
+
 
 }
