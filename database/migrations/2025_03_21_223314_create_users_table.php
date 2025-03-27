@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('username')->unique();
             $table->string('password');
-            $table->enum('role', ['Superadmin', 'Admin']);
+            $table->enum('role', ['Superadmin', 'Admin','Nasabah']);
             $table->unsignedBigInteger('id_cabang')->nullable();
             $table->foreign('id_cabang')->references('id_cabang')->on('cabang')->onDelete('set null');
             $table->timestamps();

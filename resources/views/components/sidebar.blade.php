@@ -3,7 +3,7 @@
         Dashboard
     </div>
     <ul>
-        
+
         {{-- Semua Role Bisa Akses Notifikasi --}}
         <li>
             <a href="{{ route('notifikasi.index') }}" class="py-3 text-white no-underline block p-2 hover:bg-gray-700">
@@ -42,6 +42,15 @@
                 </a>
             </li>
         @endif
-        
+
+        {{-- user == nasabah --}}
+
+        @if(auth()->user()->isNasabah())
+            <li>
+                <a href="{{ route('nasabah.profile') }}" class="block px-4 py-2">Profil Saya</a>
+            </li>
+        @endif
+
+
     </ul>
 </div>

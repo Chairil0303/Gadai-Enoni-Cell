@@ -30,9 +30,21 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('dashboard.superadmin');
         } elseif (auth()->user()->role === 'Admin') {
             return redirect()->route('dashboard.admin');
+        }elseif (auth()->user()->role === 'Nasabah') {
+            return redirect()->route('dashboard.nasabah');
         }
         return view('dashboard');
     })->name('dashboard');
+
+
+    Route::get('/dashboard/nasabah', function () {
+        return view('components.dashboard_nasabah.index');
+    })->name('dashboard.nasabah');
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/nasabah/profile', [NasabahController::class, 'myProfile'])->name('nasabah.profile');
+    });
+
 
     // Route untuk admin
     Route::middleware(RoleMiddleware::class . ':Admin')->group(function () {

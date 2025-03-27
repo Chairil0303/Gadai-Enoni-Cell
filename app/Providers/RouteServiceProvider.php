@@ -30,6 +30,8 @@ class RouteServiceProvider extends ServiceProvider
         });
         parent::boot();
         Route::model('cabang', Cabang::class);
+
+        Route::aliasMiddleware('role', \App\Http\Middleware\RoleMiddleware::class);
     }
 
     /**
@@ -42,6 +44,8 @@ class RouteServiceProvider extends ServiceProvider
                 return '/dashboard/superadmin';
             } elseif (auth()->user()->role === 'Admin') {
                 return '/dashboard/admin';
+            }else  {
+                return '/dashboard_nasabah';
             }
         }
 

@@ -33,6 +33,9 @@ class LoginController extends Controller
     } elseif ($user->role === 'Admin') {
         session()->flash('success', 'Selamat datang, Admin!');
         return redirect('/dashboard/admin'. $user->cabang_id);
+    } elseif ($user->role === 'Nasabah') {
+        session()->flash('success', 'Selamat datang, Nasabah!');
+        return redirect('/dashboard_nasabah');
     }
 
     session()->flash('success', 'Selamat datang di Dashboard!');
