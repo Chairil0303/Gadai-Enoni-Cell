@@ -24,20 +24,24 @@ class LoginController extends Controller
     }
 
     // Redirect berdasarkan role setelah login sukses
-    protected function authenticated(Request $request, $user)
+   // Redirect berdasarkan role setelah login sukses
+protected function authenticated(Request $request, $user)
 {
     if ($user->role === 'Superadmin') {
-        // Kirim flash message ke session
         session()->flash('success', 'Selamat datang, Superadmin!');
         return redirect('/dashboard/superadmin');
     } elseif ($user->role === 'Admin') {
         session()->flash('success', 'Selamat datang, Admin!');
-        return redirect('/dashboard/admin'. $user->cabang_id);
+        return redirect('/dashboard/admin/' . $user->id_cabang);
+    } elseif ($user->role === 'Nasabah') {
+        session()->flash('success', 'Selamat datang, Nasabah!');
+        return redirect('/dashboard/nasabah');
     }
 
     session()->flash('success', 'Selamat datang di Dashboard!');
     return redirect('/dashboard');
 }
+
 public function index()
 {
     $user = auth()->user();

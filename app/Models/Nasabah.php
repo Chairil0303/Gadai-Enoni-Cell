@@ -30,4 +30,10 @@ class Nasabah extends Model
     protected $casts = [
         'status_blacklist' => 'boolean',
     ];
+
+    public function user()
+{
+    return $this->belongsTo(User::class, 'username', 'username');
+}
+
 }

@@ -12,59 +12,76 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('users')->truncate();
+        DB::table('cabang')->truncate();
+        DB::table('kategori_barang')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+         // Seed cabang
         DB::table('cabang')->insert([
-            [
-                'id_cabang'  => 1,
-                'nama_cabang'=> 'Cabang Jakarta',
-                'alamat'     => 'Jl. Sudirman No. 10, Jakarta',
-                'kontak'     => '081234567890',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id_cabang'  => 2,
-                'nama_cabang'=> 'Cabang Bandung',
-                'alamat'     => 'Jl. Asia Afrika No. 15, Bandung',
-                'kontak'     => '082345678901',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
+            ['nama_cabang' => 'Cabang Kalisuren', 'alamat' => 'Jl. Kalisuren No.1, Bogor', 'kontak' => '081234567890'],
+            ['nama_cabang' => 'Cabang Parung', 'alamat' => 'Jl. Asia Afrika No.2, Parung', 'kontak' => '081234567891'],
+            ['nama_cabang' => 'Cabang Lebak Wangi', 'alamat' => 'Jl. Raya Darmo No.3, Lebak Wangi', 'kontak' => '081234567892'],
         ]);
 
+        // Seed users
         DB::table('users')->insert([
             [
-                'id'       => 1, // Pastikan id sesuai dengan DB
-                'nama'      => 'Super Admin',
-                'email'     => 'superadmin@example.com',
-                'username'  => 'superadmin',
-                'password'  => Hash::make('password123'),
-                'role'      => 'Superadmin',
+                'nama' => 'Super Admin',
+                'email' => 'superadmin@example.com',
+                'username' => 'superadmin',
+                'password' => Hash::make('password'),
+                'role' => 'Superadmin',
                 'id_cabang' => null,
-                'created_at'=> now(),
-                'updated_at'=> now(),
             ],
             [
-                'id'       => 2,
-                'nama'      => 'Admin Cabang 1',
-                'email'     => 'admin1@example.com',
-                'username'  => 'admin1',
-                'password'  => Hash::make('password123'),
-                'role'      => 'Admin',
+                'nama' => 'Admin Kalisuren',
+                'email' => 'admin.Kalisuren@example.com',
+                'username' => 'adminA',
+                'password' => Hash::make('password'),
+                'role' => 'Admin',
                 'id_cabang' => 1,
-                'created_at'=> now(),
-                'updated_at'=> now(),
             ],
             [
-                'id'       => 3,
-                'nama'      => 'Admin Cabang 2',
-                'email'     => 'admin2@example.com',
-                'username'  => 'admin2',
-                'password'  => Hash::make('password123'),
-                'role'      => 'Admin',
+                'nama' => 'Admin parung',
+                'email' => 'admin.parung@example.com',
+                'username' => 'adminB',
+                'password' => Hash::make('password'),
+                'role' => 'Admin',
                 'id_cabang' => 2,
-                'created_at'=> now(),
-                'updated_at'=> now(),
-            ]
+            ],
+            [
+                'nama' => 'Admin lebakwangi',
+                'email' => 'admin.lebakwangi@example.com',
+                'username' => 'adminC',
+                'password' => Hash::make('password'),
+                'role' => 'Admin',
+                'id_cabang' => 3,
+            ],
+            [
+                'nama' => 'Nasabah Satu',
+                'email' => 'nasabah1@example.com',
+                'username' => 'nasabah1',
+                'password' => Hash::make('password'),
+                'role' => 'Nasabah',
+                'id_cabang' => null,
+            ],
+            [
+                'nama' => 'Nasabah Dua',
+                'email' => 'nasabah2@example.com',
+                'username' => 'nasabah2',
+                'password' => Hash::make('password'),
+                'role' => 'Nasabah',
+                'id_cabang' => null,
+            ],
+        ]);
+
+        // Seed kategori_barang
+        DB::table('kategori_barang')->insert([
+            ['nama_kategori' => 'Laptop', 'deskripsi' => 'Kategori untuk barang berupa laptop'],
+            ['nama_kategori' => 'HP', 'deskripsi' => 'Kategori untuk barang berupa handphone'],
+            ['nama_kategori' => 'TV', 'deskripsi' => 'Kategori untuk barang berupa televisi'],
         ]);
     }
 }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Nasabah;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class NasabahController extends Controller
 {
@@ -18,29 +20,47 @@ class NasabahController extends Controller
         return view('nasabah.create');
     }
 
+    public function show($id)
+{
+    $nasabah = Nasabah::findOrFail($id);
+    return view('nasabah.show', compact('nasabah'));
+}
+
+
     public function store(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required',
-            'nik' => 'required|unique:nasabah,nik',
-            'alamat' => 'required',
-            'telepon' => 'required',
-            'username' => 'required|unique:nasabah,username',
-            'password' => 'required|min:6',
-        ]);
+{
+    $request->validate([
+        'nama' => 'required|string|max:255',
+        'nik' => 'required|string|unique:nasabah,nik',
+        'alamat' => 'required|string',
+        'telepon' => 'required|string|max:15',
+        'username' => 'required|string|unique:users,username',
+        'password' => 'required|string|min:6',
+    ]);
 
-        Nasabah::create([
-            'nama' => $request->nama,
-            'nik' => $request->nik,
-            'alamat' => $request->alamat,
-            'telepon' => $request->telepon,
-            'status_blacklist' => $request->has('status_blacklist'),
-            'username' => $request->username,
-            'password' => bcrypt($request->password),
-        ]);
+    // Simpan ke tabel nasabah
+    $nasabah = Nasabah::create([
+        'nama' => $request->nama,
+        'nik' => $request->nik,
+        'alamat' => $request->alamat,
+        'telepon' => $request->telepon,
+        'status_blacklist' => false,
+        'username' => $request->username,
+        'password' => Hash::make($request->password),
+    ]);
 
-        return redirect()->route('superadmin.nasabah.index')->with('success', 'Nasabah berhasil ditambahkan');
-    }
+    // Simpan ke tabel users
+    User::create([
+        'nama' => $request->nama,
+        'email' => $request->username . '@example.com', // Bisa disesuaikan
+        'username' => $request->username,
+        'password' => Hash::make($request->password),
+        'role' => 'Nasabah', // Role nasabah
+        'id_cabang' => null
+    ]);
+
+    return redirect()->back()->with('success', 'Nasabah berhasil ditambahkan!');
+}
 
     public function edit($id)
     {

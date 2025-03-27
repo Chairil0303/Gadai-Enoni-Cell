@@ -17,6 +17,4 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
-    $app->middleware([
-    \App\Http\Middleware\AutoLogout::class,
-    ]);
+    

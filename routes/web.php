@@ -20,6 +20,7 @@ Route::get('/', function () {
 });
 
 
+
 // Route untuk login
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 
@@ -30,15 +31,30 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('dashboard.superadmin');
         } elseif (auth()->user()->role === 'Admin') {
             return redirect()->route('dashboard.admin');
+        } elseif (auth()->user()->role === 'Nasabah') {
+            return redirect()->route('dashboard.Nasabah');
         }
-        return view('dashboard');
+        // Jika role tidak dikenali, arahkan ke halaman login
+        return redirect('/login');
     })->name('dashboard');
+
 
     // Route untuk admin
     Route::middleware(RoleMiddleware::class . ':Admin')->group(function () {
         Route::get('/dashboard/admin', function () {
             return view('components.dashboard.admin');
         })->name('dashboard.admin');
+    });
+
+
+    Route::middleware(['auth', 'role:Nasabah'])->prefix('nasabah')->group(function () {
+        Route::get('/nasabah/profile', [NasabahController::class, 'show'])->name('nasabah.profile');
+    });
+
+    Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
+        Route::get('/dashboard/nasabah', function () {
+            return view('components.dashboard.nasabah');
+        })->name('dashboard.Nasabah');
     });
 
     // Route untuk superadmin
