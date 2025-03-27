@@ -25,25 +25,25 @@
                                 <h5 class="text-success">Form Tambah Nasabah</h5>
                                 <hr>
                                 <form action="{{ route('nasabah.store') }}" method="POST">
-    
+                                    @csrf
                                     <div class="mb-3">
                                         <label for="nama" class="form-label">Nama Lengkap</label>
-                                        <input type="text" name="nama" class="form-control" required>
+                                        <input type="text" autocomplete="off" placeholder="Masukan Nama Anda" name="nama" class="form-control" required>
                                     </div>
     
                                     <div class="mb-3">
                                         <label for="nik" class="form-label">NIK</label>
-                                        <input type="text" name="nik" class="form-control" required>
+                                        <input type="text" autocomplete="off" placeholder="Masukan Nik Anda" name="nik" class="form-control" required>
                                     </div>
     
                                     <div class="mb-3">
                                         <label for="alamat" class="form-label">Alamat</label>
-                                        <textarea name="alamat" class="form-control" rows="3" required></textarea>
+                                        <textarea name="alamat" autocomplete="off" placeholder="Masukan Alamat anda" class="form-control" rows="3" required></textarea>
                                     </div>
     
                                     <div class="mb-3">
                                         <label for="telepon" class="form-label">Nomor Telepon</label>
-                                        <input type="text" name="telepon" class="form-control" required>
+                                        <input type="text" name="telepon" autocomplete="off" placeholder="Masukan No Telp anda" class="form-control" required>
                                     </div>
     
                                     <button type="submit" class="btn btn-primary">Simpan</button>

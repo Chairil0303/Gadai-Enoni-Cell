@@ -35,26 +35,50 @@ class NasabahController extends Controller
         $request->validate([
             'nama' => 'required',
             'nik' => 'required|unique:nasabah,nik',
-            'alamat' => 'required',
-            'telepon' => 'required'
+            'email' => 'nullable|email|unique:users,email',
+            'alamat' => 'required|string',
+            'telepon' => 'required|string|min:10'
         ]);
 
         // Buat akun user untuk login
+        // $user = User::create([
+        //     'username' => $request->username,
+        //     'password' => Hash::make($request->password),
+        //     'role'     => 'nasabah', // Role otomatis 'nasabah'
+        // ]);
+
+        $username = str_replace(' ', '', strtolower($request->nama)); // Hilangkan spasi dan buat lowercase
+
+        // 3. Ambil 4 digit terakhir dari nomor telepon sebagai password
+        $password = substr($request->telepon, -4); // Ambil 4 digit terakhir
+
+        // **Gunakan email jika ada, jika tidak buat default email**
+        $email = $request->email ?? $username . '@example.com';  // <- Kode yang kamu tanyakan ada di sini
+        
+
+        // 4. Simpan user ke tabel users
         $user = User::create([
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
-            'role'     => 'nasabah', // Role otomatis 'nasabah'
+            'nama' => $request->nama,
+            'email' => $email,
+            'username' => $username, // Username sama dengan nama
+            'password' => bcrypt($password), // Hash password
+            'role' => 'Nasabah',
         ]);
+
+        if (!$user) {
+        return redirect()->back()->with('error', 'Gagal membuat user');
+        }
 
         // Buat data nasabah
         Nasabah::create([
-            'id_users' => $user->id_users, // Hubungkan dengan user yang dibuat
+            'id_users' => $user->getKey(), // Hubungkan dengan user yang dibuat
             'nama' => $request->nama,
             'nik' => $request->nik,
             'alamat' => $request->alamat,
             'telepon' => $request->telepon,
             'status_blacklist' => $request->has('status_blacklist'),
         ]);
+        // dd($user->id_users, $user->getKey(), $user->id); // Debugging ulang
 
         return redirect()->route('superadmin.nasabah.index')->with('success', 'Nasabah berhasil ditambahkan');
     }
