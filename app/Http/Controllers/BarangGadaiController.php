@@ -35,7 +35,7 @@ class BarangGadaiController extends Controller
     public function create()
     {
         $nasabah = Nasabah::all();
-       $kategori = KategoriBarang::all(); // Ambil semua data kategori
+        $kategori = KategoriBarang::all(); // Ambil semua data kategori
 
         if ($kategori->isEmpty()) {
             dd('Data kategori kosong!'); // Debugging

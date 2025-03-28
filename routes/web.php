@@ -11,6 +11,7 @@ use App\Http\Controllers\LelangBarangController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\Superadmin\CabangController;
+use App\Http\Controllers\GadaiController;
 
 
 
@@ -126,6 +127,14 @@ Route::resource('barang_gadai', BarangGadaiController::class);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+
+    // untuk terima gadai
+    Route::post('/gadai/store', [GadaiController::class, 'store'])->name('gadai.store');
+
+    // buat kategori
+    Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
 
 
 
