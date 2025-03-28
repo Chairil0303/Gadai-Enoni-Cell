@@ -47,9 +47,11 @@ Route::middleware(['auth'])->group(function () {
     });
 
 
-    Route::middleware(['auth', 'role:Nasabah'])->prefix('nasabah')->group(function () {
-        Route::get('/nasabah/profile', [NasabahController::class, 'show'])->name('nasabah.profile');
-    });
+
+Route::middleware(['auth', RoleMiddleware::class .':nasabah'])->prefix('nasabah')->group(function () {
+    Route::get('/profile', [NasabahController::class, 'show'])->name('profile');
+});
+
 
     Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
         Route::get('/dashboard/nasabah', function () {

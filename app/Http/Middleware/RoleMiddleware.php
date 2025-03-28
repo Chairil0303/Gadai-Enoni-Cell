@@ -13,6 +13,7 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
+        // dd("Middleware role dijalankan untuk role: " . $role);
         if (auth()->check() && auth()->user()->role === $role) {
             return $next($request);
         }

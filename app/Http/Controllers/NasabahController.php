@@ -22,9 +22,16 @@ class NasabahController extends Controller
 
     public function show($id)
 {
+    // Ambil user yang sedang login
+    $user = auth()->user();
+
+    // Debugging untuk cek role user
+    // dd("Middleware role dijalankan untuk role: " . $user->role);
+
     $nasabah = Nasabah::findOrFail($id);
     return view('nasabah.show', compact('nasabah'));
 }
+
 
 
     public function store(Request $request)
