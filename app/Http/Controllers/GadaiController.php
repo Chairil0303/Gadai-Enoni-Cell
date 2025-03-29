@@ -35,7 +35,7 @@ class GadaiController extends Controller
             'imei' => 'nullable|string',
             'tenor' => 'required|integer',
             'harga_gadai' => 'required|numeric',
-            'id_kategori' => 'required|integer|exists:kategori,id_kategori',
+            'id_kategori' => 'required|integer|exists:kategori_barang,id_kategori',
         ]);
 
         // Simpan Data Nasabah
