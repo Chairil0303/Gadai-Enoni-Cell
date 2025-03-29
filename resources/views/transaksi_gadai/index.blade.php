@@ -7,7 +7,7 @@
         <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-4 lg:max-w-4xl">
             <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-4">
                 <!-- Terima Gadai -->
-                <a href="{{ route('transaksi_gadai.create') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
+                <a href="{{ route('barang_gadai.create') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
                     <dt class="text-base font-semibold text-gray-900 flex items-center space-x-4">
                         <div class="absolute top-4 left-7 flex size-10 items-center justify-center rounded-lg bg-green-600 group-hover:bg-green-700 transition">
                             <svg class="size-6 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

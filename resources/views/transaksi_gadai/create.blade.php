@@ -79,7 +79,7 @@
                                     <label for="id_kategori" class="form-label"><i class="fas fa-list"></i> Kategori</label>
                                     <select name="id_kategori" class="form-control" required>
                                         <option value="">Pilih Kategori</option>
-                                        @foreach($kategori as $k)
+                                        @foreach($kategori_barang as $k)
                                             <option value="{{ $k->id_kategori }}">{{ $k->nama_kategori }}</option>
                                         @endforeach
                                     </select>
@@ -96,7 +96,7 @@
                         {{-- Tombol Submit --}}
                         <button type="submit" class="btn btn-primary w-100"><i class="fas fa-save"></i> Simpan</button>
                     </form>
-                    
+
                 </div>
             </div>
         </div>

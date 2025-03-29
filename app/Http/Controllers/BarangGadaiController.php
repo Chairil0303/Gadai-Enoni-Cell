@@ -33,17 +33,15 @@ class BarangGadaiController extends Controller
 
 
     public function create()
-    {
-        $nasabah = Nasabah::all();
-        $kategori = KategoriBarang::all(); // Ambil semua data kategori
+{
+    $nasabah = Nasabah::all();
+    $kategori = KategoriBarang::all();
+    return view('transaksi_gadai.create', [
+        'nasabah' => $nasabah,
+        'kategori_barang' => $kategori // Ubah nama variabel yang dikirim ke Blade
+    ]);
+}
 
-        if ($kategori->isEmpty()) {
-            dd('Data kategori kosong!'); // Debugging
-        }
-        dd($kategori);
-
-        return view('transaksi_gadai.create', compact('kategori'));
-    }
 
     public function store(Request $request)
     {

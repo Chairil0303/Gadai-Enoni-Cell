@@ -54,8 +54,8 @@ Route::middleware(['auth'])->group(function () {
         })->name('dashboard.admin');
     });
 
-    
-    Route::get('/transaksi_gadai/create', [BarangGadaiController::class, 'create'])->name('transaksi-gadai.create');
+
+    Route::get('/barang_gadai/create', [BarangGadaiController::class, 'create'])->name('transaksi-gadai.create');
 
     Route::prefix('admin')->group(function () {
         Route::get('/transaksi_gadai/terima_gadai', [TransaksiGadaiController::class, 'create'])->name('admin.transaksi_gadai.create');
@@ -97,7 +97,7 @@ Route::resource('barang_gadai', BarangGadaiController::class);
     Route::resource('notifikasi', NotifikasiController::class);
 
 
-    
+
     // Route::post('/barang-gadai/store', [BarangGadaiController::class, 'store'])->name('barang_gadai.store');
 
 

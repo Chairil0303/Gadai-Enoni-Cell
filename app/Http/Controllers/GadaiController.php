@@ -5,14 +5,20 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Nasabah;
 use App\Models\BarangGadai;
-use App\Models\Kategori;
+use App\Models\KategoriBarang;
 
 class GadaiController extends Controller
 {
-    public function create(){
-    $kategori = kategori::all(); // Mengambil semua kategori dari database
-    return view('gadai.create', compact('kategori'));
-    }
+    public function create()
+{
+    $nasabah = Nasabah::all();
+    $kategori = KategoriBarang::all();
+    return view('transaksi_gadai.create', [
+        'nasabah' => $nasabah,
+        'kategori_barang' => $kategori // Ubah nama variabel yang dikirim ke Blade
+    ]);
+}
+
 
 
 
