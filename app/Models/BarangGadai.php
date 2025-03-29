@@ -9,6 +9,8 @@
 
     class BarangGadai extends Model
     {
+
+        
         use HasFactory;
 
         protected $table = 'barang_gadai'; // Sesuaikan dengan nama tabel di database
@@ -28,6 +30,8 @@
             'id_kategori',
             'id_user',
         ];
+
+
 
 
         // Getter untuk menghitung sisa hari atau keterlambatan
@@ -55,5 +59,7 @@
         {
             return $this->belongsTo(User::class, 'id_user');
         }
+
+
 
     }

@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('nasabah', function (Blueprint $table) {
             $table->id('id_nasabah');
-            $table->unsignedBigInteger('id_users')->unique(); // Relasi ke tabel users
+            $table->unsignedBigInteger('id_user')->unique(); // Relasi ke tabel users
             $table->string('nama');
             $table->string('nik')->unique();
             $table->text('alamat');
@@ -22,7 +21,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Foreign key ke tabel users
-            $table->foreign('id_users')->references('id_users')->on('users')->onDelete('cascade');
+            $table->foreign('id_user')->references('id_users')->on('users')->onDelete('cascade');
         });
     }
 

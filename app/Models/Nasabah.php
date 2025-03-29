@@ -14,13 +14,14 @@ class Nasabah extends Model
     protected $primaryKey = 'id_nasabah'; // Sesuaikan dengan kolom ID utama
 
     protected $fillable = [
-        'id_users', // Relasi ke table users
+        'id_user', //ganti dari users ke user
         'nama',
         'nik',
         'alamat',
         'telepon',
         'status_blacklist',
     ];
+
 
     protected $casts = [
         'status_blacklist' => 'boolean',
@@ -29,8 +30,10 @@ class Nasabah extends Model
     // Relasi ke table users
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_users', 'id_users');
+        return $this->belongsTo(User::class, 'id_user', 'id_users'); //colom di baranggadai nya id_user bukan id_users
     }
+
+
     public function barangGadai()
 {
     return $this->hasMany(BarangGadai::class, 'id_nasabah', 'id_nasabah');

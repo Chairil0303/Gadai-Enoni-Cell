@@ -14,7 +14,7 @@ return new class extends Migration
             Schema::create('transaksi_gadai', function (Blueprint $table) {
             $table->id('id_transaksi');
             $table->unsignedBigInteger('id_nasabah');
-            $table->unsignedBigInteger('no_bon'); // Tambahkan kolom ini sebelum foreign key
+            $table->string('no_bon', 50);  // ganti type no_bon jadi string
             $table->date('tanggal_gadai');
             $table->decimal('jumlah_pinjaman', 15, 2);
             $table->decimal('bunga', 5, 2);
@@ -26,7 +26,7 @@ return new class extends Migration
         });
 
         }
-    
+
 
     /**
      * Reverse the migrations.

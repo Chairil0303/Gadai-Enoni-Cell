@@ -69,12 +69,9 @@
 
                                 <div class="mb-3">
                                     <label for="tenor" class="form-label">Tenor</label>
-                                    <select name="tenor" class="form-control" required>
-                                        <option value="7">7 Hari</option>
-                                        <option value="14">14 Hari</option>
-                                        <option value="30">30 Hari</option>
-                                    </select>
+                                    <input type="text" name="tenor" class="form-control" placeholder="Masukan Tenor 7/14/30 hari">
                                 </div>
+                                {{-- gua ubah jadi field biasa biar jadi int --}}
                                 <div class="mb-3">
                                     <label for="id_kategori" class="form-label"><i class="fas fa-list"></i> Kategori</label>
                                     <select name="id_kategori" class="form-control" required>
