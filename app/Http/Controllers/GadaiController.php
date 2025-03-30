@@ -72,7 +72,7 @@ public function store(Request $request)
         'tempo' => now()->addDays($tenor), // ✅ Tidak error karena sudah integer
         'harga_gadai' => $request->harga_gadai,
         'id_kategori' => $request->id_kategori,
-        'id_user' => $user->id_users,
+        'id_user' => auth()->user()->id_users,  //ngambil data user yang login
     ]);
 
     // Redirect ke halaman daftar barang gadai dengan pesan sukses
