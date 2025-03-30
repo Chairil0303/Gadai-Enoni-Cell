@@ -11,19 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transaksi_gadai', function (Blueprint $table) {
-        $table->id('id_transaksi');
-        $table->unsignedBigInteger('id_nasabah');
-        $table->unsignedBigInteger('id_barang');
-        $table->date('tanggal_gadai');
-        $table->decimal('jumlah_pinjaman', 15, 2);
-        $table->decimal('bunga', 5, 2);
-        $table->date('jatuh_tempo');
-        $table->foreign('id_nasabah')->references('id_nasabah')->on('nasabah')->onDelete('cascade');
-        $table->foreign('id_barang')->references('id_barang')->on('barang_gadai')->onDelete('cascade');
-        $table->timestamps();
-    });
-    }
+            Schema::create('transaksi_gadai', function (Blueprint $table) {
+            $table->id('id_transaksi');
+            $table->unsignedBigInteger('id_nasabah');
+            $table->string('no_bon', 50);  // ganti type no_bon jadi string
+            $table->date('tanggal_gadai');
+            $table->decimal('jumlah_pinjaman', 15, 2);
+            $table->decimal('bunga', 5, 2);
+            $table->date('jatuh_tempo');
+
+            $table->foreign('id_nasabah')->references('id_nasabah')->on('nasabah')->onDelete('cascade');
+            $table->foreign('no_bon')->references('no_bon')->on('barang_gadai')->onDelete('cascade');
+            $table->timestamps();
+        });
+
+        }
+
 
     /**
      * Reverse the migrations.

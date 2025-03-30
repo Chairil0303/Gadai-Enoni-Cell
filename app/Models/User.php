@@ -11,6 +11,9 @@ class User extends Authenticatable
 
     protected $table = 'users';
     protected $primaryKey = 'id_users';
+    public $incrementing = true;
+    protected $keyType = 'int';
+    public $timestamps = true;
 
     protected $fillable = [
         'nama',  // Ubah dari 'name' ke 'nama'
@@ -46,7 +49,7 @@ class User extends Authenticatable
         return $this->role === 'Admin';
     }
 
-    // Cek jika user adalah nasabah
+
     public function isNasabah()
     {
         return $this->role === 'Nasabah';

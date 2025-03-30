@@ -11,6 +11,7 @@ use App\Http\Controllers\LelangBarangController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\Superadmin\CabangController;
+use App\Http\Controllers\GadaiController;
 
 
 
@@ -31,14 +32,29 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('dashboard.superadmin');
         } elseif (auth()->user()->role === 'Admin') {
             return redirect()->route('dashboard.admin');
+// loginNasabahfix
         } elseif (auth()->user()->role === 'Nasabah') {
             return redirect()->route('dashboard.Nasabah');
+// mergensb+transaksi
+//         }elseif (auth()->user()->role === 'Nasabah') {
+//             return redirect()->route('dashboard.nasabah');
+
         }
         // Jika role tidak dikenali, arahkan ke halaman login
         return redirect('/login');
     })->name('dashboard');
 
 
+// loginNasabahfix
+
+    Route::get('/dashboard/nasabah', function () {
+        return view('components.dashboard_nasabah.index');
+    })->name('dashboard.nasabah');
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/nasabah/profile', [NasabahController::class, 'myProfile'])->name('nasabah.profile');
+    });
+// merge_nsb_+transaksi
     // Route untuk admin
     Route::middleware(RoleMiddleware::class . ':Admin')->group(function () {
         Route::get('/dashboard/admin', function () {
@@ -47,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
 
+// loginNasabahfix
 
     Route::get('/nasabah/dashboard', [NasabahController::class, 'index'])->name('dashboard.nasabah');
     
@@ -59,13 +76,15 @@ Route::middleware(['auth'])->group(function () {
 //     })->name('dashboard.nasabah');
 // });
 
-
-
-
     Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
         Route::get('/dashboard/nasabah', function () {
             return view('components.dashboard.nasabah');
         })->name('dashboard.Nasabah');
+
+    Route::get('/barang_gadai/create', [BarangGadaiController::class, 'create'])->name('transaksi-gadai.create');
+
+    Route::prefix('admin')->group(function () {
+        Route::get('/transaksi_gadai/terima_gadai', [TransaksiGadaiController::class, 'create'])->name('admin.transaksi_gadai.create');
     });
 
     // Route untuk superadmin
@@ -85,17 +104,16 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::prefix('superadmin')->group(function () {
-    Route::get('/nasabah', [NasabahController::class, 'index'])->name('superadmin.nasabah.index');
-    Route::get('/nasabah/create', [NasabahController::class, 'create'])->name('superadmin.nasabah.create');
-    Route::post('/nasabah', [NasabahController::class, 'store'])->name('superadmin.nasabah.store');
-    Route::get('/nasabah/{id}/edit', [NasabahController::class, 'edit'])->name('superadmin.nasabah.edit');
-    Route::put('/nasabah/{id}', [NasabahController::class, 'update'])->name('superadmin.nasabah.update');
-    Route::delete('/nasabah/{id}', [NasabahController::class, 'destroy'])->name('superadmin.nasabah.destroy');
+        Route::get('/nasabah', [NasabahController::class, 'index'])->name('superadmin.nasabah.index');
+        Route::get('/nasabah/create', [NasabahController::class, 'create'])->name('superadmin.nasabah.create');
+        Route::post('/nasabah', [NasabahController::class, 'store'])->name('superadmin.nasabah.store');
+        Route::get('/nasabah/{id}/edit', [NasabahController::class, 'edit'])->name('superadmin.nasabah.edit');
+        Route::put('/nasabah/{id}', [NasabahController::class, 'update'])->name('superadmin.nasabah.update');
+        Route::delete('/nasabah/{id}', [NasabahController::class, 'destroy'])->name('superadmin.nasabah.destroy');
 });
 
 
 Route::resource('barang_gadai', BarangGadaiController::class);
-
     // route untuk view
     Route::resource('nasabah', NasabahController::class);
     Route::resource('barang_gadai', BarangGadaiController::class);
@@ -103,6 +121,12 @@ Route::resource('barang_gadai', BarangGadaiController::class);
     Route::resource('lelang_barang', LelangBarangController::class);
     Route::resource('laporan', LaporanController::class);
     Route::resource('notifikasi', NotifikasiController::class);
+
+
+
+    // Route::post('/barang-gadai/store', [BarangGadaiController::class, 'store'])->name('barang_gadai.store');
+
+
 
     // route superadmin
 
@@ -129,6 +153,18 @@ Route::resource('barang_gadai', BarangGadaiController::class);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+
+    // untuk terima gadai
+    Route::post('/gadai/store', [GadaiController::class, 'store'])->name('gadai.store');
+
+    // buat kategori
+    Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
+
+
+
+
 });
 
 

@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Nasabah;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+
 use Illuminate\Support\Facades\Auth;
+
 
 class NasabahController extends Controller
 {
@@ -15,6 +17,7 @@ class NasabahController extends Controller
         $nasabah = Nasabah::with('user')->get();
         return view('nasabah.index', compact('nasabah'));
     }
+
 
     // public function myProfile()
     // {
@@ -46,6 +49,7 @@ class NasabahController extends Controller
         return view('nasabah.profile', compact('nasabah'));
     }
 
+
     public function create()
     {
         return view('nasabah.create');
@@ -61,15 +65,16 @@ class NasabahController extends Controller
             'telepon' => 'required|string|min:10'
         ]);
 
+<
 
         $username = str_replace(' ', '', strtolower($request->nama)); // Hilangkan spasi dan buat lowercase
 
         // Ambil 4 digit terakhir dari nomor telepon sebagai password
+
         $password = substr($request->telepon, -4); // Ambil 4 digit terakhir
 
         // **Gunakan email jika ada, jika tidak buat default email**
         $email = $request->email ?? $username . '@example.com';  // <- Kode yang kamu tanyakan ada di sini
-
 
         // 4. Simpan user ke tabel users
         $user = User::create([
@@ -93,6 +98,7 @@ class NasabahController extends Controller
             'telepon' => $request->telepon,
             'status_blacklist' => $request->has('status_blacklist'),
         ]);
+        // dd($user->id_users, $user->getKey(), $user->id); // Debugging ulang
 
         return redirect()->route('superadmin.nasabah.index')->with('success', 'Nasabah berhasil ditambahkan');
     }

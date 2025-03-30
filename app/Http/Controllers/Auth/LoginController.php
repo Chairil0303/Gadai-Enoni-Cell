@@ -32,10 +32,12 @@ protected function authenticated(Request $request, $user)
         return redirect('/dashboard/superadmin');
     } elseif ($user->role === 'Admin') {
         session()->flash('success', 'Selamat datang, Admin!');
+
         return redirect('/dashboard/admin/' . $user->id_cabang);
     } elseif ($user->role === 'Nasabah') {
         session()->flash('success', 'Selamat datang, Nasabah!');
         return redirect('/dashboard/nasabah');
+
     }
 
     session()->flash('success', 'Selamat datang di Dashboard!');
