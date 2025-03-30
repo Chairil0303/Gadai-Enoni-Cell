@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Nasabah;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class NasabahController extends Controller
 {
@@ -15,15 +16,22 @@ class NasabahController extends Controller
         return view('nasabah.index', compact('nasabah'));
     }
 
-    public function myProfile()
+    public function show()
     {
-        $nasabah = Nasabah::with('barangGadai')
-            ->where('id_user', auth()->user()->id_users)
-            ->firstOrFail();
+        $nasabah = Nasabah::where('id_user', Auth::id())->first();
 
-        return view('components.dashboard_nasabah.show', compact('nasabah'));
+        if (!$nasabah) {
+            return redirect()->route('dashboard.nasabah')->with('error', 'Data nasabah tidak ditemukan.');
+        }
+
+        return view('nasabah.profile', compact('nasabah'));
     }
 
+    public function myProfile()
+    {
+        $nasabah = Nasabah::where('id_users', auth()->user()->id_users)->firstOrFail();
+        return view('components.dashboard.nasabah', compact('nasabah'));
+    }
 
     public function create()
     {
@@ -40,46 +48,37 @@ class NasabahController extends Controller
             'telepon' => 'required|string|min:10'
         ]);
 
-        // Buat akun user untuk login
-        // $user = User::create([
-        //     'username' => $request->username,
-        //     'password' => Hash::make($request->password),
-        //     'role'     => 'nasabah', // Role otomatis 'nasabah'
-        // ]);
-
         $username = str_replace(' ', '', strtolower($request->nama)); // Hilangkan spasi dan buat lowercase
 
-        // 3. Ambil 4 digit terakhir dari nomor telepon sebagai password
+        // Ambil 4 digit terakhir dari nomor telepon sebagai password
         $password = substr($request->telepon, -4); // Ambil 4 digit terakhir
 
-        // **Gunakan email jika ada, jika tidak buat default email**
-        $email = $request->email ?? $username . '@example.com';  // <- Kode yang kamu tanyakan ada di sini
-        
+        // Gunakan email jika ada, jika tidak buat default email
+        $email = $request->email ?? $username . '@example.com';
 
-        // 4. Simpan user ke tabel users
+        // Simpan user ke tabel users
         $user = User::create([
             'nama' => $request->nama,
             'email' => $email,
-            'username' => $username, // Username sama dengan nama
-            'password' => bcrypt($password), // Hash password
+            'username' => $username,
+            'password' => bcrypt($password),
             'role' => 'Nasabah',
         ]);
 
         if (!$user) {
-        return redirect()->back()->with('error', 'Gagal membuat user');
+            return redirect()->back()->with('error', 'Gagal membuat user');
         }
 
         // Buat data nasabah
         Nasabah::create([
-            'id_users' => $user->getKey(), // Hubungkan dengan user yang dibuat
+            'id_users' => $user->getKey(),
             'nama' => $request->nama,
             'nik' => $request->nik,
             'alamat' => $request->alamat,
             'telepon' => $request->telepon,
             'status_blacklist' => $request->has('status_blacklist'),
         ]);
-        // dd($user->id_users, $user->getKey(), $user->id); // Debugging ulang
-
+        
         return redirect()->route('superadmin.nasabah.index')->with('success', 'Nasabah berhasil ditambahkan');
     }
 

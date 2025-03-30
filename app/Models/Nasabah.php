@@ -33,10 +33,15 @@ class Nasabah extends Model
         return $this->belongsTo(User::class, 'id_user', 'id_users'); //colom di baranggadai nya id_user bukan id_users
     }
 
+    public function userByUsername()
+    {
+        return $this->belongsTo(User::class, 'username', 'username'); // Relasi berdasarkan username
+    }
 
     public function barangGadai()
-{
-    return $this->hasMany(BarangGadai::class, 'id_nasabah', 'id_nasabah');
-}
+    {
+        return $this->hasMany(BarangGadai::class, 'id_nasabah', 'id_nasabah');
+    }
+
 
 }
