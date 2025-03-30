@@ -11,8 +11,16 @@ use Illuminate\Support\Facades\Hash;
 
 class GadaiController extends Controller
 {
+
+    public function index()
+{
+    $barangGadai = BarangGadai::with(['kategori', 'nasabah'])->get();
+    return view('barang_gadai.index', compact('barangGadai'));
+}
+
     public function create()
 {
+    $barangGadai = BarangGadai::with(['kategori', 'nasabah'])->get();
     $nasabah = Nasabah::all();
     $kategori = KategoriBarang::all();
     return view('transaksi_gadai.create', [
