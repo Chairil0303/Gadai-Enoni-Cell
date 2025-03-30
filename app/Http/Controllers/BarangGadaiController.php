@@ -45,14 +45,6 @@ class BarangGadaiController extends Controller
 
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'id_nasabah' => 'required|exists:nasabah,id_nasabah',
-        //     'nama_barang' => 'required|string|max:255',
-        //     'deskripsi' => 'nullable|string',
-        //     'status' => 'required|in:Tergadai,Ditebus,Dilelang',
-        //     'id_kategori' => 'nullable|exists:kategori_barang,id_kategori',
-        // ]);
-
         // Validasi input
         $request->validate([
             'id_nasabah'   => 'required|exists:nasabah,id_nasabah',
