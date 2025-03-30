@@ -31,7 +31,10 @@ class RouteServiceProvider extends ServiceProvider
         parent::boot();
         Route::model('cabang', Cabang::class);
 
-        Route::aliasMiddleware('role', \App\Http\Middleware\RoleMiddleware::class);
+
+        Route::middleware('role')->group(base_path('routes/web.php'));
+
+
     }
 
     /**

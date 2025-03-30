@@ -27,6 +27,7 @@ class Nasabah extends Model
         'status_blacklist' => 'boolean',
     ];
 
+
     // Relasi ke table users
     public function user()
     {

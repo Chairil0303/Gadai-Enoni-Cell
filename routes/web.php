@@ -21,6 +21,7 @@ Route::get('/', function () {
 });
 
 
+
 // Route untuk login
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 
@@ -31,12 +32,20 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('dashboard.superadmin');
         } elseif (auth()->user()->role === 'Admin') {
             return redirect()->route('dashboard.admin');
-        }elseif (auth()->user()->role === 'Nasabah') {
-            return redirect()->route('dashboard.nasabah');
+// loginNasabahfix
+        } elseif (auth()->user()->role === 'Nasabah') {
+            return redirect()->route('dashboard.Nasabah');
+// mergensb+transaksi
+//         }elseif (auth()->user()->role === 'Nasabah') {
+//             return redirect()->route('dashboard.nasabah');
+
         }
-        return view('dashboard');
+        // Jika role tidak dikenali, arahkan ke halaman login
+        return redirect('/login');
     })->name('dashboard');
 
+
+// loginNasabahfix
 
     Route::get('/dashboard/nasabah', function () {
         return view('components.dashboard_nasabah.index');
@@ -45,8 +54,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth'])->group(function () {
         Route::get('/nasabah/profile', [NasabahController::class, 'myProfile'])->name('nasabah.profile');
     });
-
-
+// merge_nsb_+transaksi
     // Route untuk admin
     Route::middleware(RoleMiddleware::class . ':Admin')->group(function () {
         Route::get('/dashboard/admin', function () {
@@ -54,6 +62,24 @@ Route::middleware(['auth'])->group(function () {
         })->name('dashboard.admin');
     });
 
+
+// loginNasabahfix
+
+    Route::get('/nasabah/dashboard', [NasabahController::class, 'index'])->name('dashboard.nasabah');
+    
+    Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
+        Route::get('/profile', [NasabahController::class, 'show'])->name('profile');
+    });
+// Route::middleware(['auth', 'role:Nasabah'])->group(function () {
+//     Route::get('/dashboard/nasabah', function () {
+//         return view('components.dashboard.nasabah');
+//     })->name('dashboard.nasabah');
+// });
+
+    Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
+        Route::get('/dashboard/nasabah', function () {
+            return view('components.dashboard.nasabah');
+        })->name('dashboard.Nasabah');
 
     Route::get('/barang_gadai/create', [BarangGadaiController::class, 'create'])->name('transaksi-gadai.create');
 

@@ -7,6 +7,9 @@ use App\Models\Nasabah;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
+use Illuminate\Support\Facades\Auth;
+
+
 class NasabahController extends Controller
 {
     public function index()
@@ -15,13 +18,35 @@ class NasabahController extends Controller
         return view('nasabah.index', compact('nasabah'));
     }
 
+
+    // public function myProfile()
+    // {
+    //     $nasabah = Nasabah::with('barangGadai')
+    //         ->where('id_user', auth()->user()->id_users)
+    //         ->firstOrFail();
+
+    //     return view('components.dashboard_nasabah.show', compact('nasabah'));
+    // }
+
+
+    public function show()
+    {
+        // return view('nasabah.profile'); // Pastikan path view kamu benar, misalnya resources/views/nasabah/profile.blade.php
+        // Mendapatkan data nasabah berdasarkan user yang sedang login
+        $nasabah = Nasabah::where('id_user', Auth::id())->first(); // Sesuaikan relasi jika berbeda
+
+        if (!$nasabah) {
+            return redirect()->route('dashboard.Nasabah')->with('error', 'Data nasabah tidak ditemukan.');
+        }
+
+
+        return view('nasabah.profile', compact('nasabah'));
+    }
+
     public function myProfile()
     {
-        $nasabah = Nasabah::with('barangGadai')
-            ->where('id_user', auth()->user()->id_users)
-            ->firstOrFail();
-
-        return view('components.dashboard_nasabah.show', compact('nasabah'));
+        $nasabah = Nasabah::where('id_users', auth()->user()->id_users)->firstOrFail();
+        return view('nasabah.profile', compact('nasabah'));
     }
 
 
@@ -40,21 +65,16 @@ class NasabahController extends Controller
             'telepon' => 'required|string|min:10'
         ]);
 
-        // Buat akun user untuk login
-        // $user = User::create([
-        //     'username' => $request->username,
-        //     'password' => Hash::make($request->password),
-        //     'role'     => 'nasabah', // Role otomatis 'nasabah'
-        // ]);
+<
 
         $username = str_replace(' ', '', strtolower($request->nama)); // Hilangkan spasi dan buat lowercase
 
-        // 3. Ambil 4 digit terakhir dari nomor telepon sebagai password
+        // Ambil 4 digit terakhir dari nomor telepon sebagai password
+
         $password = substr($request->telepon, -4); // Ambil 4 digit terakhir
 
         // **Gunakan email jika ada, jika tidak buat default email**
         $email = $request->email ?? $username . '@example.com';  // <- Kode yang kamu tanyakan ada di sini
-        
 
         // 4. Simpan user ke tabel users
         $user = User::create([
