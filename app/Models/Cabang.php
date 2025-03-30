@@ -21,6 +21,6 @@ class Cabang extends Model
 
     public function users()
     {
-        return $this->hasMany(User::class, 'id_cabang');
+        return $this->hasMany(User::class, 'id_cabang','nama_cabang','alamat');
     }
 }

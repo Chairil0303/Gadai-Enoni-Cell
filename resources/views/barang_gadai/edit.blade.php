@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md">
             <div class="card shadow-lg">
-                <div class="card-header bg-warning text-white text-center">
+                <div class="card-header bg-success text-white text-center">
                     <h4><i class="fas fa-edit"></i> Edit Barang Gadai</h4>
                 </div>
                 <div class="card-body">
@@ -75,7 +75,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-warning w-100">
+                        <button type="submit" class="btn btn-success w-100">
                             <i class="fas fa-save"></i> Update Barang Gadai
                         </button>
                         <a href="{{ route('barang_gadai.index') }}" class="btn btn-secondary w-100 mt-2">

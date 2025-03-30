@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,16 +11,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('nasabah', function (Blueprint $table) {
-        $table->id('id_nasabah');
-        $table->string('nama');
-        $table->string('nik')->unique();
-        $table->text('alamat');
-        $table->string('telepon');
-        $table->boolean('status_blacklist')->default(false);
-        $table->string('username')->unique();
-        $table->string('password');
-        $table->timestamps();
-    });
+            $table->id('id_nasabah');
+            $table->unsignedBigInteger('id_user')->unique(); // Relasi ke tabel users
+            $table->string('nama');
+            $table->string('nik')->unique();
+            $table->text('alamat');
+            $table->string('telepon');
+            $table->boolean('status_blacklist')->default(false);
+            $table->timestamps();
+
+            // Foreign key ke tabel users
+            $table->foreign('id_user')->references('id_users')->on('users')->onDelete('cascade');
+        });
     }
 
     /**

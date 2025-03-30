@@ -11,6 +11,7 @@ use App\Http\Controllers\LelangBarangController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\Superadmin\CabangController;
+use App\Http\Controllers\GadaiController;
 
 
 
@@ -18,6 +19,7 @@ Route::get('/', function () {
 
     return redirect('/login');
 });
+
 
 
 // Route untuk login
@@ -30,15 +32,41 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('dashboard.superadmin');
         } elseif (auth()->user()->role === 'Admin') {
             return redirect()->route('dashboard.admin');
+        } elseif (auth()->user()->role === 'Nasabah') {
+            return redirect()->route('dashboard.Nasabah');
         }
-        return view('dashboard');
+        // Jika role tidak dikenali, arahkan ke halaman login
+        return redirect('/login');
     })->name('dashboard');
+
 
     // Route untuk admin
     Route::middleware(RoleMiddleware::class . ':Admin')->group(function () {
         Route::get('/dashboard/admin', function () {
             return view('components.dashboard.admin');
         })->name('dashboard.admin');
+    });
+
+
+
+    Route::get('/nasabah/dashboard', [NasabahController::class, 'index'])->name('dashboard.nasabah');
+    
+    Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
+        Route::get('/profile', [NasabahController::class, 'show'])->name('profile');
+    });
+// Route::middleware(['auth', 'role:Nasabah'])->group(function () {
+//     Route::get('/dashboard/nasabah', function () {
+//         return view('components.dashboard.nasabah');
+//     })->name('dashboard.nasabah');
+// });
+
+
+
+
+    Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
+        Route::get('/dashboard/nasabah', function () {
+            return view('components.dashboard.nasabah');
+        })->name('dashboard.Nasabah');
     });
 
     // Route untuk superadmin
@@ -102,6 +130,13 @@ Route::resource('barang_gadai', BarangGadaiController::class);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // untuk terima gadai
+    Route::post('/gadai/store', [GadaiController::class, 'store'])->name('gadai.store');
+
+    // buat kategori
+    Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
+
 });
 
 
