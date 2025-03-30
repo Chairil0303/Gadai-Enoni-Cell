@@ -7,9 +7,9 @@
             <div class="card shadow-lg">
                 <div class="card-header bg-success text-white">
                     <h4><i class="fas fa-box"></i> Data Barang Gadai
-                        <a href="{{ route('barang_gadai.create') }}" class="btn btn-light btn-sm float-end">
+                        {{-- <a href="{{ route('barang_gadai.create') }}" class="btn btn-light btn-sm float-end">
                             <i class="fas fa-plus"></i> Tambah Barang Gadai
-                        </a>
+                        </a> --}}
                     </h4>
                 </div>
                 <div class="card-body">

@@ -82,6 +82,7 @@ class NasabahController extends Controller
         if (!$user) {
         return redirect()->back()->with('error', 'Gagal membuat user');
         }
+    
 
         // Buat data nasabah
         Nasabah::create([

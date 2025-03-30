@@ -32,10 +32,17 @@ protected function authenticated(Request $request, $user)
         return redirect('/dashboard/superadmin');
     } elseif ($user->role === 'Admin') {
         session()->flash('success', 'Selamat datang, Admin!');
+<<<<<<< HEAD
+        return redirect('/dashboard/admin'. $user->cabang_id);
+    } elseif ($user->role === 'Nasabah') {
+        session()->flash('success', 'Selamat datang, Nasabah!');
+        return redirect('/dashboard_nasabah');
+=======
         return redirect('/dashboard/admin/' . $user->id_cabang);
     } elseif ($user->role === 'Nasabah') {
         session()->flash('success', 'Selamat datang, Nasabah!');
         return redirect('/dashboard/nasabah');
+>>>>>>> loginNasabahfix
     }
 
     session()->flash('success', 'Selamat datang di Dashboard!');
