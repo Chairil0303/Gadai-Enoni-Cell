@@ -19,7 +19,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('gadai.store') }}" method="POST">
+                    <form action="{{ route('gadai.store') }}" method="POST" id="formGadai">
                         @csrf
                         <div class="row">
                             {{-- Kolom Form Nasabah --}}
@@ -92,18 +92,47 @@
 
                                 <div class="mb-3">
                                     <label for="harga_gadai" class="form-label">Harga Gadai</label>
-                                    <input type="text" name="harga_gadai" id="harga_gadai" class="form-control" required placeholder="Masukkan Harga Gadai">
+                                    <input type="text" autocomplete="off" name="harga_gadai" id="harga_gadai" class="form-control" required placeholder="Masukkan Harga Gadai">
                                 </div>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-save"></i> Simpan</button>
+                        <!-- <button type="submit" class="btn btn-primary w-100"><i class="fas fa-save"></i> Simpan</button> -->
+                        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modalKonfirmasi">
+                            <i class="fas fa-save"></i> Simpan
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Konfirmasi -->
+<!-- Modal Konfirmasi -->
+<div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Header Modal (Hijau) -->
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalKonfirmasiLabel">Konfirmasi Penyimpanan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Body Modal -->
+            <div class="modal-body">
+                Apakah Anda yakin ingin menyimpan data ini? Pastikan data yang Anda masukkan sudah benar.
+            </div>
+            <!-- Footer Modal (Tombol Hijau) -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                <!-- <button type="button" class="btn btn-success" id="konfirmasiSubmit">Simpan</button> -->
+                <button type="button" class="btn btn-success" id="konfirmasiSubmit">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <script>
     // Format harga gadai menjadi format Indonesia (contoh: 1.000.000)
@@ -113,5 +142,15 @@
         value = new Intl.NumberFormat('id-ID').format(value);
         e.target.value = value;
     });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const konfirmasiButton = document.getElementById('konfirmasiSubmit');
+    const form = document.getElementById('formGadai'); // Ambil form yang memiliki ID #formGadai
+
+    konfirmasiButton.addEventListener('click', function () {
+        form.submit(); // Submit form ketika tombol "Simpan" di modal ditekan
+    });
+});
 </script>
 @endsection
