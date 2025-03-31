@@ -29,6 +29,9 @@
                         {{ auth()->user()->cabang->kontak ?? 'Nomor tidak tersedia' }}
                     </p>
                 @endif
+                @if(auth()->user()->isNasabah())
+                    <div class="mt-3 m-6">{{auth()->user()->nama}}</div>
+                @endif
 
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -44,9 +47,16 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        @if(auth()->user()->isadmin())
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
+                        @endif
+                        @if(auth()->user()->isNasabah())
+                <x-responsive-nav-link :href="route('profile')">
+                    {{ __('Profile') }}
+                </x-responsive-nav-link>
+                @endif
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
@@ -89,10 +99,20 @@
                 <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
+            <div class="mt-3 space-y-1">-
+                @if(auth()->user()->isadmin())
+                <x-dropdown-link :href="route('profile.edit')">
+                    {{ __('Profile') }}
+                </x-dropdown-link>
+                @endif
+
+
+                @if(auth()->user()->isNasabah())
+                <x-responsive-nav-link :href="route('profile')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+                @endif
+
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
