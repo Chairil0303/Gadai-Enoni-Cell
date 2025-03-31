@@ -71,7 +71,7 @@ public function store(Request $request)
 
     // Simpan Data Barang Gadai
     BarangGadai::create([
-        'no_bon' => 'BON-' . time(), // Nomor bon bisa digenerate sesuai kebutuhan
+        'no_bon' => $request->no_bon, // Nomor bon bisa digenerate sesuai kebutuhan
         'id_nasabah' => $nasabah->id_nasabah,
         'nama_barang' => $request->nama_barang,
         'deskripsi' => $request->deskripsi,
