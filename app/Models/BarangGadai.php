@@ -31,6 +31,21 @@
             'id_user',
         ];
 
+        public function hitungBunga()
+        {
+            if ($this->tenor == 7) {
+                $this->bunga = 0.05 * $this->harga_gadai;
+            } elseif ($this->tenor == 14) {
+                $this->bunga = 0.10 * $this->harga_gadai;
+            } elseif ($this->tenor == 30) {
+                $this->bunga = 0.15 * $this->harga_gadai;
+            } else {
+                $this->bunga = 0;
+            }
+            $this->save();
+        }
+
+
 
 
 
@@ -60,6 +75,10 @@
             return $this->belongsTo(User::class, 'id_user');
         }
 
+        public function transaksiGadai()
+        {
+            return $this->hasOne(TransaksiGadai::class, 'no_bon', 'no_bon');
+        }
 
 
     }

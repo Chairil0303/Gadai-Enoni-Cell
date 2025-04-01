@@ -64,9 +64,20 @@ Route::middleware(['auth'])->group(function () {
 
 
     // tebus gadai routes
-    
-    Route::get('/transaksi_gadai/tebus_gadai', [TebusGadaiController::class, 'index'])->name('tebus_gadai.index');
-    Route::post('/transaksi_gadai/tebus_gadai', [TebusGadaiController::class, 'store'])->name('tebus_gadai.store');
+    // Route::get('/tebus', [TebusGadaiController::class, 'searchForm'])->name('tebus.search');
+    // Route::post('/transaksi_gadai/tebus_gadai', [TebusGadaiController::class, 'store'])->name('tebus_gadai.store');
+
+    // // konfirmasi tebus gadai
+    // Route::get('/tebus', [TebusGadaiController::class, 'searchForm'])->name('tebus.search');
+    // Route::get('/tebus/cari', [TebusGadaiController::class, 'cari'])->name('tebus.cari');
+    // Route::post('/tebus/{noBon}', [TebusGadaiController::class, 'tebus'])->name('tebus.tebus');
+
+        // tebus gadai 
+    Route::prefix('transaksi_gadai')->group(function () {
+        Route::get('/tebus_gadai', [TebusGadaiController::class, 'index'])->name('tebus.search');
+        Route::get('/tebus_gadai/cari', [TebusGadaiController::class, 'cari'])->name('tebus.cari');
+        Route::post('/tebus_gadai/{noBon}', [TebusGadaiController::class, 'tebus'])->name('tebus.tebus');
+    });
 
 
     Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
