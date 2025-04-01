@@ -92,7 +92,7 @@
 
                                 <div class="mb-3">
                                     <label for="harga_gadai" class="form-label">Harga Gadai</label>
-                                    <input type="text" autocomplete="off" name="harga_gadai" id="harga_gadai" class="form-control" required placeholder="Masukkan Harga Gadai">
+                                    <input type="text" autocomplete="off" name="harga_gadai" id="harga_gadai" class="form-control" required placeholder="Masukkan Harga Gadai" oninput="formatHargaGadai()">
                                 </div>
                             </div>
                         </div>
@@ -135,22 +135,34 @@
 
 
 <script>
-    // Format harga gadai menjadi format Indonesia (contoh: 1.000.000)
-    const hargaGadaiInput = document.getElementById('harga_gadai');
-    hargaGadaiInput.addEventListener('input', function (e) {
-        let value = e.target.value.replace(/\D/g, ''); // Hanya angka
-        value = new Intl.NumberFormat('id-ID').format(value);
-        e.target.value = value;
-    });
-
-
     document.addEventListener('DOMContentLoaded', function () {
-    const konfirmasiButton = document.getElementById('konfirmasiSubmit');
-    const form = document.getElementById('formGadai'); // Ambil form yang memiliki ID #formGadai
+        const form = document.getElementById('formGadai');
+        const inputHargaGadai = document.getElementById('harga_gadai');
+        const konfirmasiButton = document.getElementById('konfirmasiSubmit');
 
-    konfirmasiButton.addEventListener('click', function () {
-        form.submit(); // Submit form ketika tombol "Simpan" di modal ditekan
+        // Fungsi untuk menambahkan titik pemisah ribuan
+        function formatHargaGadai() {
+            let value = inputHargaGadai.value.replace(/[^\d]/g, ''); // Menghapus semua karakter selain angka
+            let formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Menambahkan titik pemisah setiap 3 digit
+            inputHargaGadai.value = formattedValue;
+        }
+
+        // Tambahkan event listener untuk input harga_gadai
+        inputHargaGadai.addEventListener('input', formatHargaGadai);
+
+        // Event listener untuk tombol konfirmasi
+        konfirmasiButton.addEventListener('click', function () {
+            let rawValue = inputHargaGadai.value.replace(/\./g, ''); // Menghapus titik sebelum mengirim ke server
+
+            // Memperbarui nilai input tanpa titik
+            inputHargaGadai.value = rawValue;
+
+            // Submit form setelah pembersihan data
+            form.submit(); // Submit form ketika tombol "Simpan" di modal ditekan
+        });
     });
-});
 </script>
+
+
+
 @endsection

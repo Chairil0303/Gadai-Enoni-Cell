@@ -42,13 +42,16 @@
                                 <td>{{ $barang->tenor }} hari</td>
                                 <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
                                 <td>
-                                    @if($barang->telat >= 0)
-                                        +{{ $barang->telat }} hari
+                                    @if($barang->telat > 0)
+                                        <span style="color: red;">Telat {{ $barang->telat }} hari</span>
+                                    @elseif($barang->telat == 0)
+                                        <span style="color: black;">0 hari</span>
                                     @else
-                                        {{ $barang->telat }} hari
+                                        <span style="color: black;">{{ $barang->telat }} hari</span>
                                     @endif
                                 </td>
-                                <td>Rp {{ number_format($barang->harga_gadai, 2, ',', '.') }}</td>
+
+                                <td>Rp {{ number_format($barang->harga_gadai, 0, ',', '.') }}</td>
                                 <td>
                                     @if($barang->status === 'Ditebus')
                                         <span class="badge bg-success">Ditebus</span>
