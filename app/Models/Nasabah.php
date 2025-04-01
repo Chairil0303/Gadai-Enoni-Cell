@@ -43,5 +43,18 @@ class Nasabah extends Model
         return $this->hasMany(BarangGadai::class, 'id_nasabah', 'id_nasabah');
     }
 
+    public function hitungBunga()
+    {
+        if ($this->tenor == 7) {
+            $this->bunga = 0.05 * $this->harga_gadai;
+        } elseif ($this->tenor == 14) {
+            $this->bunga = 0.10 * $this->harga_gadai;
+        } elseif ($this->tenor == 30) {
+            $this->bunga = 0.15 * $this->harga_gadai;
+        } else {
+            $this->bunga = 0;
+        }
+        $this->save();
+    }
 
 }

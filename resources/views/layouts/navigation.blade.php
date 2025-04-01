@@ -33,10 +33,17 @@
                 <div class="mt-3 m-6">
                     <div class="relative">
                         <button id="profileButton" class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500 text-white text-lg font-bold focus:outline-none">
-                            {{ strtoupper(substr(auth()->user()->nama, 0, 1)) }}
+                            {{ strtoupper(substr(auth()->user()->nama, 0, 2)) }}
                         </button>
 
                         <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden">
+                            @if (auth()->user()->isNasabah())
+                            <div class="block px-4 py-2 text-gray-800 hover:bg-gray-200" >
+                                {{ strtoupper(auth()->user()->nama) }}
+                            </div>
+
+                            @endif
+
                             @if(auth()->user()->isNasabah())
                             <a href="{{ route('profile') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                                 Profile

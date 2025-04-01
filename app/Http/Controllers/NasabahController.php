@@ -28,6 +28,8 @@ class NasabahController extends Controller
 
     public function show()
     {
+    $nasabah = Nasabah::all();
+
         // return view('nasabah.profile'); // Pastikan path view kamu benar, misalnya resources/views/nasabah/profile.blade.php
         // Mendapatkan data nasabah berdasarkan user yang sedang login
         $nasabah = Nasabah::where('id_user', Auth::id())->first(); // Sesuaikan relasi jika berbeda
@@ -35,8 +37,9 @@ class NasabahController extends Controller
         if (!$nasabah) {
             return redirect()->route('dashboard.nasabah')->with('error', 'Data nasabah tidak ditemukan.');
         }
+        $barangGadai = $nasabah->barangGadai;
 
-        return view('nasabah.profile', compact('nasabah'));
+        return view('nasabah.dashboard', compact('nasabah', 'barangGadai'));
     }
 
     public function myProfile()
@@ -68,7 +71,7 @@ class NasabahController extends Controller
 
         // **Gunakan email jika ada, jika tidak buat default email**
         $email = $request->email ?? $username . '@example.com';  // <- Kode yang kamu tanyakan ada di sini
-        
+
 
         // 4. Simpan user ke tabel users
         $user = User::create([
@@ -82,7 +85,7 @@ class NasabahController extends Controller
         if (!$user) {
         return redirect()->back()->with('error', 'Gagal membuat user');
         }
-    
+
 
         // Buat data nasabah
         Nasabah::create([
@@ -93,7 +96,7 @@ class NasabahController extends Controller
             'telepon' => $request->telepon,
             'status_blacklist' => $request->has('status_blacklist'),
         ]);
-        
+
         return redirect()->route('superadmin.nasabah.index')->with('success', 'Nasabah berhasil ditambahkan');
     }
 

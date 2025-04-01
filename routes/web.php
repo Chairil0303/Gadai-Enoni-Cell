@@ -34,7 +34,7 @@ Route::middleware(['auth'])->group(function () {
         } elseif (auth()->user()->role === 'Admin') {
             return redirect()->route('dashboard.admin');
         } elseif (auth()->user()->role === 'Nasabah') {
-            return redirect()->route('dashboard.Nasabah');
+            return redirect()->route('profile');
         }
         // Jika role tidak dikenali, arahkan ke halaman login
         return redirect('/login');
@@ -51,11 +51,11 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/nasabah/dashboard', [NasabahController::class, 'index'])->name('dashboard.nasabah');
-    
+
     Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
         Route::get('/profile', [NasabahController::class, 'show'])->name('profile');
     });
-        // tebus gadai 
+        // tebus gadai
     Route::prefix('transaksi_gadai')->group(function () {
         Route::get('/tebus_gadai', [TebusGadaiController::class, 'index'])->name('tebus.search');
         Route::get('/tebus_gadai/cari', [TebusGadaiController::class, 'cari'])->name('tebus.cari');
