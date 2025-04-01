@@ -44,12 +44,12 @@
                                 <td>
                                     @if($barang->telat > 0)
                                         <span style="color: red;">Telat {{ $barang->telat }} hari</span>
-                                    @elseif($barang->telat == 0)
-                                        <span style="color: black;">0 hari</span>
                                     @else
-                                        <span style="color: black;">{{ $barang->telat }} hari</span>
+                                        <span style="color: black;">Sisa {{ $barang->sisa_hari }} hari</span>
                                     @endif
                                 </td>
+
+
 
                                 <td>Rp {{ number_format($barang->harga_gadai, 0, ',', '.') }}</td>
                                 <td>

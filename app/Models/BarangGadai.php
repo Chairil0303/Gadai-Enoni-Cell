@@ -39,9 +39,20 @@ class BarangGadai extends Model
     }
 
     // Getter untuk menghitung sisa hari atau keterlambatan
+    public function getSisaHariAttribute()
+    {
+        if ($this->status === 'Ditebus') {
+            return 0; // Jika sudah ditebus, sisa hari = 0
+        }
+        $tempo = Carbon::parse($this->tempo);
+        $hariIni = Carbon::today();
+
+        // Jika tempo masih di masa depan, hitung sisa hari. Jika tidak, sisa hari 0.
+        return $hariIni->lessThan($tempo) ? $hariIni->diffInDays($tempo) : 0;
+    }
+
     public function getTelatAttribute()
     {
-        // Pastikan tidak menghitung telat jika sudah ditebus
         if ($this->status === 'Ditebus') {
             return 0;
         }
@@ -49,8 +60,11 @@ class BarangGadai extends Model
         $tempo = Carbon::parse($this->tempo);
         $hariIni = Carbon::today();
 
-        return abs($hariIni->diffInDays($tempo, false));
+        // Jika tempo sudah lewat, hitung keterlambatan. Jika belum, telat = 0.
+        return $hariIni->greaterThan($tempo) ? $hariIni->diffInDays($tempo) : 0;
     }
+
+
 
     // Method untuk menghitung bunga
     public function hitungBunga()
