@@ -57,4 +57,22 @@ class TebusGadaiController extends Controller
 
         return view('tebus_gadai.konfirmasi', compact('barangGadai', 'nasabah', 'denda', 'totalTebus','bungaPersen','bunga'));
     }
+
+    public function tebus(Request $request, $noBon)
+    {
+        // Ambil data barang gadai berdasarkan noBon
+        $barangGadai = BarangGadai::where('no_bon', $noBon)->first();
+
+        if (!$barangGadai) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        }
+
+        // Update status barang menjadi 'Ditebus'
+        $barangGadai->status = 'Ditebus';
+        $barangGadai->save();
+
+        return redirect()->route('barang_gadai.index')->with('success', 'Barang berhasil ditebus.');
+    }
+
+
 }

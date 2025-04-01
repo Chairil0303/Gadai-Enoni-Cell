@@ -55,27 +55,11 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
         Route::get('/profile', [NasabahController::class, 'show'])->name('profile');
     });
-// Route::middleware(['auth', 'role:Nasabah'])->group(function () {
-//     Route::get('/dashboard/nasabah', function () {
-//         return view('components.dashboard.nasabah');
-//     })->name('dashboard.nasabah');
-// });
-
-
-
-    // tebus gadai routes
-    // Route::get('/tebus', [TebusGadaiController::class, 'searchForm'])->name('tebus.search');
-    // Route::post('/transaksi_gadai/tebus_gadai', [TebusGadaiController::class, 'store'])->name('tebus_gadai.store');
-
-    // // konfirmasi tebus gadai
-    // Route::get('/tebus', [TebusGadaiController::class, 'searchForm'])->name('tebus.search');
-    // Route::get('/tebus/cari', [TebusGadaiController::class, 'cari'])->name('tebus.cari');
-    // Route::post('/tebus/{noBon}', [TebusGadaiController::class, 'tebus'])->name('tebus.tebus');
-
         // tebus gadai 
     Route::prefix('transaksi_gadai')->group(function () {
         Route::get('/tebus_gadai', [TebusGadaiController::class, 'index'])->name('tebus.search');
         Route::get('/tebus_gadai/cari', [TebusGadaiController::class, 'cari'])->name('tebus.cari');
+        Route::post('/tebus_gadai/{noBon}', [TebusGadaiController::class, 'tebus'])->name('tebus.tebus');
         Route::post('/tebus_gadai/{noBon}', [TebusGadaiController::class, 'tebus'])->name('tebus.tebus');
     });
 
@@ -112,7 +96,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::resource('barang_gadai', BarangGadaiController::class);
+    Route::resource('barang_gadai', BarangGadaiController::class);
+    // Menambahkan route untuk halaman barang_gadai.index
+    Route::get('/barang_gadai', [BarangGadaiController::class, 'index'])->name('barang_gadai.index');
 
     // route untuk view
     Route::resource('nasabah', NasabahController::class);
