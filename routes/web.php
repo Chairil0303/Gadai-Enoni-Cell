@@ -12,6 +12,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\Superadmin\CabangController;
 use App\Http\Controllers\GadaiController;
+use App\Http\Controllers\TebusGadaiController;
 
 
 
@@ -61,6 +62,11 @@ Route::middleware(['auth'])->group(function () {
 // });
 
 
+
+    // tebus gadai routes
+    
+    Route::get('/transaksi_gadai/tebus_gadai', [TebusGadaiController::class, 'index'])->name('tebus_gadai.index');
+    Route::post('/transaksi_gadai/tebus_gadai', [TebusGadaiController::class, 'store'])->name('tebus_gadai.store');
 
 
     Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
