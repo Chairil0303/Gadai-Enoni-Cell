@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\BarangGadai;
 use App\Models\Nasabah;
 use Illuminate\Http\Request;
+use App\Models\TransaksiTebus;
+use Carbon\Carbon;
 
 class TebusGadaiController extends Controller
 {
@@ -49,7 +51,7 @@ class TebusGadaiController extends Controller
         } else {
             $bungaPersen = 0; // Kalau tenor tidak sesuai
         }
-        
+
         $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
 
         // Hitung Total Tebus
@@ -67,12 +69,37 @@ class TebusGadaiController extends Controller
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
         }
 
+        // Hitung Denda
+        $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
+
+        // Hitung Bunga Berdasarkan Tenor
+        if ($barangGadai->tenor == 7) {
+            $bungaPersen = 5;
+        } elseif ($barangGadai->tenor == 14) {
+            $bungaPersen = 10;
+        } elseif ($barangGadai->tenor == 30) {
+            $bungaPersen = 15;
+        } else {
+            $bungaPersen = 0;
+        }
+
+        $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+        $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
+
+        // Simpan transaksi tebus
+        TransaksiTebus::create([
+            'no_bon' => $barangGadai->no_bon,
+            'id_nasabah' => $barangGadai->id_nasabah,
+            'tanggal_tebus' => Carbon::now(),
+            'jumlah_pembayaran' => $totalTebus,
+            'status' => 'Berhasil',
+        ]);
+
         // Update status barang menjadi 'Ditebus'
         $barangGadai->status = 'Ditebus';
         $barangGadai->save();
 
-        return redirect()->route('barang_gadai.index')->with('success', 'Barang berhasil ditebus.');
+        return redirect()->route('barang_gadai.index')->with('success', 'Barang berhasil ditebus dan transaksi dicatat.');
     }
-
 
 }

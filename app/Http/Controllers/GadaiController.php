@@ -8,6 +8,7 @@ use App\Models\BarangGadai;
 use App\Models\KategoriBarang;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\TransaksiGadai;
 
 class GadaiController extends Controller
 {
@@ -43,20 +44,28 @@ public function store(Request $request)
         'nama_barang' => 'required|string|max:255',
         'deskripsi' => 'nullable|string',
         'imei' => 'nullable|string',
-        'tenor' => 'required|integer|in:7,14,30', // ✅ Pastikan tenor adalah angka yang valid
+        'tenor' => 'required|integer|in:7,14,30',
         'harga_gadai' => 'required|numeric',
         'id_kategori' => 'required|integer|exists:kategori_barang,id_kategori',
     ]);
 
-    // Konversi tenor ke integer (untuk menghindari error di Carbon)
     $tenor = (int) $request->tenor;
+
+    // Tentukan bunga berdasarkan tenor
+    $bunga_persen = match ($tenor) {
+        7 => 5,
+        14 => 10,
+        30 => 15,
+        default => 0,
+    };
+    $bunga = ($request->harga_gadai * $bunga_persen) / 100;
 
     // Buat User Baru
     $user = User::create([
         'nama' => $request->nama,
         'email' => $request->email ?? null,
         'username' => $request->nama,
-        'password' => Hash::make(substr($request->nik, 0, 6)), // Ambil 6 karakter pertama dari NIK
+        'password' => Hash::make(substr($request->nik, 0, 6)),
         'role' => 'Nasabah',
     ]);
 
@@ -66,26 +75,38 @@ public function store(Request $request)
         'nik' => $request->nik,
         'alamat' => $request->alamat,
         'telepon' => $request->telepon,
-        'id_user' => $user->id_users, // Sesuai dengan primary key di tabel users
+        'id_user' => $user->id_users,
     ]);
 
     // Simpan Data Barang Gadai
-    BarangGadai::create([
-        'no_bon' => $request->no_bon, // Nomor bon bisa digenerate sesuai kebutuhan
+    $barangGadai = BarangGadai::create([
+        'no_bon' => $request->no_bon,
         'id_nasabah' => $nasabah->id_nasabah,
         'nama_barang' => $request->nama_barang,
         'deskripsi' => $request->deskripsi,
         'imei' => $request->imei,
-        'tenor' => $tenor, // ✅ Pastikan tenor sudah integer
-        'tempo' => now()->addDays($tenor), // ✅ Tidak error karena sudah integer
+        'tenor' => $tenor,
+        'tempo' => now()->addDays($tenor),
         'harga_gadai' => $request->harga_gadai,
         'id_kategori' => $request->id_kategori,
-        'id_user' => auth()->user()->id_users,  //ngambil data user yang login
+        'id_user' => auth()->user()->id_users,
     ]);
 
-    // Redirect ke halaman daftar barang gadai dengan pesan sukses
+    // Simpan Data Transaksi Gadai
+    TransaksiGadai::create([
+        'id_nasabah' => $nasabah->id_nasabah,
+        'no_bon' => $request->no_bon,
+        'tanggal_gadai' => now(),
+        'jumlah_pinjaman' => $request->harga_gadai,
+        'bunga' => $bunga_persen,
+        'jatuh_tempo' => now()->addDays($tenor),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
     return redirect()->route('barang_gadai.index')->with('success', 'Data berhasil disimpan!');
 }
+
 
 
 
