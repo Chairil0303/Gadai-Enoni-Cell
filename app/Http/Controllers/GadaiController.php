@@ -86,6 +86,7 @@ public function store(Request $request)
         'deskripsi' => $request->deskripsi,
         'imei' => $request->imei,
         'tenor' => $tenor,
+        'bunga' => $bunga_persen,
         'tempo' => now()->addDays($tenor),
         'harga_gadai' => $request->harga_gadai,
         'id_kategori' => $request->id_kategori,

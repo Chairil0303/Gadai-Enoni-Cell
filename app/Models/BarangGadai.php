@@ -25,6 +25,7 @@ class BarangGadai extends Model
         'status',
         'id_kategori',
         'id_user',
+        'bunga'
     ];
 
     // Menambahkan pengecekan status dan mengupdate tempo dan telat jika sudah ditebus
