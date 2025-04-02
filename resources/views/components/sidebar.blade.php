@@ -43,12 +43,12 @@
             </li>
         @endif
 
-        @if(auth()->user()->isNasabah())
+        {{-- @if(auth()->user()->isNasabah())
         <li>
             <a href="{{ route('profile') }}" class="block px-4 py-2">Profil Saya</a>
 
         </li>
-    @endif
+    @endif --}}
 
     </ul>
 </div>

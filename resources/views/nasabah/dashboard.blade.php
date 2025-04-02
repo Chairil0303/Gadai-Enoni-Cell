@@ -3,10 +3,11 @@
 @section('content')
 <div class="container mx-auto p-6">
     <h1 class="text-2xl font-bold text-gray-800">Dashboard Nasabah</h1>
+    <div class="mt-12"></div>
     @foreach ($barangGadai as $barang)
 
 
-    <div class="relative w-32 h-32">
+    <div class="relative w-64 h-64">
         <svg class="w-full h-full" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="45" stroke="#ddd" stroke-width="10" fill="none" />
             <circle id="progress-{{ $barang->id }}" cx="50" cy="50" r="45" stroke="#4CAF50" stroke-width="10" fill="none" stroke-dasharray="282.6" stroke-dashoffset="0" stroke-linecap="round" />

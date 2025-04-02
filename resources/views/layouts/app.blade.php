@@ -17,9 +17,10 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen flex bg-gray-100 dark:bg-gray-900">
-            <!-- Sidebar -->
-            @include('components.sidebar')
-
+            {{-- sidebar --}}
+            <div class="w-34 bg-gray-800 text-white shadow-lg flex-shrink-0 pl-4 flex flex-col min-h-screen">
+                @include('components.sidebar')
+            </div>
             <!-- Main Content -->
             <div class="flex-1 flex flex-col">
                 @include('layouts.navigation')
