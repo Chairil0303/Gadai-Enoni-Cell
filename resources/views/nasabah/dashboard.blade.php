@@ -7,7 +7,7 @@
     @foreach ($barangGadai as $barang)
 
 
-    <div class="relative w-32 h-32">
+    <div class="relative w-48 h-48">
         <svg class="w-full h-full" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="45" stroke="#ddd" stroke-width="10" fill="none" />
             <circle id="progress-{{ $barang->id }}" cx="50" cy="50" r="45" stroke="#4CAF50" stroke-width="10" fill="none" stroke-dasharray="282.6" stroke-dashoffset="0" stroke-linecap="round" />
@@ -41,10 +41,15 @@
                 <p><strong>Tanggal Gadai: </strong>{{ $barang->created_at->translatedFormat('l,d F Y') }}</p>
                 <p><strong>Harga Gadai:</strong> Rp {{ number_format($barang->harga_gadai, 0, ',', '.') }}</p>
                 <p><strong>Tenor:</strong> {{ $barang->tenor }} hari</p>
-                <p><strong>Bunga :</strong> {{ number_format(($barang->bunga/100) * $barang->harga_gadai) }}</p>
+                <p><strong>Bunga :</strong>Rp {{ number_format(($barang->bunga/100) * $barang->harga_gadai,0,',', '.') }}</p>
 
                 <p><strong>Jatuh Tempo:</strong> {{ \Carbon\Carbon::parse($barang->tempo)->translatedFormat('l, d F Y') }}</p>
-                <p><strong>Waktu Pembayaran:</strong> <span id="countdown-{{ $barang->id }}" class="font-bold text-blue-600"></span></p>
+                {{-- <p><strong>Waktu Pembayaran:</strong> <span id="countdown-{{ $barang->id }}" class="font-bold text-blue-600"></span></p> --}}
+                <p><strong>Waktu Pembayaran:</strong>
+                    <span id="countdown-{{ $barang->id }}" class="font-bold text-blue-600"
+                          data-status="{{ $barang->status }}">
+                    </span>
+                </p>
 
             @endforeach
         </div>
@@ -55,14 +60,42 @@
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll("[id^='countdown-']").forEach(function(element) {
         var id = element.id.replace("countdown-", "");
-        var createdAt = new Date(document.getElementById("created-at-" + id).value);
-        var tempo = new Date(document.getElementById("tempo-" + id).value);
+        var status = element.getAttribute("data-status");
+
+        console.log("Barang ID:", id, "Status:", status); // Debugging
+
+        var progressCircle = document.getElementById("progress-" + id);
+        var progressText = document.getElementById("progress-text-" + id);
+
+        if (status && status.trim().toLowerCase() === "ditebus") {
+            element.innerHTML = `<span class='text-green-600'>Sudah Ditebus</span>`;
+
+            if (progressCircle) {
+                progressCircle.style.stroke = "#4CAF50"; // Warna hijau
+                progressCircle.style.strokeDashoffset = 0;
+            }
+            if (progressText) {
+                progressText.textContent = "Sudah Ditebus";
+                progressText.classList.add("text-green-600");
+            }
+            return; // Stop script kalau sudah ditebus
+        }
+
+        var createdAtElement = document.getElementById("created-at-" + id);
+        var tempoElement = document.getElementById("tempo-" + id);
+
+        if (!createdAtElement || !tempoElement) {
+            console.warn(`Data tidak lengkap untuk barang ID ${id}`);
+            return;
+        }
+
+        var createdAt = new Date(createdAtElement.value);
+        var tempo = new Date(tempoElement.value);
 
         function updateCountdown() {
             var now = new Date();
             var timeLeft = tempo - now;
             var totalDuration = tempo - createdAt;
-
             var daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
 
             var isLate = daysLeft < 0;
@@ -70,11 +103,8 @@ document.addEventListener("DOMContentLoaded", function() {
             var percentage = ((timeLeft / totalDuration) * 100).toFixed(2);
             var dashOffset = (282.6 * (100 - percentage)) / 100;
 
-            var progressCircle = document.getElementById("progress-" + id);
-            var progressText = document.getElementById("progress-text-" + id);
-
             if (isLate) {
-                progressCircle.style.stroke = "#8B0000"; // Merah tua untuk keterlambatan
+                progressCircle.style.stroke = "#8B0000"; // Merah tua
                 element.innerHTML = `<span class='text-red-600'>Telat ${overdueDays} hari</span>`;
                 progressText.textContent = `Telat ${overdueDays} Hari`;
                 progressCircle.style.strokeDashoffset = 282.6;
@@ -96,6 +126,7 @@ document.addEventListener("DOMContentLoaded", function() {
         setInterval(updateCountdown, 1000);
     });
 });
+
 </script>
 @endsection
 {{-- dashboard nasbah --}}
