@@ -20,6 +20,7 @@ class TransaksiGadai extends Model
         'jumlah_pinjaman',
         'bunga',
         'jatuh_tempo',
+        'no_bon',
     ];
 
     public function nasabah()
@@ -32,3 +33,4 @@ class TransaksiGadai extends Model
         return $this->belongsTo(BarangGadai::class, 'id_barang', 'id_barang');
     }
 }
+// model transaksi gadai

@@ -7,7 +7,7 @@
     @foreach ($barangGadai as $barang)
 
 
-    <div class="relative w-64 h-64">
+    <div class="relative w-32 h-32">
         <svg class="w-full h-full" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="45" stroke="#ddd" stroke-width="10" fill="none" />
             <circle id="progress-{{ $barang->id }}" cx="50" cy="50" r="45" stroke="#4CAF50" stroke-width="10" fill="none" stroke-dasharray="282.6" stroke-dashoffset="0" stroke-linecap="round" />
@@ -25,7 +25,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <div class="bg-white shadow-md rounded-lg p-6">
             <h2 class="text-lg font-semibold text-gray-700 border-b pb-2">🧑 Data Nasabah</h2>
-            <p class="mt-2"><strong>Nama:</strong> {{ $nasabah->nama }}</p>
+            <p class="mt-2"><strong>Nama:</strong> {{ ucwords(strtolower($nasabah->nama)) }}</p>
             <p><strong>NIK:</strong> {{ $nasabah->nik }}</p>
             <p><strong>Alamat:</strong> {{ $nasabah->alamat }}</p>
             <p><strong>No. Telp:</strong> {{ $nasabah->telepon }}</p>
@@ -33,16 +33,16 @@
 
         <div class="grid grid-cols-1 gap-6">
             @foreach ($barangGadai as $barang)
-            <div class="bg-white shadow-md rounded-lg p-6">
+            <div class="bg-white shadow-md rounded-lg p-6 grid grid-cols-2 gap-4 mt-2">
                 <h2 class="text-lg font-semibold text-gray-700 border-b pb-2">📦 Data Barang Gadai</h2>
+                <span></span>
                 <p class="mt-2"><strong>Nama Barang:</strong> {{ $barang->nama_barang }}</p>
                 <p><strong>No Bon:</strong> {{ $barang->no_bon }}</p>
+                <p><strong>Tanggal Gadai: </strong>{{ $barang->created_at->translatedFormat('l,d F Y') }}</p>
                 <p><strong>Harga Gadai:</strong> Rp {{ number_format($barang->harga_gadai, 0, ',', '.') }}</p>
                 <p><strong>Tenor:</strong> {{ $barang->tenor }} hari</p>
-                <p><strong>Jatuh Tempo:</strong> {{ $barang->tempo }}</p>
+                <p><strong>Jatuh Tempo:</strong> {{ \Carbon\Carbon::parse($barang->tempo)->translatedFormat('l, d F Y') }}</p>
                 <p><strong>Waktu Pembayaran:</strong> <span id="countdown-{{ $barang->id }}" class="font-bold text-blue-600"></span></p>
-
-                <!-- Progress Circle -->
 
             @endforeach
         </div>
@@ -95,3 +95,4 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 @endsection
+{{-- dashboard nasbah --}}

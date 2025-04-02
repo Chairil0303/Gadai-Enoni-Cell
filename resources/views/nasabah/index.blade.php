@@ -7,9 +7,9 @@
             <div class="card shadow-lg">
                 <div class="card-header bg-success text-white">
                     <h4><i class="fas fa-users"></i> Data Nasabah
-                        <a href="{{ route('superadmin.nasabah.create') }}" class="btn btn-light btn-sm float-end">
+                        {{-- <a href="{{ route('superadmin.nasabah.create') }}" class="btn btn-light btn-sm float-end">
                             <i class="fas fa-plus"></i> Tambah Nasabah
-                        </a>
+                        </a> --}}
                     </h4>
                 </div>
                 <div class="card-body">
@@ -22,8 +22,11 @@
                                 <th>Alamat</th>
                                 <th>Telepon</th>
                                 <th>Status Blacklist</th>
-                                <th>Username</th>
+                                @if (auth()->user()->isSuperadmin())
+                                {{-- <th>Username</th> --}}
                                 <th>Aksi</th>
+                                @endif
+
                             </tr>
                         </thead>
                         <tbody>
@@ -41,7 +44,8 @@
                                         <span class="badge bg-success">Aktif</span>
                                     @endif
                                 </td>
-                                <td>{{ $item->username }}</td>
+                                {{-- <td>{{ $item->username }}</td> --}}
+                                @if (auth()->user()->isSuperadmin())
                                 <td>
                                     <a href="{{ route('superadmin.nasabah.edit', $item->id_nasabah) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Edit
@@ -54,6 +58,7 @@
                                         </button>
                                     </form>
                                 </td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>
@@ -69,3 +74,5 @@
     </div>
 </div>
 @endsection
+
+{{-- index nasabah --}}

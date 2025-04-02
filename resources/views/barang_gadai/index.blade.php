@@ -27,7 +27,9 @@
                                 <th>Sisa Hari</th>
                                 <th>Harga Gadai</th>
                                 <th>Status</th>
+                                @if (auth()->user()->isSuperadmin())
                                 <th>Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -61,6 +63,7 @@
                                         <span class="badge bg-warning">Tergadai</span>
                                     @endif
                                 </td>
+                            @if (auth()->user()->isSuperadmin())
                                 <td>
                                     <a href="{{ route('barang_gadai.edit', $barang->no_bon) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Edit
@@ -73,6 +76,7 @@
                                         </button>
                                     </form>
                                 </td>
+                            @endif
                             </tr>
                             @endforeach
                         </tbody>
@@ -88,3 +92,4 @@
     </div>
 </div>
 @endsection
+{{-- index blade barang gadai --}}
