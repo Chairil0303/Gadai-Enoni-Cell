@@ -89,6 +89,7 @@ class TebusGadaiController extends Controller
         // Simpan transaksi tebus
         TransaksiTebus::create([
             'no_bon' => $barangGadai->no_bon,
+            'id_user' => auth()->id(),
             'id_nasabah' => $barangGadai->id_nasabah,
             'tanggal_tebus' => Carbon::now(),
             'jumlah_pembayaran' => $totalTebus,

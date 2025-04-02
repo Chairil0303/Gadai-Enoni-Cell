@@ -41,6 +41,8 @@
                 <p><strong>Tanggal Gadai: </strong>{{ $barang->created_at->translatedFormat('l,d F Y') }}</p>
                 <p><strong>Harga Gadai:</strong> Rp {{ number_format($barang->harga_gadai, 0, ',', '.') }}</p>
                 <p><strong>Tenor:</strong> {{ $barang->tenor }} hari</p>
+                <p><strong>Bunga :</strong> {{ number_format(($barang->bunga/100) * $barang->harga_gadai) }}</p>
+
                 <p><strong>Jatuh Tempo:</strong> {{ \Carbon\Carbon::parse($barang->tempo)->translatedFormat('l, d F Y') }}</p>
                 <p><strong>Waktu Pembayaran:</strong> <span id="countdown-{{ $barang->id }}" class="font-bold text-blue-600"></span></p>
 
@@ -61,7 +63,8 @@ document.addEventListener("DOMContentLoaded", function() {
             var timeLeft = tempo - now;
             var totalDuration = tempo - createdAt;
 
-            var daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            var daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
+
             var isLate = daysLeft < 0;
             var overdueDays = Math.abs(daysLeft);
             var percentage = ((timeLeft / totalDuration) * 100).toFixed(2);

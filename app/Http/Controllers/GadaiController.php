@@ -95,6 +95,7 @@ public function store(Request $request)
 
     // Simpan Data Transaksi Gadai
     TransaksiGadai::create([
+        'id_user' => auth()->user()->id_users,
         'id_nasabah' => $nasabah->id_nasabah,
         'no_bon' => $request->no_bon,
         'tanggal_gadai' => now(),

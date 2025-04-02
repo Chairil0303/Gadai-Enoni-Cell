@@ -13,6 +13,6 @@ class TransaksiTebus extends Model
     protected $table = 'transaksi_tebus';
     protected $primaryKey = 'id_transaksi_tebus';
     protected $fillable = [
-        'no_bon', 'id_nasabah', 'tanggal_tebus', 'jumlah_pembayaran', 'status'
+        'no_bon','id_user', 'id_nasabah', 'tanggal_tebus', 'jumlah_pembayaran', 'status'
     ];
 }

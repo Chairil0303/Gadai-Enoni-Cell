@@ -11,6 +11,7 @@ return new class extends Migration
     {
         Schema::create('transaksi_tebus', function (Blueprint $table) {
             $table->id('id_transaksi_tebus');
+            $table->unsignedBigInteger('id_user');
             $table->string('no_bon', 50);
             $table->unsignedBigInteger('id_nasabah');
             $table->date('tanggal_tebus');
@@ -18,6 +19,8 @@ return new class extends Migration
             $table->enum('status', ['Berhasil', 'Gagal'])->default('Berhasil');
             $table->timestamps();
 
+
+            $table->foreign('id_user')->references('id_users')->on('users')->onDelete('cascade');
             $table->foreign('no_bon')->references('no_bon')->on('barang_gadai')->onDelete('cascade');
             $table->foreign('id_nasabah')->references('id_nasabah')->on('nasabah')->onDelete('cascade');
         });

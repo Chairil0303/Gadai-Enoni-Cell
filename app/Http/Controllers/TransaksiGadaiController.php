@@ -24,6 +24,7 @@ class TransaksiGadaiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'id_user' => 'required|exists:users,id',
             'id_nasabah' => 'required|exists:nasabah,id_nasabah',
             'id_barang' => 'required|exists:barang_gadai,id_barang',
             'tanggal_gadai' => 'required|date',

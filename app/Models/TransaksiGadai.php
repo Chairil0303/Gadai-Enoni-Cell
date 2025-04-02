@@ -15,6 +15,7 @@ class TransaksiGadai extends Model
 
     protected $fillable = [
         'id_nasabah',
+        'id_user',
         'id_barang',
         'tanggal_gadai',
         'jumlah_pinjaman',

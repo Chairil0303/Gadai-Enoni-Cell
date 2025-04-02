@@ -13,6 +13,7 @@ return new class extends Migration
     {
             Schema::create('transaksi_gadai', function (Blueprint $table) {
             $table->id('id_transaksi');
+            $table->unsignedBigInteger('id_user');
             $table->unsignedBigInteger('id_nasabah');
             $table->string('no_bon', 50);  // ganti type no_bon jadi string
             $table->date('tanggal_gadai');
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->decimal('bunga', 5, 2);
             $table->date('jatuh_tempo');
 
+            $table->foreign('id_user')->references('id_users')->on('users')->onDelete('cascade');
             $table->foreign('id_nasabah')->references('id_nasabah')->on('nasabah')->onDelete('cascade');
             $table->foreign('no_bon')->references('no_bon')->on('barang_gadai')->onDelete('cascade');
             $table->timestamps();
