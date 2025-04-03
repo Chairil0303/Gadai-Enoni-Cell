@@ -58,11 +58,55 @@
                 <p><strong>Waktu Pembayaran:</strong> <span id="countdown-{{ $barang->id }}" class="font-bold text-blue-600" data-status="{{ $barang->status }}"></span></p>
             </div>
             @endforeach
-        </div>
-    </div>
-</div>
+            @foreach ($barangGadai as $barang)
+
+<!-- Button untuk tebus -->
+<input type="hidden" id="no-bon-{{ $barang->no_bon }}" value="{{ $barang->no_bon }}">
+<input type="hidden" id="total-tebus-{{ $barang->no_bon }}" value="{{ $barang->harga_gadai + (($barang->bunga / 100) * $barang->harga_gadai) + max(0, ($barang->harga_gadai * 0.01) * $barang->telat) }}">
+<button onclick="payWithMidtrans('{{ $barang->no_bon }}')" class="bg-green-500 text-white px-4 py-2 rounded">
+    Tebus Sekarang
+</button>
+@endforeach
+
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 
 <script>
+   function payWithMidtrans(noBon) {
+    var noBonElement = document.getElementById("no-bon-" + noBon);
+    var totalTebusElement = document.getElementById("total-tebus-" + noBon);
+
+    if (!noBonElement || !totalTebusElement) {
+        console.error('Elemen tidak ditemukan untuk barang dengan no_bon: ' + noBon);
+        return;
+    }
+
+    var amount = totalTebusElement.value;
+
+    fetch('/nasabah/process-payment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            no_bon: noBon,
+            payment_method: 'bank_transfer',
+            amount: amount
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.href = data.redirect_url;
+        } else {
+            alert('Terjadi kesalahan: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll("[id^='countdown-']").forEach(function(element) {
         var id = element.id.replace("countdown-", "");

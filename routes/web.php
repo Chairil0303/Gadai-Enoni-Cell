@@ -13,6 +13,8 @@ use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\Superadmin\CabangController;
 use App\Http\Controllers\GadaiController;
 use App\Http\Controllers\TebusGadaiController;
+use App\Http\Controllers\TebusGadaiNasabahController;
+use App\Http\Controllers\NasabahPaymentController;
 
 
 
@@ -142,7 +144,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
 
 });
+Route::post('/midtrans/webhook', [TebusGadaiNasabahController::class, 'handleNotification']);
 
-
+Route::post('/nasabah/process-payment', [NasabahPaymentController::class, 'processPayment']);
+Route::post('/nasabah/payment-notification', [NasabahPaymentController::class, 'handleNotification']);
 
 require __DIR__.'/auth.php';
