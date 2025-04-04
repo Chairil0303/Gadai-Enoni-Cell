@@ -118,16 +118,17 @@ class BarangGadaiController extends Controller
 
         return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil diperbarui.');
     }
+    
 
 
     public function destroy(BarangGadai $barangGadai)
-{
-    if ($barangGadai->id_user !== auth()->id()) {
-        abort(403, 'Unauthorized action.');
-    }
+    {
+        if ($barangGadai->id_user !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
-    $barangGadai->delete();
-    return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil dihapus.');
-}
+        $barangGadai->delete();
+        return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil dihapus.');
+    }
 
 }
