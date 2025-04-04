@@ -37,20 +37,70 @@
         </tbody>
     </table>
 
+        <!-- Button untuk tebus -->
+    <div class="mt-4 flex justify-end">
+        <input type="hidden" id="no-bon-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->no_bon }}">
+        <input type="hidden" id="total-tebus-{{ $barangGadai->no_bon }}" value="{{ $totalTebus }}">
+        <input type="hidden" id="denda-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->denda }}">
+        <button onclick="payWithMidtrans('{{ $barangGadai->no_bon }}')" class="bg-green-500 text-white px-4 py-2 rounded">
+            Tebus Sekarang
+        </button>
+        <button onclick="window.location.href='{{ route('profile') }}'" class="btn btn-danger">Cancel</button>
+    </div>
+
+
     <!-- Tombol Aksi -->
-    <div class="mt-4">
+    {{-- <div class="mt-4">
         <form id="tebusForm" action="{{ route('tebus.tebus', $barangGadai->no_bon) }}" method="POST">
             @csrf
             <button type="button" class="btn btn-success" id="confirmTebusBtn">Tebus</button>
-            <a href="{{ route('tebus.search') }}" class="btn btn-danger">Cancel</a>
+            <a href="{{ route('profile') }}" class="btn btn-danger">Cancel</a>
         </form>
     </div>
-</div>
+</div> --}}
 
 <!-- SweetAlert2 Script -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+// script midtrans
+function payWithMidtrans(noBon) {
+    var noBonElement = document.getElementById("no-bon-" + noBon);
+    var totalTebusElement = document.getElementById("total-tebus-" + noBon);
+    var dendaElement = document.getElementById("denda-" + noBon);
+
+    if (!noBonElement || !totalTebusElement) {
+        console.error('Elemen tidak ditemukan untuk barang dengan no_bon: ' + noBon);
+        return;
+    }
+
+    var amount = totalTebusElement.value;
+
+    fetch('/nasabah/process-payment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            no_bon: noBon,
+            payment_method: 'bank_transfer',
+            amount: amount
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.href = data.redirect_url;
+        } else {
+            alert('Terjadi kesalahan: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
     document.getElementById('confirmTebusBtn').addEventListener('click', function() {
         Swal.fire({
             title: 'Apakah Anda yakin?',
