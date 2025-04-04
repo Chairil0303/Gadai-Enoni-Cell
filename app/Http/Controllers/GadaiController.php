@@ -9,6 +9,7 @@ use App\Models\KategoriBarang;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\TransaksiGadai;
+use Illuminate\Support\Str;
 
 class GadaiController extends Controller
 {
@@ -64,7 +65,7 @@ public function store(Request $request)
     $user = User::create([
         'nama' => $request->nama,
         'email' => $request->email ?? null,
-        'username' => $request->nama,
+        'username' => Str::of($request->nama)->lower()->replace(' ', ''),
         'password' => Hash::make(substr($request->nik, 0, 6)),
         'role' => 'Nasabah',
     ]);

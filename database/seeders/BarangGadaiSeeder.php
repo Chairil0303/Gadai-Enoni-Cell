@@ -58,6 +58,22 @@ class BarangGadaiSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'no_bon' => 'BON003',
+                'id_nasabah' => $nasabah2,
+                'id_user' => $adminB,
+                'nama_barang' => 'Samsung Galaxy J3',
+                'deskripsi' => 'RAM 8GB, dan memori internal 128GB.',
+                'imei' => '987654321098765',
+                'tenor' => 14,
+                'tempo' => Carbon::now()->addDays(14),
+                'telat' => 0,
+                'harga_gadai' => 800000.00,
+                'status' => 'Tergadai',
+                'id_kategori' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ];
 
         // Simpan persentase bunga berdasarkan tenor
