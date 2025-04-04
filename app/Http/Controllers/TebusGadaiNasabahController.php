@@ -38,6 +38,26 @@ class TebusGadaiNasabahController extends Controller
                 'email' => Auth::user()->email,
                 'phone' => Auth::user()->telepon,
             ],
+            'item_details' => [
+            [
+                'id' => 'harga-gadai',
+                'price' => (int) $barang->harga_gadai,
+                'quantity' => 1,
+                'name' => 'Harga Gadai',
+            ],
+            [
+                'id' => 'bunga',
+                'price' => (int) $bunga,
+                'quantity' => 1,
+                'name' => 'Bunga Gadai',
+            ],
+            [
+                'id' => 'denda',
+                'price' => (int) $denda,
+                'quantity' => 1,
+                'name' => 'Denda Keterlambatan',
+            ],
+        ],
         ];
 
         $snapToken = Snap::getSnapToken($transactionDetails);

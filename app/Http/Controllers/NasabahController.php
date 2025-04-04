@@ -13,6 +13,14 @@ class NasabahController extends Controller
     public function index()
     {
         $nasabah = Nasabah::with('user')->get();
+        $barangGadai = $nasabah->barangGadai;
+        // Menghitung keterlambatan
+        foreach ($barangGadai as $barang) {
+            $today = \Carbon\Carbon::today();
+            $tempo = \Carbon\Carbon::parse($barang->tempo);
+            $barang->telat = $today->gt($tempo) ? $today->diffInDays($tempo) : 0;
+        }
+
         return view('nasabah.index', compact('nasabah'));
     }
 
@@ -38,6 +46,12 @@ class NasabahController extends Controller
             return redirect()->route('dashboard.nasabah')->with('error', 'Data nasabah tidak ditemukan.');
         }
         $barangGadai = $nasabah->barangGadai;
+        foreach ($barangGadai as $barang) {
+            $today = \Carbon\Carbon::today();
+            $tempo = \Carbon\Carbon::parse($barang->tempo);
+            $barang->telat = $today->gt($tempo) ? $today->diffInDays($tempo) : 0;
+        }
+
 
         return view('nasabah.dashboard', compact('nasabah', 'barangGadai'));
     }
@@ -46,6 +60,12 @@ class NasabahController extends Controller
     {
         $nasabah = Nasabah::where('id_users', auth()->user()->id_users)->firstOrFail();
         return view('components.dashboard.nasabah', compact('nasabah'));
+        foreach ($barangGadai as $barang) {
+            $today = \Carbon\Carbon::today();
+            $tempo = \Carbon\Carbon::parse($barang->tempo);
+            $barang->telat = $today->gt($tempo) ? $today->diffInDays($tempo) : 0;
+        }
+
     }
 
     public function create()

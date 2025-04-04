@@ -57,4 +57,6 @@ class Nasabah extends Model
         $this->save();
     }
 
+    
+
 }
