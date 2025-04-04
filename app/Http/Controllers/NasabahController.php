@@ -29,7 +29,8 @@ class NasabahController extends Controller
 
     public function show()
     {
-    $user = Auth::user()->cabang;
+        $user = Auth::id();
+    // $user = Auth::user()->cabang;
     $nasabah = Nasabah::all();
 
         // return view('nasabah.profile'); // Pastikan path view kamu benar, misalnya resources/views/nasabah/profile.blade.php
@@ -40,6 +41,11 @@ class NasabahController extends Controller
             return redirect()->route('dashboard.nasabah')->with('error', 'Data nasabah tidak ditemukan.');
         }
         $barangGadai = $nasabah->barangGadai;
+        dd([
+            'userId' => $user,
+            // 'no_bon' => $no_bon,
+            'barangGadai' => $barangGadai,
+        ]);
 
 
         return view('nasabah.dashboard', compact('nasabah', 'barangGadai','user'));

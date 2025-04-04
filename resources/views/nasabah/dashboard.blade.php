@@ -60,9 +60,9 @@
                         </dt>
                         <dd class="mt-2 pt-3 text-base text-gray-600">Perkirakan harga gadai barang anda di sini</dd>
                     </a>
-
+                    @foreach($barangGadai as $barang)
                     <!-- Tebus Gadai -->
-                    <a href="{{ url('/transaksi_gadai/tebus_gadai') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
+                    <a href="{{ route('nasabah.konfirmasi', $barang->no_bon) }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
                         <dt class="text-base font-semibold text-gray-900 flex items-center space-x-4">
                             <div class="absolute top-4 left-7 flex size-10 items-center justify-center rounded-lg bg-green-600 group-hover:bg-green-700 transition">
                                 <svg class="size-6 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -73,7 +73,7 @@
                         </dt>
                         <dd class="mt-2 pt-3 text-base text-gray-600">Lakukan pembayaran untuk menebus barang yang telah digadaikan.</dd>
                     </a>
-
+                    @endforeach
                     <!-- Perpanjang Gadai -->
                     <a href="{{ url('/transaksi_gadai/perpanjang_gadai') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
                         <dt class="text-base font-semibold text-gray-900 flex items-center space-x-4">
