@@ -2,36 +2,11 @@
 
 @section('content')
 
-    <!-- Sidebar -->
-    <!-- <aside class="w-1/4 pr-8 border-r border-gray-300">
-        <h2 class="text-xl font-bold mb-6">User Profile</h2>
-        <nav class="space-y-4">
-            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
-                <i class="fas fa-user mr-2"></i> User info
-            </a>
-            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
-                <i class="fas fa-heart mr-2"></i> Favorites
-            </a>
-            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
-                <i class="fas fa-list mr-2"></i> Watchlist
-            </a>
-            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
-                <i class="fas fa-cog mr-2"></i> Setting
-            </a>
-            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
-                <i class="fas fa-bell mr-2"></i> Notifications
-            </a>
-            <a href="#" class="flex items-center text-red-500 mt-6">
-                <i class="fas fa-sign-out-alt mr-2"></i> Log out
-            </a>
-        </nav>
-    </aside> -->
-
     <!-- Form Profile -->
     <div class=" pl-2">
         <div class="bg-[#A0D683] rounded-lg p-6 mb-6 flex items-center justify-left">
             <!-- Illustration Section -->
-            <div>
+                    <div>
                 <img src="{{ asset('images/profile.png') }}" alt="Illustration" class="w-24 rounded-full">
             </div>
 
@@ -43,7 +18,7 @@
     </div>
 
 
-     <div class="bg-white py-2 sm:py-32">
+    <div class="bg-white py-2 sm:py-32">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
             <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-4 lg:max-w-4xl">
                 <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-4">
@@ -103,4 +78,5 @@
             </div>
         </div>
     </div>
+</div>
 @endsection
