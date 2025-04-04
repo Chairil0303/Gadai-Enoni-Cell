@@ -6,10 +6,10 @@
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Dashboard Nasabah</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach ($barangGadai as $barang)
-            @php
+            {{-- @php
     $denda = abs($barang->harga_gadai * 0.01 * $barang->telat);
 
-            @endphp
+            @endphp --}}
 
             <div class="bg-white shadow-lg rounded-lg p-6 transform hover:scale-135 transition-transform duration-300">
                 <div class="flex items-center space-x-4">
@@ -27,22 +27,21 @@
                         <p class="text-xl font-bold text-green-600">
                             Rp {{ number_format(
                                 $barang->harga_gadai +
-                                (($barang->bunga / 100) * $barang->harga_gadai) +
-                                $denda,
+                                (($barang->bunga / 100) * $barang->harga_gadai) +$barang->denda,
                                 0, ',', '.'
                             ) }}
                         </p>
 
-                        {{-- <p class="text-xl font-bold text-green-600">Rp {{ number_format($barang->harga_gadai + (($barang->bunga / 100) * $barang->harga_gadai + $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat), 0, ',', '.') }}</p> --}}
+                        {{-- <p class="text-xl font-bold text-green-600">Rp {{ number_format($barang->harga_gadai + (($barang->bunga / 100) * $barang->harga_gadai + denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat), 0, ',', '.') }}</p> --}}
                     </div>
                 </div>
                 <input type="hidden" id="created-at-{{ $barang->id }}" value="{{ $barang->created_at }}">
                 <input type="hidden" id="tempo-{{ $barang->id }}" value="{{ $barang->tempo }}">
             </div>
 
-    @php
+    {{-- @php
     $denda = abs($barang->harga_gadai * 0.01 * $barang->telat);
-    @endphp
+    @endphp --}}
             @endforeach
     </div>
 
@@ -64,22 +63,22 @@
                 <p><strong>Tenor:</strong> {{ $barang->tenor }} hari</p>
                 <p><strong>Harga Gadai:</strong> Rp {{ number_format($barang->harga_gadai, 0, ',', '.') }}</p>
                 <p><strong>Bunga:</strong> Rp {{ number_format(max(0, ($barang->bunga / 100) * $barang->harga_gadai), 0, ',', '.') }}</p>
-                <p><strong>Denda: </strong>Rp {{number_format($denda)}}<p>
+                <p><strong>Denda: </strong>Rp {{number_format($barang->denda)}}<p>
                 <p><strong>Jatuh Tempo:</strong> {{ \Carbon\Carbon::parse($barang->tempo)->translatedFormat('l, d F Y') }}</p>
                 <p><strong>Waktu Pembayaran:</strong> <span id="countdown-{{ $barang->id }}" class="font-bold text-blue-600" data-status="{{ $barang->status }}"></span></p>
-                <p><strong>Total Penebusan : </strong>Rp {{ number_format($barang->harga_gadai +(($barang->bunga / 100) * $barang->harga_gadai) +$denda,0, ',', '.') }}</p>
+                <p><strong>Total Penebusan : </strong>Rp {{ number_format($barang->harga_gadai +(($barang->bunga / 100) * $barang->harga_gadai) + $barang->denda,0, ',', '.') }}</p>
             </div>
             @endforeach
             @foreach ($barangGadai as $barang)
 
-@php
+{{-- @php
 $denda = abs($barang->harga_gadai * 0.01 * $barang->telat);
-@endphp
+@endphp --}}
 
 <!-- Button untuk tebus -->
 <input type="hidden" id="no-bon-{{ $barang->no_bon }}" value="{{ $barang->no_bon }}">
-<input type="hidden" id="total-tebus-{{ $barang->no_bon }}" value="{{ $barang->harga_gadai + (($barang->bunga / 100) * $barang->harga_gadai) + $denda }}">
-<input type="hidden" id="denda-{{ $barang->no_bon }}" value="{{ $denda }}">
+<input type="hidden" id="total-tebus-{{ $barang->no_bon }}" value="{{ $barang->harga_gadai + (($barang->bunga / 100) * $barang->harga_gadai) + $barang->denda }}">
+<input type="hidden" id="denda-{{ $barang->no_bon }}" value="{{ $barang->denda }}">
 <button onclick="payWithMidtrans('{{ $barang->no_bon }}')" class="bg-green-500 text-white px-4 py-2 rounded">
     Tebus Sekarang
 </button>
