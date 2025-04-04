@@ -6,11 +6,6 @@
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Dashboard Nasabah</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach ($barangGadai as $barang)
-            {{-- @php
-    $denda = abs($barang->harga_gadai * 0.01 * $barang->telat);
-
-            @endphp --}}
-
             <div class="bg-white shadow-lg rounded-lg p-6 transform hover:scale-135 transition-transform duration-300">
                 <div class="flex items-center space-x-4">
                     <div class="relative w-28   h-28">
@@ -39,9 +34,7 @@
                 <input type="hidden" id="tempo-{{ $barang->id }}" value="{{ $barang->tempo }}">
             </div>
 
-    {{-- @php
-    $denda = abs($barang->harga_gadai * 0.01 * $barang->telat);
-    @endphp --}}
+
             @endforeach
     </div>
 
@@ -71,9 +64,7 @@
             @endforeach
             @foreach ($barangGadai as $barang)
 
-{{-- @php
-$denda = abs($barang->harga_gadai * 0.01 * $barang->telat);
-@endphp --}}
+
 
 <!-- Button untuk tebus -->
 <input type="hidden" id="no-bon-{{ $barang->no_bon }}" value="{{ $barang->no_bon }}">
