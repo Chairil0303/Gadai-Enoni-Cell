@@ -38,7 +38,8 @@
         <!-- Text Section -->
         <div class="ml-5">
             <h2 class="text-3xl font-bold mb-1">Hi, {{ ucwords(strtolower($nasabah->nama)) }}</h2>
-            <p class="text-gray-600">Selamat datang di Pegadaian Enoni Cell, Cabang......</p>
+            <p class="text-gray-600">Selamat datang di Pegadaian Enoni Cell, {{ auth()->user()->cabang->nama_cabang  }},
+            </p>
         </div>
     </div>
 

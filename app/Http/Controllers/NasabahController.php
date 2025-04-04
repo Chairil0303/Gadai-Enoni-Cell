@@ -12,15 +12,8 @@ class NasabahController extends Controller
 {
     public function index()
     {
+        $user = user::with('nasabah')->get();
         $nasabah = Nasabah::with('user')->get();
-        $barangGadai = $nasabah->barangGadai;
-        // Menghitung keterlambatan
-        foreach ($barangGadai as $barang) {
-            $today = \Carbon\Carbon::today();
-            $tempo = \Carbon\Carbon::parse($barang->tempo);
-            $barang->telat = $today->gt($tempo) ? $today->diffInDays($tempo) : 0;
-        }
-
         return view('nasabah.index', compact('nasabah'));
     }
 
@@ -36,6 +29,7 @@ class NasabahController extends Controller
 
     public function show()
     {
+    $user = Auth::user()->cabang;
     $nasabah = Nasabah::all();
 
         // return view('nasabah.profile'); // Pastikan path view kamu benar, misalnya resources/views/nasabah/profile.blade.php
@@ -46,25 +40,16 @@ class NasabahController extends Controller
             return redirect()->route('dashboard.nasabah')->with('error', 'Data nasabah tidak ditemukan.');
         }
         $barangGadai = $nasabah->barangGadai;
-        foreach ($barangGadai as $barang) {
-            $today = \Carbon\Carbon::today();
-            $tempo = \Carbon\Carbon::parse($barang->tempo);
-            $barang->telat = $today->gt($tempo) ? $today->diffInDays($tempo) : 0;
-        }
 
 
-        return view('nasabah.dashboard', compact('nasabah', 'barangGadai'));
+        return view('nasabah.dashboard', compact('nasabah', 'barangGadai','user'));
     }
 
     public function myProfile()
     {
         $nasabah = Nasabah::where('id_users', auth()->user()->id_users)->firstOrFail();
         return view('components.dashboard.nasabah', compact('nasabah'));
-        foreach ($barangGadai as $barang) {
-            $today = \Carbon\Carbon::today();
-            $tempo = \Carbon\Carbon::parse($barang->tempo);
-            $barang->telat = $today->gt($tempo) ? $today->diffInDays($tempo) : 0;
-        }
+
 
     }
 

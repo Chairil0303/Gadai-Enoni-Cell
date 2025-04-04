@@ -64,11 +64,13 @@ public function store(Request $request)
     // Buat User Baru
     $user = User::create([
         'nama' => $request->nama,
-        'email' => $request->email ?? null,
+        'email' => $request->email,
         'username' => Str::of($request->nama)->lower()->replace(' ', ''),
         'password' => Hash::make(substr($request->nik, 0, 6)),
         'role' => 'Nasabah',
+        'id_cabang' => auth()->user()->id_cabang,
     ]);
+
 
     // Simpan Data Nasabah dengan ID User
     $nasabah = Nasabah::create([
