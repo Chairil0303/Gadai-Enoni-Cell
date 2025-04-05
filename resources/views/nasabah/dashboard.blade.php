@@ -2,6 +2,33 @@
 
 @section('content')
 
+    <!-- Sidebar -->
+    <!-- <aside class="w-1/4 pr-8 border-r border-gray-300">
+        <h2 class="text-xl font-bold mb-6">User Profile</h2>
+        <nav class="space-y-4">
+            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
+                <i class="fas fa-user mr-2"></i> User info
+            </a>
+            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
+                <i class="fas fa-heart mr-2"></i> Favorites
+            </a>
+            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
+                <i class="fas fa-list mr-2"></i> Watchlist
+            </a>
+            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
+                <i class="fas fa-cog mr-2"></i> Setting
+            </a>
+            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
+                <i class="fas fa-bell mr-2"></i> Notifications
+            </a>
+            <a href="#" class="flex items-center text-red-500 mt-6">
+                <i class="fas fa-sign-out-alt mr-2"></i> Log out
+            </a>
+        </nav>
+    </aside> -->
+
+
+
     <!-- Form Profile -->
     <div class=" pl-2">
         <div class="bg-[#A0D683] rounded-lg p-6 mb-6 flex items-center justify-left">
@@ -13,9 +40,42 @@
         <!-- Text Section -->
         <div class="ml-5">
             <h2 class="text-3xl font-bold mb-1">Hi, {{ ucwords(strtolower($nasabah->nama)) }}</h2>
-            <p class="text-gray-600">Selamat datang di Pegadaian Enoni Cell, Cabang......</p>
+            <p class="text-gray-600">Selamat datang di Pegadaian Enoni Cell, {{ auth()->user()->cabang->nama_cabang  }},
+            </p>
         </div>
     </div>
+
+    @foreach ($barangGadai as $barang)
+    <div class="bg-white shadow-lg rounded-lg p-6 transform hover:scale-135 transition-transform duration-300">
+        <input type="hidden" id="created-at-{{ $barang->id }}" value="{{ $barang->created_at }}">
+        <input type="hidden" id="tempo-{{ $barang->id }}" value="{{ $barang->tempo }}">
+        <div id="countdown-{{ $barang->id }}" data-status="{{ $barang->status }}" class="hidden"></div>
+
+
+        <div class="flex items-center space-x-4">
+            <div class="relative w-28 h-28">
+                <svg class="w-full h-full" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" stroke="#ddd" stroke-width="10" fill="none" />
+                    <circle id="progress-{{ $barang->id }}" cx="50" cy="50" r="45" stroke="#4CAF50" stroke-width="10" fill="none" stroke-dasharray="282.6" stroke-dashoffset="0" stroke-linecap="round" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center text-lg font-semibold text-gray-700">
+                    <span id="progress-text-{{ $barang->id }}">0 Hari</span>
+                </div>
+            </div>
+            <div>
+                <p class="text-lg font-semibold text-gray-800">💰 Total Tebus</p>
+                <p class="text-xl font-bold text-green-600">
+                    Rp {{ number_format(
+                        $barang->harga_gadai +
+                        (($barang->bunga / 100) * $barang->harga_gadai) + $barang->denda,
+                        0, ',', '.'
+                    ) }}
+                </p>
+                <p><strong>No Bon:</strong> {{ $barang->no_bon }}</p>
+            </div>
+        </div>
+    </div>
+    @endforeach
 
 
     <div class="bg-white py-2 sm:py-32">
@@ -34,9 +94,9 @@
                         </dt>
                         <dd class="mt-2 pt-3 text-base text-gray-600">Perkirakan harga gadai barang anda di sini</dd>
                     </a>
-
+                    @foreach($barangGadai as $barang)
                     <!-- Tebus Gadai -->
-                    <a href="{{ url('/transaksi_gadai/tebus_gadai') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
+                    <a href="{{ route('nasabah.konfirmasi', $barang->no_bon) }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
                         <dt class="text-base font-semibold text-gray-900 flex items-center space-x-4">
                             <div class="absolute top-4 left-7 flex size-10 items-center justify-center rounded-lg bg-green-600 group-hover:bg-green-700 transition">
                                 <svg class="size-6 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -47,7 +107,7 @@
                         </dt>
                         <dd class="mt-2 pt-3 text-base text-gray-600">Lakukan pembayaran untuk menebus barang yang telah digadaikan.</dd>
                     </a>
-
+                    @endforeach
                     <!-- Perpanjang Gadai -->
                     <a href="{{ url('/transaksi_gadai/perpanjang_gadai') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
                         <dt class="text-base font-semibold text-gray-900 flex items-center space-x-4">
@@ -78,5 +138,51 @@
             </div>
         </div>
     </div>
-</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("div[id^='countdown-']").forEach(function(element) {
+        var id = element.id.replace("countdown-", "");
+        var status = element.getAttribute("data-status");
+        var progressCircle = document.getElementById("progress-" + id);
+        var progressText = document.getElementById("progress-text-" + id);
+
+        if (status && status.trim().toLowerCase() === "ditebus") {
+            element.innerHTML = `<span class='text-green-600'>Sudah Ditebus</span>`;
+            progressCircle.style.stroke = "#4CAF50";
+            progressText.textContent = "Sudah Ditebus";
+            return;
+        }
+
+        var createdAt = new Date(document.getElementById("created-at-" + id).value);
+        var tempo = new Date(document.getElementById("tempo-" + id).value);
+
+        function updateCountdown() {
+            var now = new Date();
+            var timeLeft = tempo - now;
+            var totalDuration = tempo - createdAt;
+            var daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
+            var isLate = daysLeft < 0;
+            var overdueDays = Math.abs(daysLeft);
+            var percentage = ((timeLeft / totalDuration) * 100).toFixed(2);
+            var dashOffset = (282.6 * (100 - percentage)) / 100;
+
+            if (isLate) {
+                progressCircle.style.stroke = "#8B0000";
+                element.innerHTML = `<span class='text-red-600'>Telat ${overdueDays} hari</span>`;
+                progressText.textContent = `Telat ${overdueDays} Hari`;
+                progressCircle.style.strokeDashoffset = 282.6;
+            } else {
+                progressCircle.style.stroke = daysLeft >= 14 ? "#4CAF50" : daysLeft >= 7 ? "#FFC107" : "#F44336";
+                element.innerHTML = `${daysLeft} hari`;
+                progressText.textContent = `${daysLeft} Hari`;
+                progressCircle.style.strokeDashoffset = dashOffset;
+            }
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    });
+});
+</script>
+
 @endsection

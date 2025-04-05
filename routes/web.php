@@ -13,7 +13,18 @@ use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\Superadmin\CabangController;
 use App\Http\Controllers\GadaiController;
 use App\Http\Controllers\TebusGadaiController;
+use App\Http\Controllers\TebusGadaiNasabahController;
+use App\Http\Controllers\NasabahPaymentController;
 
+
+
+Route::get('/cek-auth', function () {
+    return response()->json([
+        'user' => auth()->user(),
+        'id' => auth()->id(),
+        'session' => session()->all(),
+    ]);
+});
 
 
 Route::get('/', function () {
@@ -64,6 +75,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/tebus_gadai/{noBon}', [TebusGadaiController::class, 'tebus'])->name('tebus.tebus');
     });
 
+      // tebus gadaiNasabah
+      Route::middleware(['auth'])->prefix('nasabah')->group(function () {
+        Route::get('/cari', [TebusGadaiNasabahController::class, 'cari'])->name('tebus.cari');
+        Route::get('/konfirmasi/{no_bon}', [TebusGadaiNasabahController::class, 'konfirmasi'])->name('nasabah.konfirmasi');
+        Route::post('/tebus/{no_bon}', [TebusGadaiNasabahController::class, 'tebus'])->name('tebus.tebus');
+    });
+
 
     Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
         Route::get('/dashboard/nasabah', function () {
@@ -100,7 +118,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('barang_gadai', BarangGadaiController::class);
     // Menambahkan route untuk halaman barang_gadai.index
     Route::get('/barang_gadai', [BarangGadaiController::class, 'index'])->name('barang_gadai.index');
-    
+
 
     // route untuk view
     Route::resource('nasabah', NasabahController::class);
@@ -143,7 +161,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
 
 });
+Route::post('/midtrans/webhook', [TebusGadaiNasabahController::class, 'handleNotification']);
 
-
+Route::post('/nasabah/process-payment', [NasabahPaymentController::class, 'processPayment']);
+Route::post('/nasabah/payment-notification', [NasabahPaymentController::class, 'handleNotification']);
 
 require __DIR__.'/auth.php';
