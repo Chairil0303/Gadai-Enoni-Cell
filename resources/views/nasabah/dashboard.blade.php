@@ -46,36 +46,33 @@
     </div>
 
     @foreach ($barangGadai as $barang)
-    <div class="bg-white shadow-lg rounded-lg p-6 transform hover:scale-135 transition-transform duration-300">
-        <input type="hidden" id="created-at-{{ $barang->id }}" value="{{ $barang->created_at }}">
-        <input type="hidden" id="tempo-{{ $barang->id }}" value="{{ $barang->tempo }}">
+    <div class="bg-white shadow-lg rounded-lg p-4 sm:p-6 transform hover:scale-[1.03] transition-transform duration-300 w-full max-w-xl mx-auto">
+        <input type="hidden" id="created-at-{{ $barang->id }}" value="{{ \Carbon\Carbon::parse($barang->created_at)->format('Y-m-d\TH:i:s') }}">
+        <input type="hidden" id="tempo-{{ $barang->id }}" value="{{ \Carbon\Carbon::parse($barang->tempo)->format('Y-m-d\TH:i:s') }}">
+
         <div id="countdown-{{ $barang->id }}" data-status="{{ $barang->status }}" class="hidden"></div>
 
-
-        <div class="flex items-center space-x-4">
-            <div class="relative w-28 h-28">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start sm:space-x-4 space-y-4 sm:space-y-0">
+            <div class="relative w-24 h-24 sm:w-28 sm:h-28">
                 <svg class="w-full h-full" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="45" stroke="#ddd" stroke-width="10" fill="none" />
                     <circle id="progress-{{ $barang->id }}" cx="50" cy="50" r="45" stroke="#4CAF50" stroke-width="10" fill="none" stroke-dasharray="282.6" stroke-dashoffset="0" stroke-linecap="round" />
                 </svg>
-                <div class="absolute inset-0 flex items-center justify-center text-lg font-semibold text-gray-700">
+                <div class="absolute inset-0 flex items-center justify-center text-sm sm:text-lg font-semibold text-gray-700">
                     <span id="progress-text-{{ $barang->id }}">0 Hari</span>
                 </div>
             </div>
-            <div>
-                <p class="text-lg font-semibold text-gray-800">💰 Total Tebus</p>
-                <p class="text-xl font-bold text-green-600">
-                    Rp {{ number_format(
-                        $barang->harga_gadai +
-                        (($barang->bunga / 100) * $barang->harga_gadai) + $barang->denda,
-                        0, ',', '.'
-                    ) }}
+            <div class="text-center sm:text-left space-y-1">
+                <p class="text-sm sm:text-base font-bold text-gray-600">
+                    Nama Barang Tergadai: {{ $barang->nama_barang ? strtoupper($barang->nama_barang) : '--' }}
                 </p>
-                <p><strong>No Bon:</strong> {{ $barang->no_bon }}</p>
+                <p class="text-sm sm:text-base font-bold text-gray-600">
+                    Jatuh Tempo: {{ $barang->tempo }}
+                </p>
             </div>
         </div>
     </div>
-    @endforeach
+@endforeach
 
 
     <div class="bg-white py-2 sm:py-32">
@@ -139,50 +136,73 @@
         </div>
     </div>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll("div[id^='countdown-']").forEach(function(element) {
-        var id = element.id.replace("countdown-", "");
-        var status = element.getAttribute("data-status");
-        var progressCircle = document.getElementById("progress-" + id);
-        var progressText = document.getElementById("progress-text-" + id);
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("div[id^='countdown-']").forEach(function (element) {
+        const id = element.id.replace("countdown-", "");
+        const status = element.getAttribute("data-status")?.trim().toLowerCase();
+        const progressCircle = document.getElementById("progress-" + id);
+        const progressText = document.getElementById("progress-text-" + id);
+        const createdAtVal = document.getElementById("created-at-" + id)?.value;
+        const tempoVal = document.getElementById("tempo-" + id)?.value;
 
-        if (status && status.trim().toLowerCase() === "ditebus") {
+        // Safety check
+        if (!progressCircle || !progressText || !createdAtVal || !tempoVal) return;
+
+        const createdAt = new Date(createdAtVal);
+        const tempo = new Date(tempoVal);
+
+        // Jika sudah ditebus
+        if (status === "ditebus") {
             element.innerHTML = `<span class='text-green-600'>Sudah Ditebus</span>`;
             progressCircle.style.stroke = "#4CAF50";
             progressText.textContent = "Sudah Ditebus";
             return;
         }
 
-        var createdAt = new Date(document.getElementById("created-at-" + id).value);
-        var tempo = new Date(document.getElementById("tempo-" + id).value);
-
         function updateCountdown() {
-            var now = new Date();
-            var timeLeft = tempo - now;
-            var totalDuration = tempo - createdAt;
-            var daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
-            var isLate = daysLeft < 0;
-            var overdueDays = Math.abs(daysLeft);
-            var percentage = ((timeLeft / totalDuration) * 100).toFixed(2);
-            var dashOffset = (282.6 * (100 - percentage)) / 100;
+            const now = new Date();
+            const timeLeft = tempo - now;
+            const totalDuration = tempo - createdAt;
+
+            const daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
+            const isLate = daysLeft < 0;
+            const overdueDays = Math.abs(daysLeft);
+
+            let dashOffset = 0;
+
+            if (!isLate && totalDuration > 0) {
+                const percentage = (timeLeft / totalDuration) * 100;
+                dashOffset = (282.6 * (100 - percentage)) / 100;
+            }
 
             if (isLate) {
-                progressCircle.style.stroke = "#8B0000";
+                progressCircle.style.stroke = "#A62C2C"; // Merah gelap
                 element.innerHTML = `<span class='text-red-600'>Telat ${overdueDays} hari</span>`;
                 progressText.textContent = `Telat ${overdueDays} Hari`;
                 progressCircle.style.strokeDashoffset = 282.6;
             } else {
-                progressCircle.style.stroke = daysLeft >= 14 ? "#4CAF50" : daysLeft >= 7 ? "#FFC107" : "#F44336";
-                element.innerHTML = `${daysLeft} hari`;
+                // Gunakan warna sesuai jumlah hari tersisa
+                let strokeColor;
+                if (daysLeft >= 14) {
+                    strokeColor = "#4CAF50"; // Hijau
+                } else if (daysLeft >= 7) {
+                    strokeColor = "#FFC107"; // Kuning
+                } else {
+                    strokeColor = "#F44336"; // Merah terang
+                }
+
+                progressCircle.style.stroke = strokeColor;
+                element.innerHTML = `<span class='text-gray-700'>${daysLeft} hari</span>`;
                 progressText.textContent = `${daysLeft} Hari`;
                 progressCircle.style.strokeDashoffset = dashOffset;
             }
         }
 
         updateCountdown();
-        setInterval(updateCountdown, 1000);
+        setInterval(updateCountdown, 60000); // perbarui setiap 1 menit, tidak perlu tiap detik
     });
 });
+
 </script>
 
 @endsection
