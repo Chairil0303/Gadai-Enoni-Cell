@@ -45,11 +45,29 @@
             👤 {{ strtoupper(auth()->user()->nama) }}
         </div>
 
-        <form method="POST" action="{{ route('logout') }}">
+        <form id="logoutFormMobile" method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="w-full text-left px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-white">
+            <button type="button" onclick="confirmLogoutMobile()" class="w-full text-left px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-white">
                 🚪 Log Out
             </button>
         </form>
     </div>
 </aside>
+
+<script>
+    function confirmLogoutMobile() {
+        Swal.fire({
+            title: 'Yakin ingin logout?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e3342f',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Logout',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('logoutFormMobile').submit();
+            }
+        });
+    }
+</script>

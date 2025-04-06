@@ -30,25 +30,6 @@
                     </p>
                 @endif
 
-                <!-- Profil -->
-                <div class="relative mt-3 m-6">
-                    <button id="profileButton" class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500 text-white text-lg font-bold focus:outline-none">
-                        {{ strtoupper(substr(auth()->user()->nama, 0, 2)) }}
-                    </button>
-
-                    <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden z-50">
-                        <div class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
-                            {{ strtoupper(auth()->user()->nama) }}
-                        </div>
-
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200">
-                                Log Out
-                            </button>
-                        </form>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
