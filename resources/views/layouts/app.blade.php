@@ -15,15 +15,21 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
+    <body class="font-sans antialiased" x-data="{ open: false }">
         <div class="min-h-screen flex bg-gray-100 dark:bg-gray-900">
-            {{-- sidebar --}}
-            <div class="w-34 bg-gray-800 text-white shadow-lg flex-shrink-0 pl-4 flex flex-col min-h-screen">
-                @include('components.sidebar')
-            </div>
+
+            {{-- Sidebar Responsive --}}
+            @include('components.sidebar')
+
             <!-- Main Content -->
-            <div class="flex-1 flex flex-col">
-                @include('layouts.navigation')
+            <div class="flex-1 flex flex-col md:ml-64">
+
+                {{-- Navbar / Topbar --}}
+                <div class="bg-green-800 text-white flex items-center px-4 py-3 md:px-8 shadow-md">
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden mr-4 text-2xl" @click="open = true">☰</button>
+                    <h1 class="text-xl font-bold">ENONI CELL</h1>
+                </div>
 
                 <!-- Page Heading -->
                 @isset($header)
