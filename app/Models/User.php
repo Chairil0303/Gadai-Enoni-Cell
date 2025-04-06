@@ -56,4 +56,10 @@ class User extends Authenticatable
     }
 
 
+    public function nasabah()
+    {
+        return $this->hasOne(Nasabah::class, 'id_user'); // karena satu user hanya punya satu data nasabah
+    }
+
+
 }

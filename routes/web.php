@@ -160,6 +160,15 @@ Route::middleware(['auth'])->group(function () {
     // buat kategori
     Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
 
+
+
+    Route::get('/cek-auth', function () {
+    return response()->json([
+        'user' => auth()->user(),
+        'id' => auth()->id(),
+        'session' => session()->all(),
+    ]);
+});
 });
 Route::post('/midtrans/webhook', [TebusGadaiNasabahController::class, 'handleNotification']);
 
