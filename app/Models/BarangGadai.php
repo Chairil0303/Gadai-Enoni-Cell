@@ -39,6 +39,12 @@
             }
         }
 
+
+        public function getTempoFormattedAttribute()
+        {
+            return Carbon::parse($this->tempo)->translatedFormat('l, d F Y');
+        }
+
         // Getter untuk menghitung sisa hari atau keterlambatan
         public function getSisaHariAttribute()
         {
@@ -86,6 +92,8 @@
             }
             $this->save();
         }
+
+
 
         public function nasabah()
         {
