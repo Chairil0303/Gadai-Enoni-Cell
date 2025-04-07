@@ -24,7 +24,8 @@ class RoleMiddleware
     // baru 
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        if (auth()->check() && auth()->user()->role === $role) {
+
+        if (auth()->check() && strtolower(auth()->user()->role) === strtolower($role)) {
             return $next($request);
         }
 

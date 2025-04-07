@@ -24,7 +24,7 @@
             <li><a href="{{ route('transaksi_gadai.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">💰 Transaksi Gadai</a></li>
             <li><a href="{{ route('barang_gadai.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">📦 Barang Gadai</a></li>
             <li><a href="{{ route('nasabah.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">👨‍💼 Nasabah</a></li>
-            <li><a href="{{ route('cabang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">🏣 Cabang</a></li>
+            <li><a href="{{ route('superadmin.cabang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">🏣 Cabang</a></li>
             <li><a href="{{ route('lelang_barang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">⚖️ Lelang</a></li>
             <li><a href="{{ route('laporan.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">📝 Laporan</a></li>
         @endif

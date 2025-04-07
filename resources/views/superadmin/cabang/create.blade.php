@@ -28,9 +28,14 @@
                             <input type="text" autocomplete="off" class="form-control" id="kontak" name="kontak" placeholder="No Handphone" required>
                             <div class="form-text">Gunakan format nomor yang valid.</div>
                         </div>
+                        <div class="mb-3">
+                            <label for="google_maps_link" class="form-label"><i class="fas fa-map"></i> Link Google Maps</label>
+                            <input type="url" autocomplete="off" class="form-control" id="google_maps_link" name="google_maps_link" placeholder="https://goo.gl/maps/..." value="{{ old('google_maps_link') }}">
+                            <div class="form-text">Tempelkan link Google Maps lokasi cabang jika ada.</div>
+                        </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="{{ route('superadmin.cabang.store') }}" class="no-underline btn btn-secondary">
+                            <a href="{{ route('superadmin.cabang.index') }}" class="no-underline btn btn-secondary">
                                 <i class="fas fa-arrow-left"></i> Kembali
                             </a>
                             <button type="submit" class="btn btn-success">

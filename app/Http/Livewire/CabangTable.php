@@ -19,9 +19,10 @@ class CabangTable extends Component
 
     public function render()
     {
-        $cabangs = Cabang::where('nama_cabang', 'like', "%{$this->search}%")->paginate(5);
+        $cabangs = Cabang::where('nama_cabang', 'like', "%{$this->search}%")->get();
         return view('livewire.cabang-table', ['cabangs' => $cabangs]);
     }
+
 
     // delete
     public function delete($id)

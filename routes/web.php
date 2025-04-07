@@ -76,7 +76,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
       // tebus gadaiNasabah
-      Route::middleware(['auth'])->prefix('nasabah')->group(function () {
+        Route::middleware(['auth'])->prefix('nasabah')->group(function () {
         Route::get('/cari', [TebusGadaiNasabahController::class, 'cari'])->name('tebus.cari');
         Route::get('/konfirmasi/{no_bon}', [TebusGadaiNasabahController::class, 'konfirmasi'])->name('nasabah.konfirmasi');
         Route::post('/tebus/{no_bon}', [TebusGadaiNasabahController::class, 'tebus'])->name('tebus.tebus');
@@ -129,25 +129,22 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('notifikasi', NotifikasiController::class);
 
     // route superadmin
-
-
-    Route::middleware('auth')->group(function () {
-        Route::get('/superadmin/cabang', [CabangController::class, 'index'])->name('cabang.index');
-    });
-    Route::middleware('auth')->prefix('superadmin')->group(function () {
+    Route::middleware(['auth', RoleMiddleware::class . ':superadmin'])->prefix('superadmin')->group(function () {
+        Route::get('/cabang', [CabangController::class, 'index'])->name('superadmin.cabang.index');
+        Route::get('/cabang', [CabangController::class, 'index'])->name('cabang.index');
         Route::get('/cabang/create', [CabangController::class, 'create'])->name('superadmin.cabang.create');
+        Route::post('/cabang', [CabangController::class, 'store'])->name('superadmin.cabang.store');
+        Route::get('/cabang/{cabang}/edit', [CabangController::class, 'edit'])->name('superadmin.cabang.edit');
+        Route::put('/cabang/{cabang}', [CabangController::class, 'update'])->name('superadmin.cabang.update');
+        Route::delete('/cabang/{cabang}', [CabangController::class, 'destroy'])->name('superadmin.cabang.destroy');
     });
-    Route::middleware('auth')->prefix('superadmin')->group(function () {
-        Route::get('cabang/{cabang}/edit', [CabangController::class, 'edit'])->name('superadmin.cabang.edit');
-        Route::put('cabang/{cabang}', [CabangController::class, 'update'])->name('superadmin.cabang.update');
+    Route::prefix('dashboard/superadmin')->name('superadmin.')->group(function () {
+        Route::get('/cabang', [CabangController::class, 'index'])->name('cabang.index');
+        Route::get('/cabang/create', [CabangController::class, 'create'])->name('cabang.create');
+        Route::post('/cabang', [CabangController::class, 'store'])->name('cabang.store');
     });
 
-    Route::middleware('auth')->prefix('superadmin')->group(function () {
-    Route::post('/cabang', [CabangController::class, 'store'])->name('superadmin.cabang.store');
-    });
-    Route::middleware('auth')->group(function () {
-        Route::delete('/superadmin/cabang/{cabang}', [CabangController::class, 'destroy'])->name('cabang.destroy');
-    });
+
 
     // Route untuk profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -160,15 +157,6 @@ Route::middleware(['auth'])->group(function () {
     // buat kategori
     Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
 
-
-
-    Route::get('/cek-auth', function () {
-    return response()->json([
-        'user' => auth()->user(),
-        'id' => auth()->id(),
-        'session' => session()->all(),
-    ]);
-});
 });
 Route::post('/midtrans/webhook', [TebusGadaiNasabahController::class, 'handleNotification']);
 
