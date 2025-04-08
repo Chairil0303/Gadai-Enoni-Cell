@@ -65,7 +65,7 @@
                     </table>
                 </div>
                 <div class="card-footer text-end">
-                    <a href="{{ route('superadmin.cabang.store') }}" class="btn btn-secondary">
+                    <a href="{{ auth()->user()->isSuperadmin() ? route('dashboard.superadmin') : route('dashboard.admin') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Kembali
                     </a>
                 </div>
