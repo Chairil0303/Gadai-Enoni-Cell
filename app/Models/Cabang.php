@@ -17,6 +17,7 @@ class Cabang extends Model
         'nama_cabang',
         'alamat',
         'kontak',
+        'google_maps_link'
     ];
 
     public function users()
