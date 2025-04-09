@@ -9,6 +9,11 @@ use Midtrans\Config;
 use Midtrans\Notification;
 use app\models\TransaksiTebus;
 use Carbon\Carbon;
+use Auth;
+use App\Models\Nasabah;
+use App\Models\Cabang;
+use App\Models\TransaksiGadai;
+use App\Models\LelangBarang;
 
 
 class NasabahPaymentController extends Controller
@@ -79,6 +84,162 @@ class NasabahPaymentController extends Controller
         return response()->json(['status' => 'error', 'error' => $e->getMessage()]);
     }
 }
+//test function dlu
+// public function processPaymentJson($noBon)
+// {
+//     $userId = auth()->user()->id_users;
+//     $nasabah = Nasabah::where('id_user', $userId)->first();
+
+//     if (!$nasabah) {
+//         return response()->json(['message' => 'Nasabah tidak ditemukan'], 404);
+//     }
+
+//     $barangGadai = BarangGadai::where('no_bon', $noBon)
+//         ->where('id_nasabah', $nasabah->id_nasabah)
+//         ->with('nasabah')
+//         ->first();
+
+//     if (!$barangGadai) {
+//         return response()->json(['message' => 'Barang tidak ditemukan'], 404);
+//     }
+
+//     // Hitung Denda
+//     $telat = $barangGadai->telat > 0 ? $barangGadai->telat : 0;
+//     $denda = ($barangGadai->harga_gadai * 0.01) * $telat;
+
+//     // Hitung Bunga berdasarkan tenor
+//     $tenor = $barangGadai->tenor;
+//     $bungaPersen = match ($tenor) {
+//         7 => 5,
+//         14 => 10,
+//         30 => 15,
+//         default => 0,
+//     };
+//     $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+
+//     $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
+
+//     // Midtrans config
+//     Config::$serverKey = config('midtrans.server_key');
+//     Config::$isProduction = config('midtrans.is_production');
+//     Config::$isSanitized = config('midtrans.is_sanitized');
+//     Config::$is3ds = config('midtrans.is_3ds');
+
+//     $params = [
+//         'transaction_details' => [
+//             'order_id' => $barangGadai->no_bon,
+//             'gross_amount' => (int) $totalTebus,
+//         ],
+//         'customer_details' => [
+//             'first_name' => $barangGadai->nasabah->nama,
+//             'phone' => $barangGadai->nasabah->telepon,
+//         ],
+//     ];
+
+//     $snapToken = Snap::getSnapToken($params);
+
+//     return response()->json([
+//         'snap_token' => $snapToken,
+//         'total_tebus' => $totalTebus,
+//     ]);
+// }
+
+
+public function processPaymentJson($noBon)
+{
+    $userId = auth()->user()->id_users;
+    $nasabah = Nasabah::where('id_user', $userId)->first();
+
+    if (!$nasabah) {
+        return response()->json(['message' => 'Nasabah tidak ditemukan'], 404);
+    }
+
+    $barangGadai = BarangGadai::where('no_bon', $noBon)
+        ->where('id_nasabah', $nasabah->id_nasabah)
+        ->with('nasabah')
+        ->first();
+
+    if (!$barangGadai) {
+        return response()->json(['message' => 'Barang tidak ditemukan'], 404);
+    }
+
+    // Hitung Denda
+    $telat = $barangGadai->telat > 0 ? $barangGadai->telat : 0;
+    $denda = ($barangGadai->harga_gadai * 0.01) * $telat;
+
+    // Hitung Bunga berdasarkan tenor
+    $tenor = $barangGadai->tenor;
+    $bungaPersen = match ($tenor) {
+        7 => 5,
+        14 => 10,
+        30 => 15,
+        default => 0,
+    };
+    $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+
+    $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
+
+    // Midtrans config
+    Config::$serverKey = config('midtrans.server_key');
+    Config::$isProduction = config('midtrans.is_production');
+    Config::$isSanitized = config('midtrans.is_sanitized');
+    Config::$is3ds = config('midtrans.is_3ds');
+
+    $params = [
+        'transaction_details' => [
+            'order_id' => $barangGadai->no_bon . '-' . time(),
+            'gross_amount' => (int) $totalTebus,
+        ],
+        'customer_details' => [
+            'first_name' => $barangGadai->nasabah->nama,
+            'phone' => $barangGadai->nasabah->telepon,
+        ],
+    ];
+
+    $snapToken = Snap::getSnapToken($params);
+
+    return response()->json([
+        'snap_token' => $snapToken,
+        'total_tebus' => $totalTebus,
+        'order_id' => $barangGadai->no_bon,
+        'detail' => [
+            'harga_gadai' => $barangGadai->harga_gadai,
+            'bunga' => $bunga,
+            'denda' => $denda,
+            'telat' => $telat,
+            'tenor' => $tenor,
+            'nama_nasabah' => $barangGadai->nasabah->nama,
+            'telepon' => $barangGadai->nasabah->telepon,
+        ]
+    ]);
+}
+
+
+
+public function handleNotificationJson(Request $request)
+{
+    // Konfigurasi Midtrans
+    Config::$serverKey = config('midtrans.server_key');
+    Config::$isProduction = false;
+
+    $notif = new Notification();
+
+    $transaction = $notif->transaction_status;
+    $orderId = $notif->order_id;
+
+    if ($transaction === 'settlement' || $transaction === 'capture') {
+        // Pembayaran berhasil
+        $barang = BarangGadai::where('no_bon', $orderId)->first();
+        if ($barang) {
+            $barang->status = 'Ditebus';
+            $barang->save();
+        }
+    }
+
+    return response()->json(['message' => 'Notifikasi diproses']);
+}
+
+
 
 
     // Handle notification dari Midtrans (untuk konfirmasi pembayaran)
@@ -119,5 +280,54 @@ class NasabahPaymentController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function getPaymentJsonByBon($noBon)
+    {
+        // Ambil user yang login
+        $userId = auth()->user()->id_users;
+
+        // Ambil data nasabah yang terhubung
+        $nasabah = Nasabah::where('id_user', $userId)->first();
+
+        if (!$nasabah) {
+            return response()->json(['message' => 'Nasabah tidak ditemukan'], 404);
+        }
+
+        // Cek data barang berdasarkan no_bon dan id_nasabah
+        $barang = BarangGadai::with('nasabah')
+        ->whereRaw('LOWER(no_bon) = ?', [strtolower($noBon)])
+        ->where('id_nasabah', $nasabah->id_nasabah)
+        ->first();
+        // $barang = BarangGadai::with('nasabah')
+        //     ->whereRaw('LOWER(no_bon) = ?', [strtolower($noBon)])
+        //     ->where('id_nasabah', $nasabah->id_nasabah)
+        //     ->first();
+
+        if (!$barang) {
+            return response()->json(['message' => 'Barang tidak ditemukan'], 404);
+        }
+
+        // Hitung bunga dan denda
+        $bungaPersen = 1;
+        $bunga = ($barang->harga_gadai * $bungaPersen) / 100;
+        $denda = $barang->telat > 0 ? ($barang->telat * 5000) : 0;
+        $totalTebus = $barang->harga_gadai + $bunga + $denda;
+
+        // Return JSON
+        return response()->json([
+            'no_bon' => $barang->no_bon,
+            'nama_barang' => $barang->nama_barang,
+            'harga_gadai' => $barang->harga_gadai,
+            'bunga' => $bunga,
+            'denda' => $denda,
+            'total_tebus' => $totalTebus,
+            'payment_method' => 'snap',
+        ]);
+    }
+
+
+
+
+
 
 }
