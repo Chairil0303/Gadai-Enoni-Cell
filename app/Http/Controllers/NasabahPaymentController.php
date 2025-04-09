@@ -363,7 +363,7 @@ class NasabahPaymentController extends Controller
             // Simpan transaksi tebus
             TransaksiTebus::create([
                 'no_bon' => $barang->no_bon,
-                'id_user' => null, // Karena ini dari webhook, gak ada user login
+                'id_user' => 2, // Karena ini dari webhook, gak ada user login
                 'id_nasabah' => $barang->id_nasabah,
                 'tanggal_tebus' => Carbon::now(),
                 'jumlah_pembayaran' => (int) $grossAmount,
