@@ -84,12 +84,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/tebus/{no_bon}', [TebusGadaiNasabahController::class, 'tebus'])->name('tebus.tebus');
     });
 
-    // perpanjang gadai 
-    Route::get('/transaksi_gadai/perpanjang_gadai', [PerpanjangGadaiController::class, 'create'])->name('perpanjang_gadai.create');
-    Route::post('/transaksi_gadai/perpanjang_gadai/proses', [PerpanjangGadaiController::class, 'proses'])->name('perpanjang_gadai.proses');
-    Route::post('/transaksi_gadai/perpanjang_gadai/simpan', [PerpanjangGadaiController::class, 'store'])->name('perpanjang_gadai.store');
-    Route::get('/transaksi_gadai/perpanjang_gadai/detail', [PerpanjangGadaiController::class, 'detail'])->name('perpanjang_gadai.detail');
 
+    // perpanjang gadai
+    Route::prefix('perpanjang-gadai')->group(function () {
+    Route::get('/', [PerpanjangGadaiController::class, 'create'])->name('perpanjang_gadai.create');
+    Route::post('/simpan', [PerpanjangGadaiController::class, 'store'])->name('perpanjang_gadai.store');
+    Route::post('/perpanjang_gadai/konfirmasi', [PerpanjangGadaiController::class, 'konfirmasi'])->name('perpanjang_gadai.konfirmasi');
+});
 
 
     Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {

@@ -21,7 +21,7 @@
             </div>
 
             <!-- Info Cabang dan Profil -->
-            <div class="hidden sm:flex sm:items-center">
+            <div class="hidden sm:flex sm:items-center  z-100">
                 @if(auth()->user()->isadmin())
                     <p class="mt-6 m-6 text-lg text-gray-600">
                         {{ auth()->user()->cabang->nama_cabang ?? 'Cabang tidak ditemukan' }},
