@@ -33,7 +33,7 @@
 
 
             <!-- Profile Dropdown Button -->
-                <div class="m-2">
+                <div class="m-2 ">
                     <div class="relative">
                         <button id="profileButton" class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500 text-white text-lg font-bold focus:outline-none">
                             {{ strtoupper(substr(auth()->user()->nama, 0, 2)) }}
