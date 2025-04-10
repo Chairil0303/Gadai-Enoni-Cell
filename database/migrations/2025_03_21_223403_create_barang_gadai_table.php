@@ -24,7 +24,7 @@ return new class extends Migration
     $table->date('tempo');
     $table->integer('telat')->default(0);
     $table->decimal('harga_gadai', 15, 2);
-    $table->decimal('bunga', 5, 2);
+    $table->decimal('bunga', 10, 2)->default(0);
     $table->enum('status', ['Tergadai', 'Ditebus', 'Dilelang','Diperpanjang'])->default('Tergadai');
     $table->unsignedBigInteger('id_kategori')->nullable();
     $table->foreign('id_nasabah')->references('id_nasabah')->on('nasabah')->onDelete('cascade');
