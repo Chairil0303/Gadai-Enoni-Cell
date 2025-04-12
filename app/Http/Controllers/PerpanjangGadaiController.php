@@ -75,6 +75,11 @@ class PerpanjangGadaiController extends Controller
             return redirect()->back()->with('error', 'Data dengan bon lama tidak ditemukan.');
         }
 
+            // Cek apakah no_bon_lama valid dan statusnya masih tergadai
+        if ($lama->status !== 'Tergadai') {
+            return redirect()->back()->with('error', 'Barang dengan No Bon Lama sudah tidak dalam status "Tergadai".');
+        }
+
         // Ambil data nasabah
         $nasabah = \App\Models\Nasabah::where('id_nasabah', $lama->id_nasabah)->first();
 
