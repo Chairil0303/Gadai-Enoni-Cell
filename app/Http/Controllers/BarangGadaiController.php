@@ -17,9 +17,9 @@ class BarangGadaiController extends Controller
         if ($userId == 1) {
             $barangGadai = BarangGadai::with('nasabah.user', 'kategori')->get();
         } else {
-            if (Schema::hasColumn('barang_gadai', 'id_user')) {
+            if (Schema::hasColumn('barang_gadai', 'id_cabang')) {
                 $barangGadai = BarangGadai::with('nasabah.user', 'kategori')
-                                ->where('id_user', $userId)
+                                ->where('id_cabang', $userId)
                                 ->get();
             } else {
                 $barangGadai = collect(); // Jika kolom tidak ada, kembalikan koleksi kosong
@@ -118,7 +118,7 @@ class BarangGadaiController extends Controller
 
         return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil diperbarui.');
     }
-    
+
 
 
     public function destroy(BarangGadai $barangGadai)

@@ -47,6 +47,8 @@ class PerpanjangGadaiController extends Controller
             'bunga' => $request->bunga,
             'status' => 'Tergadai',
             'id_kategori' => $lama->id_kategori,
+            'id_cabang' => auth()->user()->id_cabang,
+
         ]);
 
         // Simpan ke histori perpanjangan
@@ -57,6 +59,8 @@ class PerpanjangGadaiController extends Controller
             'harga_gadai_baru' =>$lama->harga_gadai + $request->harga_gadai,
             'bunga_baru' => $request->bunga,
             'tempo_baru' => $tempo_baru,
+            'id_cabang' => auth()->user()->id_cabang,
+
         ]);
 
         return redirect()->route('barang_gadai.index')->with('success', 'Perpanjangan berhasil disimpan.');
@@ -72,10 +76,12 @@ class PerpanjangGadaiController extends Controller
             'harga_gadai' => 'required|numeric|min:0',
         ]);
 
-        $lama = BarangGadai::where('no_bon', $request->no_bon_lama)->first();
+        $lama = BarangGadai::where('no_bon', $request->no_bon_lama)
+        ->where('id_cabang', auth()->user()->id_cabang) // Hanya ambil jika sesuai cabang
+        ->first();
 
         if (!$lama) {
-            return redirect()->back()->with('error', 'Data dengan bon lama tidak ditemukan.');
+            return redirect()->back()->with('error', 'No Bon Lama tidak ditemukan atau bukan milik cabang Anda.');
         }
 
         // Cek apakah no_bon_lama valid dan statusnya masih tergadai
@@ -88,10 +94,10 @@ class PerpanjangGadaiController extends Controller
         }
 
         // Cek apakah no_bon_baru sudah digunakan
-        $cekBonBaru = BarangGadai::where('no_bon', $request->no_bon_baru)->first();
-        if ($cekBonBaru) {
-            return redirect()->back()->with('error', 'No BON Baru sudah digunakan. Silakan gunakan nomor yang lain.');
-        }
+        $cekBonBaru = BarangGadai::where('no_bon', $request->no_bon_baru)
+        ->where('id_cabang', auth()->user()->id_cabang)
+        ->first();
+
 
         // Ambil data nasabah
         $nasabah = Nasabah::where('id_nasabah', $lama->id_nasabah)->first();

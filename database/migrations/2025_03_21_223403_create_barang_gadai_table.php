@@ -16,6 +16,7 @@ return new class extends Migration
     $table->string('no_bon', 10)->primary();  // PRIMARY KEY ganti jadi string
     $table->string('no_bon_lama')->nullable();
     $table->unsignedBigInteger('id_nasabah');
+    $table->unsignedBigInteger('id_cabang')->nullable();
     $table->string('nama_barang');
     $table->text('deskripsi')->nullable();
     $table->string('imei');
@@ -29,6 +30,8 @@ return new class extends Migration
     $table->unsignedBigInteger('id_kategori')->nullable();
     $table->foreign('id_nasabah')->references('id_nasabah')->on('nasabah')->onDelete('cascade');
     $table->foreign('id_kategori')->references('id_kategori')->on('kategori_barang')->onDelete('set null');
+    $table->foreign('id_cabang')->references('id_cabang')->on('cabang')->onDelete('set null');
+
 
     $table->timestamps();
 });
