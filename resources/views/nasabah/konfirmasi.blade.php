@@ -67,7 +67,6 @@
 function payWithMidtrans(noBon) {
     var noBonElement = document.getElementById("no-bon-" + noBon);
     var totalTebusElement = document.getElementById("total-tebus-" + noBon);
-    var dendaElement = document.getElementById("denda-" + noBon);
 
     if (!noBonElement || !totalTebusElement) {
         console.error('Elemen tidak ditemukan untuk barang dengan no_bon: ' + noBon);
@@ -90,16 +89,35 @@ function payWithMidtrans(noBon) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.status === 'success') {
-            window.location.href = data.redirect_url;
+        if (data.snap_token) {
+            snap.pay(data.snap_token, {
+                onSuccess: function(result) {
+                    alert("Pembayaran berhasil!");
+                    console.log(result);
+                    // bisa redirect ke halaman sukses
+                },
+                onPending: function(result) {
+                    alert("Pembayaran sedang diproses.");
+                    console.log(result);
+                },
+                onError: function(result) {
+                    alert("Pembayaran gagal.");
+                    console.log(result);
+                },
+                onClose: function() {
+                    alert("Anda menutup popup pembayaran tanpa menyelesaikannya.");
+                }
+            });
         } else {
-            alert('Terjadi kesalahan: ' + data.error);
+            alert('Terjadi kesalahan: Snap token tidak ditemukan.');
         }
     })
     .catch(error => {
         console.error('Error:', error);
+        alert('Terjadi kesalahan saat memproses pembayaran.');
     });
 }
+
 
     document.getElementById('confirmTebusBtn').addEventListener('click', function() {
         Swal.fire({

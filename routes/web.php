@@ -89,7 +89,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/perpanjang-gadai/create', [PerpanjangGadaiController::class, 'create'])->name('perpanjang_gadai.create');
     Route::post('/perpanjang-gadai/konfirmasi', [PerpanjangGadaiController::class, 'konfirmasi'])->name('perpanjang_gadai.konfirmasi');
     Route::post('/perpanjang-gadai/store', [PerpanjangGadaiController::class, 'store'])->name('perpanjang_gadai.store');
-    
+
 
 
     Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
@@ -167,9 +167,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
 
 });
-Route::post('/midtrans/webhook', [TebusGadaiNasabahController::class, 'handleNotification']);
+Route::post('/midtrans/webhook', [NasabahPaymentController::class, 'handleNotificationTEST']);
 
-Route::post('/nasabah/process-payment', [NasabahPaymentController::class, 'processPayment']);
-Route::post('/nasabah/payment-notification', [NasabahPaymentController::class, 'handleNotification']);
+Route::post('/nasabah/process-payment', [NasabahPaymentController::class, 'processPaymentJson']);
+Route::post('/nasabah/payment-notification', [NasabahPaymentController::class, 'handleNotificationTEST']);
 
 require __DIR__.'/auth.php';
