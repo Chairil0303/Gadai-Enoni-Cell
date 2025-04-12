@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;use App\Models\BarangGadai;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class PerpanjangGadaiController extends Controller
 {
@@ -23,7 +24,8 @@ class PerpanjangGadaiController extends Controller
         $lama = BarangGadai::where('no_bon', $request->no_bon_lama)->firstOrFail();
 
         // Hitung tempo baru berdasarkan tenor
-        $tempo_baru = now()->addDays((int) $request->tenor);
+        $tempo_baru = Carbon::parse($lama->tempo)->addDays((int) $request->tenor);
+
 
         // Update status bon lama
         $lama->update([
@@ -75,13 +77,28 @@ class PerpanjangGadaiController extends Controller
             return redirect()->back()->with('error', 'Data dengan bon lama tidak ditemukan.');
         }
 
-            // Cek apakah no_bon_lama valid dan statusnya masih tergadai
+        // Cek apakah no_bon_lama valid dan statusnya masih tergadai
         if ($lama->status !== 'Tergadai') {
+            if ($lama->status === 'Diperpanjang') {
+                return redirect()->back()->with('error', 'Barang dengan No Bon Lama sudah diperpanjang sebelumnya.');
+            }
+
             return redirect()->back()->with('error', 'Barang dengan No Bon Lama sudah tidak dalam status "Tergadai".');
+        }
+
+        // Cek apakah no_bon_baru sudah digunakan
+        $cekBonBaru = \App\Models\BarangGadai::where('no_bon', $request->no_bon_baru)->first();
+        if ($cekBonBaru) {
+            return redirect()->back()->with('error', 'No BON Baru sudah digunakan. Silakan gunakan nomor yang lain.');
         }
 
         // Ambil data nasabah
         $nasabah = \App\Models\Nasabah::where('id_nasabah', $lama->id_nasabah)->first();
+
+
+        // Hitung Denda Keterlambatan
+        $denda_lama = ($lama->harga_gadai * 0.01) * $lama->telat;
+
 
         // Hitung bunga
         $bunga_persen = match ((int) $request->tenor) {
@@ -92,15 +109,19 @@ class PerpanjangGadaiController extends Controller
         };
         $bunga_baru = $request->harga_gadai * $bunga_persen;
 
-        $total_lama = $lama->harga_gadai + $lama->bunga;
+        $total_lama = $lama->harga_gadai + $lama->bunga + $denda_lama;
         $total_baru = $request->harga_gadai + $bunga_baru;
         $total_tagihan = $total_lama + $total_baru;
+
+
+        $tempo_baru = Carbon::parse($lama->tempo)->addDays((int) $request->tenor);
 
         $baru = [
         'no_bon' => $request->no_bon_baru,
         'tenor' => $request->tenor,
         'harga_gadai' => $request->harga_gadai,
         'bunga' => $bunga_baru,
+        'tempo' => $tempo_baru->format('Y-m-d'),
     ];
 
 
@@ -114,6 +135,7 @@ class PerpanjangGadaiController extends Controller
             'total_lama' => $total_lama,
             'total_baru' => $total_baru,
             'total_tagihan' => $total_tagihan,
+            'denda_lama' => $denda_lama,
             'baru' => $baru,
         ]);
     }
