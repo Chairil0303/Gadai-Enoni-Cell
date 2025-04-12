@@ -46,11 +46,10 @@
     </div>
 
     @foreach ($barangGadai as $barang)
-    <div class="bg-white shadow-lg rounded-lg p-6 transform hover:scale-135 transition-transform duration-300">
+    <div class="bg-white shadow-lg rounded-lg p-6 transform hover:scale-105 transition-transform duration-300">
         <input type="hidden" id="created-at-{{ $barang->id }}" value="{{ $barang->created_at }}">
         <input type="hidden" id="tempo-{{ $barang->id }}" value="{{ $barang->tempo }}">
         <div id="countdown-{{ $barang->id }}" data-status="{{ $barang->status }}" class="hidden"></div>
-
 
         <div class="flex items-center space-x-4">
             <div class="relative w-28 h-28">
@@ -62,8 +61,9 @@
                     <span id="progress-text-{{ $barang->id }}">0 Hari</span>
                 </div>
             </div>
-            <div>
-                <p class="text-lg font-semibold text-gray-800">💰 Total Tebus</p>
+
+            <div class="flex-1">
+                <p class="text-lg font-semibold text-gray-800">Total Tebus</p>
                 <p class="text-xl font-bold text-green-600">
                     Rp {{ number_format(
                         $barang->harga_gadai +
@@ -71,11 +71,14 @@
                         0, ',', '.'
                     ) }}
                 </p>
-                <p><strong>No Bon:</strong> {{ $barang->no_bon }}</p>
+                {{-- <p><strong>No Bon:</strong> {{ $barang->no_bon }}</p> --}}
+                <p><strong>Barang Gadai :</strong> {{ $barang->nama_barang }}</p>
+                <p class="text-sm text-gray-600">Barang ini akan jatuh Tempo  di Hari {{$barang->tempo_formatted }} </p>
             </div>
         </div>
     </div>
-    @endforeach
+@endforeach
+
 
 
      <div class="bg-white py-2 sm:py-32">

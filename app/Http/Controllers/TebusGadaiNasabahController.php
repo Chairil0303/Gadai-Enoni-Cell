@@ -218,4 +218,33 @@ public function konfirmasi($no_bon)
     return response()->json(['success' => true]);
 }
 
+public function konfirmasiJson($no_bon)
+{
+    $userId = auth()->user()->id_users;
+    $nasabah = Nasabah::where('id_user', $userId)->first();
+
+    $barangGadai = BarangGadai::where('no_bon', $no_bon)
+        ->where('id_nasabah', $nasabah->id_nasabah)
+        ->with('nasabah')
+        ->first();
+
+    if (!$barangGadai) {
+        return response()->json(['message' => 'Barang gadai tidak ditemukan'], 404);
+    }
+
+    $bungaPersen = 1;
+    $bunga = ($barangGadai->harga_gadai * $bungaPersen) / 100;
+    $denda = $barangGadai->telat > 0 ? ($barangGadai->telat * 5000) : 0;
+    $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
+
+    return response()->json([
+        'barang_gadai' => $barangGadai,
+        'bunga' => $bunga,
+        'bunga_persen' => $bungaPersen,
+        'denda' => $denda,
+        'total_tebus' => $totalTebus,
+    ]);
+}
+
+
 }
