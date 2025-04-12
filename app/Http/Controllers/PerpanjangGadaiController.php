@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;use App\Models\BarangGadai;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Nasabah;
 
 class PerpanjangGadaiController extends Controller
 {
@@ -87,13 +88,13 @@ class PerpanjangGadaiController extends Controller
         }
 
         // Cek apakah no_bon_baru sudah digunakan
-        $cekBonBaru = \App\Models\BarangGadai::where('no_bon', $request->no_bon_baru)->first();
+        $cekBonBaru = BarangGadai::where('no_bon', $request->no_bon_baru)->first();
         if ($cekBonBaru) {
             return redirect()->back()->with('error', 'No BON Baru sudah digunakan. Silakan gunakan nomor yang lain.');
         }
 
         // Ambil data nasabah
-        $nasabah = \App\Models\Nasabah::where('id_nasabah', $lama->id_nasabah)->first();
+        $nasabah = Nasabah::where('id_nasabah', $lama->id_nasabah)->first();
 
 
         // Hitung Denda Keterlambatan

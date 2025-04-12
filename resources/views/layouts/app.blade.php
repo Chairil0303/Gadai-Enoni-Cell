@@ -13,7 +13,10 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- Font Awesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+     --}}
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
 
 
     <!-- Scripts -->
@@ -21,7 +24,7 @@
 </head>
 <body class="font-sans antialiased" x-data="{ sidebarOpen: false }">
     {{-- Sidebar --}}
-    <div 
+    <div
         class="fixed inset-y-0 left-0 w-64 z-40 bg-gray-800 transform transition-transform duration-300 ease-in-out text-white"
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
     >
@@ -29,9 +32,9 @@
     </div>
 
     {{-- Overlay (untuk mobile) --}}
-    <div 
-        class="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden" 
-        x-show="sidebarOpen" 
+    <div
+        class="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+        x-show="sidebarOpen"
         @click="sidebarOpen = false"
         x-transition.opacity
     ></div>
