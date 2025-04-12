@@ -114,4 +114,9 @@
         {
             return $this->hasOne(TransaksiGadai::class, 'no_bon', 'no_bon');
         }
+
+        public function perpanjangan()
+        {
+            return $this->hasMany(PerpanjanganGadai::class, 'no_bon', 'no_bon');
+        }
     }

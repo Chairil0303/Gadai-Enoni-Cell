@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
 
-        Schema::create('barang_gadai', function (Blueprint $table) {
-    $table->string('no_bon', 50)->primary();  // PRIMARY KEY ganti jadi string
+    Schema::create('barang_gadai', function (Blueprint $table) {
+    $table->string('no_bon', 10)->primary();  // PRIMARY KEY ganti jadi string
+    $table->string('no_bon_lama')->nullable();
     $table->unsignedBigInteger('id_nasabah');
     $table->string('nama_barang');
     $table->text('deskripsi')->nullable();
@@ -23,10 +24,9 @@ return new class extends Migration
     $table->date('tempo');
     $table->integer('telat')->default(0);
     $table->decimal('harga_gadai', 15, 2);
-    $table->decimal('bunga', 5, 2);
-    $table->enum('status', ['Tergadai', 'Ditebus', 'Dilelang']);
+    $table->decimal('bunga', 10, 2)->default(0);
+    $table->enum('status', ['Tergadai', 'Ditebus', 'Dilelang','Diperpanjang'])->default('Tergadai');
     $table->unsignedBigInteger('id_kategori')->nullable();
-
     $table->foreign('id_nasabah')->references('id_nasabah')->on('nasabah')->onDelete('cascade');
     $table->foreign('id_kategori')->references('id_kategori')->on('kategori_barang')->onDelete('set null');
 

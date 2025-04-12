@@ -41,7 +41,7 @@
     <div class="mt-4">
         <form id="tebusForm" action="{{ route('tebus.tebus', $barangGadai->no_bon) }}" method="POST">
             @csrf
-            <button type="button" class="btn btn-success" id="confirmTebusBtn">Tebus</button>
+            <button type="button" class="btn btn-success" id="adminConfirmTebusBtnFix">Tebus</button>
             <a href="{{ route('tebus.search') }}" class="btn btn-danger">Cancel</a>
         </form>
     </div>
@@ -51,7 +51,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    document.getElementById('confirmTebusBtn').addEventListener('click', function() {
+        document.getElementById('adminConfirmTebusBtnFix').addEventListener('click', function() {
         Swal.fire({
             title: 'Apakah Anda yakin?',
             text: "Anda akan menebus barang ini dan statusnya akan berubah menjadi Ditebus!",
@@ -63,7 +63,6 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Submit form jika konfirmasi
                 document.getElementById('tebusForm').submit();
             }
         });
