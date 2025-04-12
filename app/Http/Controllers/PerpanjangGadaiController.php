@@ -42,7 +42,7 @@ class PerpanjangGadaiController extends Controller
             'tenor' => $request->tenor,
             'tempo' => $tempo_baru,
             'telat' => 0,
-            'harga_gadai' => $request->harga_gadai,
+            'harga_gadai' =>$lama->harga_gadai + $request->harga_gadai,
             'bunga' => $request->bunga,
             'status' => 'Tergadai',
             'id_kategori' => $lama->id_kategori,
@@ -53,7 +53,7 @@ class PerpanjangGadaiController extends Controller
             'no_bon_lama' => $request->no_bon_lama,
             'no_bon_baru' => $request->no_bon_baru,
             'tenor_baru' => $request->tenor,
-            'harga_gadai_baru' => $request->harga_gadai,
+            'harga_gadai_baru' =>$lama->harga_gadai + $request->harga_gadai,
             'bunga_baru' => $request->bunga,
             'tempo_baru' => $tempo_baru,
         ]);

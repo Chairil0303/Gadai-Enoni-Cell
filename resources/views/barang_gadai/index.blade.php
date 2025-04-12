@@ -64,8 +64,10 @@
                                         <span class="badge bg-success">Ditebus</span>
                                     @elseif($barang->status === 'Dilelang')
                                         <span class="badge bg-danger">Dilelang</span>
-                                    @else
+                                    @elseif($barang->status === 'Tergadai')
                                         <span class="badge bg-warning">Tergadai</span>
+                                    @elseif($barang->status === 'Diperpanjang')
+                                        <span class="badge bg-info">Diperpanjang</span>
                                     @endif
                                 </td>
                             @if (auth()->user()->isSuperadmin())
