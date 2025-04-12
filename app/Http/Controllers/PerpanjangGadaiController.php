@@ -33,6 +33,8 @@ class PerpanjangGadaiController extends Controller
             'status' => 'diperpanjang',
         ]);
 
+        $user = auth()->user();
+
         // Buat bon baru
         BarangGadai::create([
             'no_bon' => $request->no_bon_baru,
@@ -47,7 +49,7 @@ class PerpanjangGadaiController extends Controller
             'bunga' => $request->bunga,
             'status' => 'Tergadai',
             'id_kategori' => $lama->id_kategori,
-            'id_cabang' => auth()->user()->id_cabang,
+            'id_cabang' => $user->id_cabang,
 
         ]);
 
@@ -59,7 +61,7 @@ class PerpanjangGadaiController extends Controller
             'harga_gadai_baru' =>$lama->harga_gadai + $request->harga_gadai,
             'bunga_baru' => $request->bunga,
             'tempo_baru' => $tempo_baru,
-            'id_cabang' => auth()->user()->id_cabang,
+            // 'id_cabang' => auth()->user()->id_cabang,
 
         ]);
 

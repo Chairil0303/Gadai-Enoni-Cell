@@ -18,6 +18,7 @@ class PerpanjanganGadai extends Model
         'harga_gadai_baru',
         'bunga_baru',
         'tempo_baru',
+        'id_cabang',
     ];
 
     public $timestamps = true;

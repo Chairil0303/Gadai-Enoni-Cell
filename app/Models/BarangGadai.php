@@ -16,6 +16,7 @@
         protected $fillable = [
             'no_bon',
             'id_nasabah',
+            'id_cabang',
             'nama_barang',
             'deskripsi',
             'tempo', 'tenor',
