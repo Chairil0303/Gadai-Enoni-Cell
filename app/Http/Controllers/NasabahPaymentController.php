@@ -340,39 +340,40 @@ class NasabahPaymentController extends Controller
     // Coba Save ke table column transaksi tebus
 
     public function handleNotificationJson(Request $request)
-    {
-        $data = $request->all();
+{
+    $data = $request->all();
 
-        $transaction = $data['transaction_status'];
-        $orderId = $data['order_id'];
-        $grossAmount = $data['gross_amount'] ?? 0;
+    $transaction = $data['transaction_status'];
+    $orderId = $data['order_id'];
+    $grossAmount = $data['gross_amount'] ?? 0;
 
-        $noBon = explode('-', $orderId)[0];
+    $noBon = explode('-', $orderId)[0];
 
-        $barang = BarangGadai::where('no_bon', $noBon)->first();
+    $barang = BarangGadai::with('nasabah.user.cabang')->where('no_bon', $noBon)->first();
 
-        if (!$barang) {
-            return response()->json(['message' => 'Barang tidak ditemukan'], 404);
-        }
-
-        if (in_array($transaction, ['settlement', 'capture'])) {
-            // Update status barang jadi Ditebus
-            $barang->status = 'Ditebus';
-            $barang->save();
-
-            // Simpan transaksi tebus
-            TransaksiTebus::create([
-                'no_bon' => $barang->no_bon,
-                'id_user' => 2, // Karena ini dari webhook, gak ada user login
-                'id_nasabah' => $barang->id_nasabah,
-                'tanggal_tebus' => Carbon::now(),
-                'jumlah_pembayaran' => (int) $grossAmount,
-                'status' => 'Berhasil',
-            ]);
-        }
-
-        return response()->json(['message' => 'Notifikasi diproses']);
+    if (!$barang) {
+        return response()->json(['message' => 'Barang tidak ditemukan'], 404);
     }
+
+    if (in_array($transaction, ['settlement', 'capture'])) {
+        $barang->status = 'Ditebus';
+        $barang->save();
+
+        $id_cabang = optional($barang->nasabah->user->cabang)->id_cabang;
+
+        TransaksiTebus::create([
+            'no_bon' => $barang->no_bon,
+            'id_cabang' => $id_cabang,
+            'id_nasabah' => $barang->id_nasabah,
+            'tanggal_tebus' => Carbon::now(),
+            'jumlah_pembayaran' => (int) $grossAmount,
+            'status' => 'Berhasil',
+        ]);
+    }
+
+    return response()->json(['message' => 'Notifikasi diproses']);
+}
+
 
 
 

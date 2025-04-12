@@ -42,6 +42,7 @@ Route::post('/login-api', function (Request $request) {
             'username' => $user->username,
             'nama' => $user->nama,
             'role' => $user->role,
+            'cabang' => $user->cabang,
         ],
         'nasabah' => [
             'id_nasabah' => $nasabah->id_nasabah,
