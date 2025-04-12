@@ -50,9 +50,9 @@ class PerpanjangGadaiController extends Controller
         \App\Models\PerpanjanganGadai::create([
             'no_bon_lama' => $request->no_bon_lama,
             'no_bon_baru' => $request->no_bon_baru,
-            'tenor' => $request->tenor,
-            'bunga' => $request->bunga,
-            'tanggal_perpanjangan' => now(),
+            'tenor_baru' => $request->tenor,
+            'harga_gadai_baru' => $request->harga_gadai,
+            'bunga_baru' => $request->bunga,
             'tempo_baru' => $tempo_baru,
         ]);
 

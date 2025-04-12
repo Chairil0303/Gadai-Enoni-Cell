@@ -9,8 +9,13 @@
                     <h4><i class="fas fa-box"></i> Data Barang Gadai</h4>
                 </div>
                 <div class="card-body">
-                    @if(session('success'))
+                    <!-- @if(session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif -->
+                    @if (session('success'))
+                        <div class="mb-4 p-4 bg-green-100 text-green-800 border border-green-400 rounded">
+                            {{ session('success') }}
+                        </div>
                     @endif
 
                     <table class="table table-striped table-hover">
