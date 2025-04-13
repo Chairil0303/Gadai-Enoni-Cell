@@ -45,61 +45,136 @@
         <button id="confirmTebusBtn"  class="bg-green-500 text-white px-4 py-2 rounded">
             Tebus Sekarang
         </button>
+        <div id="continue-payment-container" ></div>
         <button onclick="window.location.href='{{ route('profile') }}'" class="btn btn-danger">Cancel</button>
     </div>
 
-
-    <!-- Tombol Aksi -->
-    {{-- <div class="mt-4">
-        <form id="tebusForm" action="{{ route('tebus.tebus', $barangGadai->no_bon) }}" method="POST">
-            @csrf
-            <button type="button" class="btn btn-success" id="confirmTebusBtn">Tebus</button>
-            <a href="{{ route('profile') }}" class="btn btn-danger">Cancel</a>
-        </form>
-    </div>
-</div> --}}
 
 <!-- SweetAlert2 Script -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 // script midtrans
-function payWithMidtrans(noBon) {
-    var noBonElement = document.getElementById("no-bon-" + noBon);
-    var totalTebusElement = document.getElementById("total-tebus-" + noBon);
+let latestSnapToken = null; // Global variabel
 
-    if (!noBonElement || !totalTebusElement) {
-        console.error('Elemen tidak ditemukan untuk barang dengan no_bon: ' + noBon);
-        return;
+    function payWithMidtrans(noBon) {
+        const noBonElement = document.getElementById("no-bon-" + noBon);
+        const totalTebusElement = document.getElementById("total-tebus-" + noBon);
+
+        if (!noBonElement || !totalTebusElement) {
+            console.error('Elemen tidak ditemukan untuk barang dengan no_bon: ' + noBon);
+            return;
+        }
+
+        const amount = totalTebusElement.value;
+
+        fetch('/nasabah/process-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                no_bon: noBon,
+                payment_method: 'bank_transfer',
+                amount: amount
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.snap_token) {
+                latestSnapToken = data.snap_token; // Simpan snap_token untuk nanti
+
+                snap.pay(data.snap_token, {
+                    onSuccess: function(result) {
+                        swal.fire({
+                            icon: 'success',
+                            title: 'Pembayaran Berhasil',
+                            text: 'Pembayaran Anda telah berhasil diproses.',
+                        });
+                        window.location.href = '/nasabah/dashboard';
+                    },
+                    onPending: function(result) {
+                        swal.fire({
+                            icon: 'info',
+                            title: 'Pembayaran Pending',
+                            text: 'Pembayaran Anda sedang diproses.',
+                        });
+                    },
+                    onError: function(result) {
+                        swal.fire({
+                            icon: 'error',
+                            title: 'Pembayaran Gagal',
+                            text: 'Terjadi kesalahan saat memproses pembayaran.',
+                        });
+                    },
+                    onClose: function() {
+                        swal.fire({
+                            icon: 'warning',
+                            title: 'Apakah Anda yakin ingin membatalkan pembayaran?',
+                            text: 'Jika Anda lanjut, transaksi akan dibatalkan.',
+                            showCancelButton: true,
+                            confirmButtonText: 'Ya, batalkan',
+                            cancelButtonText: 'Tidak, lanjutkan pembayaran'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                fetch('/nasabah/cancel-payment', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    },
+                                    body: JSON.stringify({
+                                        order_id: data.order_id
+                                    })
+                                })
+                                .then(res => res.json())
+                                .then(cancelResp => {
+                                    swal.fire({
+                                        icon: 'info',
+                                        title: 'Pembayaran Dibatalkan',
+                                        text: 'Pembayaran Anda telah dibatalkan.',
+                                    });
+                                });
+                            } else {
+                                // User batal cancel → munculkan tombol lanjut bayar
+                                showContinueButton();
+                            }
+                        });
+                    }
+                });
+            } else {
+                swal.fire({
+                    icon: 'error',
+                    title: 'Pembayaran Gagal',
+                    text: 'Terjadi kesalahan saat memproses pembayaran.',
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat memproses pembayaran.');
+        });
     }
 
-    var amount = totalTebusElement.value;
+    function showContinueButton() {
+        const container = document.getElementById('continue-payment-container');
+        container.innerHTML = `
+            <button onclick="resumeSnap()" class="bg-blue-500 text-white px-4 py-2 rounded">
+                Lanjutkan Pembayaran
+            </button>
+        `;
+    }
 
-    fetch('/nasabah/process-payment', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({
-            no_bon: noBon,
-            payment_method: 'bank_transfer',
-            amount: amount
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.snap_token) {
-            snap.pay(data.snap_token, {
+    function resumeSnap() {
+        if (latestSnapToken) {
+            snap.pay(latestSnapToken, {
                 onSuccess: function(result) {
                     swal.fire({
                         icon: 'success',
                         title: 'Pembayaran Berhasil',
                         text: 'Pembayaran Anda telah berhasil diproses.',
                     });
-
-                    console.log(result);
-                    // bisa redirect ke halaman sukses
                     window.location.href = '/nasabah/dashboard';
                 },
                 onPending: function(result) {
@@ -108,8 +183,6 @@ function payWithMidtrans(noBon) {
                         title: 'Pembayaran Pending',
                         text: 'Pembayaran Anda sedang diproses.',
                     });
-
-                    console.log(result);
                 },
                 onError: function(result) {
                     swal.fire({
@@ -117,50 +190,15 @@ function payWithMidtrans(noBon) {
                         title: 'Pembayaran Gagal',
                         text: 'Terjadi kesalahan saat memproses pembayaran.',
                     });
-                    console.log(result);
                 },
                 onClose: function() {
-                    swal.fire({
-                        icon: 'warning',
-                        title: 'Pembayaran Dibatalkan',
-                        text: 'Anda menutup popup pembayaran tanpa menyelesaikannya.',
-                    });
-                    // alert("Anda menutup popup pembayaran tanpa menyelesaikannya.");
-
-                    fetch('/nasabah/cancel-payment', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            order_id: data.order_id
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(cancelResp => {
-                        console.log('Status updated to cancelled:', cancelResp);
-                    })
-                    .catch(err => {
-                        console.error('Gagal update status cancel:', err);
-                    });
+                    // Bisa ulangi proses validasi lagi kalau mau
+                    showContinueButton();
                 }
-
             });
-        } else {
-            swal.fire({
-                icon: 'error',
-                title: 'Pembayaran Gagal',
-                text: 'Terjadi kesalahan saat memproses pembayaran.',
-            });
-            
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan saat memproses pembayaran.');
-    });
-}
+    }
+
 
 
     document.getElementById('confirmTebusBtn').addEventListener('click', function() {
