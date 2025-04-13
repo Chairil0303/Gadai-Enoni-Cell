@@ -40,7 +40,8 @@ class Nasabah extends Model
 
     public function barangGadai()
     {
-        return $this->hasMany(BarangGadai::class, 'id_nasabah', 'id_nasabah');
+        return $this->hasMany(BarangGadai::class, 'id_nasabah', 'id_nasabah')
+                    ->where('status', 'tergadai');
     }
 
     public function hitungBunga()
@@ -57,6 +58,8 @@ class Nasabah extends Model
         $this->save();
     }
 
-    
+
+
+
 
 }

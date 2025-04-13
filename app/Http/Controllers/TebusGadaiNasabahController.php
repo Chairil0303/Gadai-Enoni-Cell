@@ -14,7 +14,9 @@ class TebusGadaiNasabahController extends Controller
 {
     public function cari(Request $request)
     {
-        $query = BarangGadai::query();
+        // $query = BarangGadai::query();
+        $query = BarangGadai::where('status', 'tergadai');
+
 
         if ($request->has('no_bon')) {
             $query->where('no_bon', $request->input('no_bon'));
@@ -89,6 +91,7 @@ public function konfirmasi($no_bon)
 
     $barangGadai = BarangGadai::where('no_bon', $no_bon)
         ->where('id_nasabah', $nasabah->id_nasabah)
+        ->where('status', 'tergadai')
         ->with('nasabah')
         ->first();
 
@@ -103,10 +106,19 @@ public function konfirmasi($no_bon)
     if (!$barangGadai) {
         abort(404, 'Barang gadai tidak ditemukan atau tidak cocok dengan akun nasabah.');
     }
+    // Hitung Bunga Berdasarkan Tenor
+    if ($barangGadai->tenor == 7) {
+        $bungaPersen = 5;
+    } elseif ($barangGadai->tenor == 14) {
+        $bungaPersen = 10;
+    } elseif ($barangGadai->tenor == 30) {
+        $bungaPersen = 15;
+    } else {
+        $bungaPersen = 0; // Kalau tenor tidak sesuai
+    }
 
+    $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
     // Hitung bunga, denda, dll
-    $bungaPersen = 1;
-    $bunga = ($barangGadai->harga_gadai * $bungaPersen) / 100;
     $denda = $barangGadai->telat > 0 ? ($barangGadai->telat * 5000) : 0;
     $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
 
@@ -114,32 +126,6 @@ public function konfirmasi($no_bon)
 }
 
 
-// ke 1
-    // public function konfirmasi($no_bon)
-    // {
-    //     // dd("Masuk ke halaman konfirmasi untuk no bon: $no_bon");
-    //     $userId = auth()->id();
-
-    //     $barangGadai = BarangGadai::where('no_bon', $no_bon)
-    //     ->where('id_nasabah', $userId)
-    //     ->with('nasabah')
-    //     ->first();
-
-
-    //         // dd([
-    //         //     'userId' => $userId,
-    //         //     'no_bon' => $no_bon,
-    //         //     'barangGadai' => $barangGadai,
-    //         // ]);
-
-    //     // Hitung bunga, denda, dll
-    //     $bungaPersen = 1; // contoh, sesuaikan
-    //     $bunga = ($barangGadai->harga_gadai * $bungaPersen) / 100;
-    //     $denda = $barangGadai->telat > 0 ? ($barangGadai->telat * 5000) : 0;
-    //     $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
-
-    //     return view('nasabah.konfirmasi', compact('barangGadai','nasabah'));
-    // }
 
 
     public function processPayment(Request $request)

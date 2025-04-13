@@ -21,9 +21,7 @@
     </div>
 
     @foreach ($barangGadai as $barang)
-    @if ($barang->status !== 'Tergadai')
-    @continue
-    @endif
+   
     <div class="bg-white shadow-lg rounded-lg p-6 transform hover:scale-105 transition-transform duration-300">
         <input type="hidden" id="created-at-{{ $barang->id }}" value="{{ $barang->created_at }}">
         <input type="hidden" id="tempo-{{ $barang->id }}" value="{{ $barang->tempo }}">

@@ -49,6 +49,7 @@ class NasabahController extends Controller
     public function myProfile()
     {
         $nasabah = Nasabah::where('id_users', auth()->user()->id_users)->firstOrFail();
+        
         return view('components.dashboard.nasabah', compact('nasabah'));
 
 
