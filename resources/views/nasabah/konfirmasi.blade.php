@@ -42,7 +42,7 @@
         <input type="hidden" id="no-bon-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->no_bon }}">
         <input type="hidden" id="total-tebus-{{ $barangGadai->no_bon }}" value="{{ $totalTebus }}">
         <input type="hidden" id="denda-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->denda }}">
-        <button onclick="payWithMidtrans('{{ $barangGadai->no_bon }}')" class="bg-green-500 text-white px-4 py-2 rounded">
+        <button id="confirmTebusBtn"  class="bg-green-500 text-white px-4 py-2 rounded">
             Tebus Sekarang
         </button>
         <button onclick="window.location.href='{{ route('profile') }}'" class="btn btn-danger">Cancel</button>
@@ -132,8 +132,8 @@ function payWithMidtrans(noBon) {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Submit form jika konfirmasi
-                document.getElementById('tebusForm').submit();
+                // Jika pengguna mengkonfirmasi, panggil fungsi untuk memproses pembayaran
+                payWithMidtrans(document.getElementById('no-bon-{{ $barangGadai->no_bon }}').value);
             }
         });
     });
