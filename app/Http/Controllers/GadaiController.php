@@ -85,6 +85,7 @@ public function store(Request $request)
     $barangGadai = BarangGadai::create([
         'no_bon' => $request->no_bon,
         'id_nasabah' => $nasabah->id_nasabah,
+        'id_cabang' => auth()->user()->id_cabang,
         'nama_barang' => $request->nama_barang,
         'deskripsi' => $request->deskripsi,
         'imei' => $request->imei,
@@ -93,7 +94,7 @@ public function store(Request $request)
         'tempo' => now()->addDays($tenor),
         'harga_gadai' => $request->harga_gadai,
         'id_kategori' => $request->id_kategori,
-        'id_user' => auth()->user()->id_users,
+        // 'id_user' => auth()->user()->id_users,
     ]);
 
     // Simpan Data Transaksi Gadai

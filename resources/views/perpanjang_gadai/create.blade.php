@@ -10,9 +10,9 @@
         </div>
     @endif
 
-    
 
-    
+
+
     <form action="{{ route('perpanjang_gadai.konfirmasi') }}" method="POST">
     @csrf
 
@@ -55,7 +55,7 @@
                         <input type="hidden" name="harga_gadai" id="harga_gadai">
                     </div>
                 </div>
-            
+
                 <!-- Tombol Lanjut -->
                 <div class="pt-4">
                     <button type="submit"

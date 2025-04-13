@@ -117,10 +117,10 @@ class PerpanjangGadaiController extends Controller
             30 => 0.15,
             default => 0,
         };
-        $bunga_baru = $request->harga_gadai * $bunga_persen;
+        $bunga_baru = $lama->harga_gadai + $request->harga_penambahan * $bunga_persen;
 
         $total_lama = $lama->harga_gadai + $lama->bunga + $denda_lama;
-        $total_baru = $request->harga_gadai + $bunga_baru;
+        $total_baru = $request->harga_gadai + $lama->harga_gadai + $bunga_baru;
         $total_tagihan = $total_lama + $total_baru;
 
 
@@ -129,7 +129,7 @@ class PerpanjangGadaiController extends Controller
         $baru = [
         'no_bon' => $request->no_bon_baru,
         'tenor' => $request->tenor,
-        'harga_gadai' => $request->harga_gadai,
+        'harga_gadai' => $request->harga_penambahan+ $lama->harga_gadai ,
         'bunga' => $bunga_baru,
         'tempo' => $tempo_baru->format('Y-m-d'),
     ];
