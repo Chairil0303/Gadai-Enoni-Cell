@@ -167,9 +167,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
 
 });
-Route::post('/midtrans/webhook', [NasabahPaymentController::class, 'handleNotificationTEST']);
+// Route::post('/midtrans/webhook', [NasabahPaymentController::class, 'handleNotificationTEST']);
 
 Route::post('/nasabah/process-payment', [NasabahPaymentController::class, 'processPaymentJson']);
-Route::post('/nasabah/payment-notification', [NasabahPaymentController::class, 'handleNotificationTEST']);
+// Route::post('/nasabah/payment-notification', [NasabahPaymentController::class, 'handleNotificationTEST']);
 
 require __DIR__.'/auth.php';

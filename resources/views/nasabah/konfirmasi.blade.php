@@ -95,6 +95,7 @@ function payWithMidtrans(noBon) {
                     alert("Pembayaran berhasil!");
                     console.log(result);
                     // bisa redirect ke halaman sukses
+                    window.location.href = '/nasabah/dashboard';
                 },
                 onPending: function(result) {
                     alert("Pembayaran sedang diproses.");
