@@ -109,92 +109,107 @@ class NasabahPaymentController extends Controller
 
 
         // pemisah
-        public function processPaymentJson(request $request)
-    {
-        $noBon = $request->no_bon;
-        $userId = auth()->user()->id_users;
-        $nasabah = Nasabah::where('id_user', $userId)->first();
+        public function processPaymentJson(Request $request)
+        {
+            $noBon = $request->no_bon;
+            $userId = auth()->user()->id_users;
+            $nasabah = Nasabah::where('id_user', $userId)->first();
 
-        if (!$nasabah) {
-            return response()->json(['message' => 'Nasabah tidak ditemukan'], 404);
-        }
+            if (!$nasabah) {
+                return response()->json(['message' => 'Nasabah tidak ditemukan'], 404);
+            }
 
-        $barangGadai = BarangGadai::where('no_bon', $noBon)
-            ->where('id_nasabah', $nasabah->id_nasabah)
-            ->with('nasabah')
-            ->first();
+            $barangGadai = BarangGadai::where('no_bon', $noBon)
+                ->where('id_nasabah', $nasabah->id_nasabah)
+                ->with('nasabah')
+                ->first();
 
-        if (!$barangGadai) {
-            return response()->json(['message' => 'Barang tidak ditemukan'], 404);
-        }
+            if (!$barangGadai) {
+                return response()->json(['message' => 'Barang tidak ditemukan'], 404);
+            }
 
-        // Hitung Denda
-        $telat = max($barangGadai->telat, 0);
-        $denda = ($barangGadai->harga_gadai * 0.01) * $telat;
+            // Cek apakah barang sudah ditebus
+            if ($barangGadai->status === 'Ditebus') {
+                return response()->json(['message' => 'Barang ini sudah ditebus sebelumnya.'], 403);
+            }
 
-        // Hitung Bunga
-        $tenor = $barangGadai->tenor;
-        $bungaPersen = match ($tenor) {
-            7 => 5,
-            14 => 10,
-            30 => 15,
-            default => 0,
-        };
-        $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+            // Cek apakah sudah ada transaksi pending untuk no_bon ini
+            $pendingExists = PendingPayment::where('no_bon', $noBon)
+                ->where('status', 'pending')
+                ->exists();
 
-        $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
+            if ($pendingExists) {
+                return response()->json(['message' => 'Masih ada transaksi pembayaran yang belum selesai untuk barang ini.'], 403);
+            }
 
-        // Midtrans config
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = config('midtrans.is_production');
-        Config::$isSanitized = config('midtrans.is_sanitized');
-        Config::$is3ds = config('midtrans.is_3ds');
+            // Hitung Denda
+            $telat = max($barangGadai->telat, 0);
+            $denda = ($barangGadai->harga_gadai * 0.01) * $telat;
 
-        $orderId = $barangGadai->no_bon . '-' . time(); // Tanpa disimpan ke DB
+            // Hitung Bunga
+            $tenor = $barangGadai->tenor;
+            $bungaPersen = match ($tenor) {
+                7 => 5,
+                14 => 10,
+                30 => 15,
+                default => 0,
+            };
+            $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
 
-        $params = [
-            'transaction_details' => [
+            $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
+
+            // Midtrans config
+            Config::$serverKey = config('midtrans.server_key');
+            Config::$isProduction = config('midtrans.is_production');
+            Config::$isSanitized = config('midtrans.is_sanitized');
+            Config::$is3ds = config('midtrans.is_3ds');
+
+            $orderId = $barangGadai->no_bon . '-' . time();
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $orderId,
+                    'gross_amount' => (int) $totalTebus,
+                ],
+                'customer_details' => [
+                    'first_name' => $barangGadai->nasabah->nama,
+                    'phone' => $barangGadai->nasabah->telepon,
+                ],
+            ];
+
+            $snapToken = Snap::getSnapToken($params);
+
+            PendingPayment::create([
                 'order_id' => $orderId,
-                'gross_amount' => (int) $totalTebus,
-            ],
-            'customer_details' => [
-                'first_name' => $barangGadai->nasabah->nama,
-                'phone' => $barangGadai->nasabah->telepon,
-            ],
-        ];
+                'no_bon' => $barangGadai->no_bon,
+                'id_nasabah' => $nasabah->id_nasabah,
+                'id_cabang' => optional($nasabah->user->cabang)->id_cabang,
+                'jumlah_pembayaran' => (int) $totalTebus,
+                'status' => 'pending',
+            ]);
 
-        $snapToken = Snap::getSnapToken($params);
-        PendingPayment::create([
-            'order_id' => $orderId,
-            'no_bon' => $barangGadai->no_bon,
-            'id_nasabah' => $nasabah->id_nasabah,
-            'id_cabang' => optional($nasabah->user->cabang)->id_cabang,
-            'jumlah_pembayaran' => (int) $totalTebus,
-            'status' => 'pending',
-        ]);
+            return response()->json([
+                'snap_token' => $snapToken,
+                'total_tebus' => $totalTebus,
+                'order_id' => $orderId,
+                'detail' => [
+                    'harga_gadai' => $barangGadai->harga_gadai,
+                    'bunga' => $bunga,
+                    'denda' => $denda,
+                    'telat' => $telat,
+                    'tenor' => $tenor,
+                    'nama_nasabah' => $barangGadai->nasabah->nama,
+                    'telepon' => $barangGadai->nasabah->telepon,
+                ]
+            ]);
+        }
 
 
-        return response()->json([
-            'snap_token' => $snapToken,
-            'total_tebus' => $totalTebus,
-            'order_id' => $orderId,
-            'detail' => [
-                'harga_gadai' => $barangGadai->harga_gadai,
-                'bunga' => $bunga,
-                'denda' => $denda,
-                'telat' => $telat,
-                'tenor' => $tenor,
-                'nama_nasabah' => $barangGadai->nasabah->nama,
-                'telepon' => $barangGadai->nasabah->telepon,
-            ]
-        ]);
-    }
 
 // ini belum ada pending payment
 public function handleNotificationJson(Request $request)
 {
     $data = $request->all();
-
     $transaction = $data['transaction_status'];
     $orderId = $data['order_id'];
     $grossAmount = $data['gross_amount'] ?? 0;
@@ -207,19 +222,24 @@ public function handleNotificationJson(Request $request)
         return response()->json(['message' => 'Barang tidak ditemukan'], 404);
     }
 
+    // Cek status transaksi dan update status pembayaran sesuai dengan kondisi
+    $pending = PendingPayment::where('order_id', $orderId)->first();
+
+    if (!$pending) {
+        return response()->json(['message' => 'Transaksi tidak valid atau tidak ditemukan di pending payments.']);
+    }
+
+    // Proses jika transaksi berhasil (settlement atau capture)
     if (in_array($transaction, ['settlement', 'capture'])) {
         $barang->status = 'Ditebus';
         $barang->save();
 
-        $pending = PendingPayment::where('order_id', $orderId)->first();
-        if (!$pending || $pending->status === 'paid') {
-            return response()->json(['message' => 'Transaksi tidak valid atau sudah diproses.']);
-        }
-
-        $id_cabang = optional($barang->nasabah->user->cabang)->id_cabang;
-
+        // Update status pending payment menjadi 'paid'
         $pending->status = 'paid';
-    //         $pending->save();
+        $pending->save();
+
+        // Buat transaksi tebus baru
+        $id_cabang = optional($barang->nasabah->user->cabang)->id_cabang;
 
         TransaksiTebus::create([
             'no_bon' => $barang->no_bon,
@@ -227,7 +247,7 @@ public function handleNotificationJson(Request $request)
             'id_nasabah' => $barang->id_nasabah,
             'tanggal_tebus' => Carbon::now(),
             'jumlah_pembayaran' => (int) $grossAmount,
-            'status' => 'Berhasil',
+            'status' => 'Berhasil', // Status transaksi tebus
         ]);
 
         // Kirim notifikasi WhatsApp ke nasabah
@@ -250,8 +270,26 @@ public function handleNotificationJson(Request $request)
         }
     }
 
+    // Proses jika transaksi expired
+    if ($transaction === 'expire') {
+        $pending->status = 'expired';
+        $pending->save();
+    }
+
+    // Proses jika transaksi dibatalkan
+    if ($transaction === 'cancel') {
+        $pending->status = 'cancelled';
+        $pending->save();
+    }
+
+    // Proses jika transaksi masih dalam status pending
+    if ($transaction === 'pending') {
+        // Tidak perlu melakukan apa-apa karena sudah berstatus pending
+    }
+
     return response()->json(['message' => 'Notifikasi diproses.', 'wa_notif' => $responseWA ?? 'Tidak ada WA']);
 }
+
 
 // pake pending payment
     // public function handleNotificationJson(Request $request)
