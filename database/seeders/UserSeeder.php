@@ -51,7 +51,7 @@ class UserSeeder extends Seeder
                 'username' => 'nasabah1',
                 'password' => Hash::make('password'),
                 'role' => 'Nasabah',
-                'id_cabang' => null,
+                'id_cabang' => 1,
             ],
             [
                 'nama' => 'Nasabah Dua',
@@ -59,8 +59,16 @@ class UserSeeder extends Seeder
                 'username' => 'nasabah2',
                 'password' => Hash::make('password'),
                 'role' => 'Nasabah',
-                'id_cabang' => null,
+                'id_cabang' => 2,
             ],
+            [
+                'nama' => 'Nasabah Tiga',
+                'email' => 'nasabah3@example.com',
+                'username' => 'nasabah3',
+                'password' => Hash::make('password'),
+                'role' => 'Nasabah',
+                'id_cabang' => 3,
+            ]
         ]);
     }
 }

@@ -23,13 +23,14 @@ class BarangGadaiSeeder extends Seeder
         // Ambil ID dari Nasabah Satu dan Nasabah Dua dari tabel nasabah
         $nasabah1 = DB::table('nasabah')->where('nama', 'Nasabah Satu')->value('id_nasabah');
         $nasabah2 = DB::table('nasabah')->where('nama', 'Nasabah Dua')->value('id_nasabah');
+        $nasabah3 = DB::table('nasabah')->where('nama', 'nasabah Tiga')->value('id_nasabah');
 
         // Data barang gadai dengan perhitungan bunga otomatis berdasarkan tenor
         $barangGadaiData = [
             [
                 'no_bon' => 'BON001',
                 'id_nasabah' => $nasabah1,
-                'id_user' => $adminA,
+                'id_cabang' => 1,
                 'nama_barang' => 'Laptop Asus ROG',
                 'deskripsi' => 'high-end.',
                 'imei' => '123456789012345',
@@ -45,7 +46,7 @@ class BarangGadaiSeeder extends Seeder
             [
                 'no_bon' => 'BON002',
                 'id_nasabah' => $nasabah2,
-                'id_user' => $adminA,
+                'id_user' => 2,
                 'nama_barang' => 'Samsung Galaxy J2',
                 'deskripsi' => 'RAM 8GB, dan memori internal 128GB.',
                 'imei' => '987654321098765',
@@ -60,8 +61,8 @@ class BarangGadaiSeeder extends Seeder
             ],
             [
                 'no_bon' => 'BON003',
-                'id_nasabah' => $nasabah2,
-                'id_user' => $adminB,
+                'id_nasabah' => $nasabah3,
+                'id_user' => 3,
                 'nama_barang' => 'Samsung Galaxy J3',
                 'deskripsi' => 'RAM 8GB, dan memori internal 128GB.',
                 'imei' => '987654321098765',

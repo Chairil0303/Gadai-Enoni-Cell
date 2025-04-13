@@ -38,6 +38,7 @@ class PerpanjangGadaiController extends Controller
         // Buat bon baru
         BarangGadai::create([
             'no_bon' => $request->no_bon_baru,
+            'no_bon_lama' => $lama->no_bon,
             'id_nasabah' => $lama->id_nasabah,
             'nama_barang' => $lama->nama_barang,
             'deskripsi' => $lama->deskripsi,

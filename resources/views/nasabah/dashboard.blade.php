@@ -2,31 +2,6 @@
 
 @section('content')
 
-    <!-- Sidebar -->
-    <!-- <aside class="w-1/4 pr-8 border-r border-gray-300">
-        <h2 class="text-xl font-bold mb-6">User Profile</h2>
-        <nav class="space-y-4">
-            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
-                <i class="fas fa-user mr-2"></i> User info
-            </a>
-            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
-                <i class="fas fa-heart mr-2"></i> Favorites
-            </a>
-            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
-                <i class="fas fa-list mr-2"></i> Watchlist
-            </a>
-            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
-                <i class="fas fa-cog mr-2"></i> Setting
-            </a>
-            <a href="#" class="flex items-center text-gray-600 hover:text-orange-500">
-                <i class="fas fa-bell mr-2"></i> Notifications
-            </a>
-            <a href="#" class="flex items-center text-red-500 mt-6">
-                <i class="fas fa-sign-out-alt mr-2"></i> Log out
-            </a>
-        </nav>
-    </aside> -->
-
 
 
     <!-- Form Profile -->
@@ -46,6 +21,9 @@
     </div>
 
     @foreach ($barangGadai as $barang)
+    @if ($barang->status !== 'Tergadai')
+    @continue
+    @endif
     <div class="bg-white shadow-lg rounded-lg p-6 transform hover:scale-105 transition-transform duration-300">
         <input type="hidden" id="created-at-{{ $barang->id }}" value="{{ $barang->created_at }}">
         <input type="hidden" id="tempo-{{ $barang->id }}" value="{{ $barang->tempo }}">
