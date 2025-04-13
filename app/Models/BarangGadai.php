@@ -16,6 +16,7 @@
         protected $fillable = [
             'no_bon',
             'id_nasabah',
+            'id_cabang',
             'nama_barang',
             'deskripsi',
             'tempo', 'tenor',
@@ -118,5 +119,9 @@
         public function perpanjangan()
         {
             return $this->hasMany(PerpanjanganGadai::class, 'no_bon', 'no_bon');
+        }
+        public function cabang()
+        {
+            return $this->belongsTo(Cabang::class, 'id_cabang', 'id_cabang');
         }
     }

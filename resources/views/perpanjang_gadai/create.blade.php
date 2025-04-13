@@ -47,8 +47,13 @@
                 <!-- Harga Gadai Baru -->
                 <div class="mb-4">
                     <label for="harga_gadai" class="block text-sm font-medium text-gray-700">Harga Gadai Baru</label>
-                    <input type="number" name="harga_gadai" id="harga_gadai" step="0.01" required
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-green-300">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-700">Rp</span>
+                        <input type="text" name="harga_gadai_display" id="harga_gadai_display"
+                            class="pl-10 mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-green-300"
+                            placeholder="0" required>
+                        <input type="hidden" name="harga_gadai" id="harga_gadai">
+                    </div>
                 </div>
             
                 <!-- Tombol Lanjut -->
@@ -66,4 +71,26 @@
 </form>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const displayInput = document.getElementById('harga_gadai_display');
+    const hiddenInput = document.getElementById('harga_gadai');
+
+    function formatRupiah(angka) {
+        return angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function cleanNumber(angka) {
+        return angka.replace(/\./g, '');
+    }
+
+    displayInput.addEventListener('input', function () {
+        let clean = cleanNumber(this.value.replace(/[^0-9]/g, ''));
+        this.value = formatRupiah(clean);
+        hiddenInput.value = clean;
+    });
+});
+</script>
+
 @endsection
