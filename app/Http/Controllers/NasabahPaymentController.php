@@ -256,6 +256,8 @@ public function handleNotificationJson(Request $request)
 
         $message = "*📦 Transaksi Tebus Berhasil!*\n\n" .
             "🆔 No BON: {$barang->no_bon}\n" .
+            "🏷 Nama Barang: {$barang->nama_barang}\n" .
+            "🏦 Cabang: {$barang->nasabah->user->cabang->nama_cabang}\n" .
             "🏷 Barang: {$barang->nama_barang}\n" .
             "🏦 Cabang: {$barang->nasabah->user->cabang->nama_cabang}\n" .
             "👤 Nama: {$nasabah->nama}\n" .
