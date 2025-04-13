@@ -291,135 +291,23 @@ public function handleNotificationJson(Request $request)
 }
 
 
-// pake pending payment
-    // public function handleNotificationJson(Request $request)
-    // {
-    //     // \Log::info('Webhook masuk:', $request->all());
-    //     $data = $request->all();
+public function cancelPayment(Request $request)
+{
+    $orderId = $request->order_id;
 
-    //     $transaction = $data['transaction_status'];
-    //     $orderId = $data['order_id'];
-    //     $grossAmount = $data['gross_amount'] ?? 0;
+    $pending = PendingPayment::where('order_id', $orderId)
+        ->where('status', 'pending')
+        ->first();
 
-    //     $noBon = explode('-', $orderId)[0];
+    if (!$pending) {
+        return response()->json(['message' => 'Data tidak ditemukan atau status bukan pending'], 404);
+    }
 
-    //     $barang = BarangGadai::with('nasabah.user.cabang')->where('no_bon', $noBon)->first();
+    $pending->status = 'cancelled';
+    $pending->save();
 
-    //     if (!$barang) {
-    //         return response()->json(['message' => 'Barang tidak ditemukan'], 404);
-    //     }
-
-    //     $pending = PendingPayment::where('order_id', $orderId)->first();
-
-    //     if (!$pending) {
-    //         return response()->json(['message' => 'Data pending tidak ditemukan']);
-    //     }
-
-    //     // Cek jika status sudah diproses sebelumnya
-    //     if (in_array($pending->status, ['paid', 'cancelled', 'expired'])) {
-    //         return response()->json(['message' => 'Transaksi sudah diproses sebelumnya.']);
-    //     }
-
-    //     $responseWA = null;
-
-    //     if (in_array($transaction, ['settlement', 'capture'])) {
-    //         // Update status barang
-    //         $barang->status = 'Ditebus';
-    //         $barang->save();
-
-    //         // Update status pending jadi paid
-    //         $pending->status = 'paid';
-    //         $pending->save();
-
-    //         // Simpan transaksi tebus
-    //         TransaksiTebus::create([
-    //             'no_bon' => $barang->no_bon,
-    //             'id_cabang' => optional($barang->nasabah->user->cabang)->id_cabang,
-    //             'id_nasabah' => $barang->id_nasabah,
-    //             'tanggal_tebus' => Carbon::now(),
-    //             'jumlah_pembayaran' => (int) $grossAmount,
-    //             'status' => 'Berhasil',
-    //         ]);
-
-    //         // Kirim notifikasi ke WA
-    //         $nasabah = $barang->nasabah;
-    //         $noHp = preg_replace('/^0/', '62', $nasabah->telepon);
-
-    //         $message = "*📦 Transaksi Tebus Berhasil!*\n\n" .
-    //             "🆔 No BON: {$barang->no_bon}\n" .
-    //             "👤 Nama: {$nasabah->nama}\n" .
-    //             "💰 Jumlah: Rp " . number_format($grossAmount, 0, ',', '.') . "\n" .
-    //             "📅 Tanggal: " . now()->format('d-m-Y') . "\n\n" .
-    //             "Terima kasih telah menebus barang Anda di *Pegadaian Kami* 🙏";
-
-    //         $responseWA = WhatsappHelper::send($noHp, $message);
-
-    //     } elseif (in_array($transaction, ['cancel', 'deny'])) {
-    //         $pending->status = 'cancelled';
-    //         $pending->save();
-    //     } elseif ($transaction === 'expire') {
-    //         $pending->status = 'expired';
-    //         $pending->save();
-    //     } else {
-    //         $pending->status = 'pending'; // fallback jika status tak dikenali
-    //         $pending->save();
-    //     }
-
-    //     return response()->json([
-    //         'message' => "Status transaksi: {$transaction}",
-    //         'wa_notif' => $responseWA
-    //     ]);
-    // }
-
-
-
-
-
-
-
-
-
-
-
-
-    // Handle notification dari Midtrans (untuk konfirmasi pembayaran)
-    // public function handleNotification(Request $request)
-    // {
-    //     $serverKey = config('midtrans.server_key');
-    //     $signatureKey = hash('sha512', $request->order_id.$request->status_code.$request->gross_amount.$serverKey);
-
-    //     if ($signatureKey !== $request->signature_key) {
-    //         return response()->json(['error' => 'Invalid signature'], 403);
-    //     }
-
-    //     if ($request->transaction_status == 'settlement') {
-    //         // Cek apakah transaksi sudah ada di database
-    //         $transaksi = TransaksiTebus::where('order_id', $request->order_id)->first();
-
-    //         if (!$transaksi) {
-    //             // Ambil barang berdasarkan no_bon dari order_id
-    //             $barang = BarangGadai::where('no_bon', str_replace('Tebus-', '', $request->order_id))->first();
-
-    //             if ($barang) {
-    //                 // Simpan transaksi tebus
-    //                 TransaksiTebus::create([
-    //                     'no_bon' => $barang->no_bon,
-    //                     'id_user' => $barang->id_nasabah,
-    //                     'id_nasabah' => $barang->id_nasabah,
-    //                     'tanggal_tebus' => Carbon::now(),
-    //                     'jumlah_pembayaran' => $request->gross_amount,
-    //                     'status' => 'Berhasil',
-    //                 ]);
-
-    //                 // Update status barang jadi "Ditebus"
-    //                 $barang->status = 'Ditebus';
-    //                 $barang->save();
-    //             }
-    //         }
-    //     }
-
-    //     return response()->json(['success' => true]);
-    // }
+    return response()->json(['message' => 'Status pembayaran diubah menjadi cancelled.']);
+}
 
     public function getPaymentJsonByBon($noBon)
     {
@@ -464,8 +352,6 @@ public function handleNotificationJson(Request $request)
             'payment_method' => 'snap',
         ]);
     }
-
-
 
 
 

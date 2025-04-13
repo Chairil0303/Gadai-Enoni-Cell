@@ -170,6 +170,6 @@ Route::middleware(['auth'])->group(function () {
 // Route::post('/midtrans/webhook', [NasabahPaymentController::class, 'handleNotificationTEST']);
 
 Route::post('/nasabah/process-payment', [NasabahPaymentController::class, 'processPaymentJson']);
-// Route::post('/nasabah/payment-notification', [NasabahPaymentController::class, 'handleNotificationTEST']);
+Route::post('/nasabah/cancel-payment', [NasabahPaymentController::class, 'cancelPayment']);
 
 require __DIR__.'/auth.php';

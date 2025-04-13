@@ -92,25 +92,68 @@ function payWithMidtrans(noBon) {
         if (data.snap_token) {
             snap.pay(data.snap_token, {
                 onSuccess: function(result) {
-                    alert("Pembayaran berhasil!");
+                    swal.fire({
+                        icon: 'success',
+                        title: 'Pembayaran Berhasil',
+                        text: 'Pembayaran Anda telah berhasil diproses.',
+                    });
+
                     console.log(result);
                     // bisa redirect ke halaman sukses
                     window.location.href = '/nasabah/dashboard';
                 },
                 onPending: function(result) {
-                    alert("Pembayaran sedang diproses.");
+                    swal.fire({
+                        icon: 'info',
+                        title: 'Pembayaran Pending',
+                        text: 'Pembayaran Anda sedang diproses.',
+                    });
+
                     console.log(result);
                 },
                 onError: function(result) {
-                    alert("Pembayaran gagal.");
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Pembayaran Gagal',
+                        text: 'Terjadi kesalahan saat memproses pembayaran.',
+                    });
                     console.log(result);
                 },
                 onClose: function() {
-                    alert("Anda menutup popup pembayaran tanpa menyelesaikannya.");
+                    swal.fire({
+                        icon: 'warning',
+                        title: 'Pembayaran Dibatalkan',
+                        text: 'Anda menutup popup pembayaran tanpa menyelesaikannya.',
+                    });
+                    // alert("Anda menutup popup pembayaran tanpa menyelesaikannya.");
+
+                    fetch('/nasabah/cancel-payment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            order_id: data.order_id
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(cancelResp => {
+                        console.log('Status updated to cancelled:', cancelResp);
+                    })
+                    .catch(err => {
+                        console.error('Gagal update status cancel:', err);
+                    });
                 }
+
             });
         } else {
-            alert('Terjadi kesalahan: Snap token tidak ditemukan.');
+            swal.fire({
+                icon: 'error',
+                title: 'Pembayaran Gagal',
+                text: 'Terjadi kesalahan saat memproses pembayaran.',
+            });
+            
         }
     })
     .catch(error => {
