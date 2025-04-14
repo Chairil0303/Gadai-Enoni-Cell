@@ -87,11 +87,13 @@ Route::middleware(['auth'])->group(function () {
 
     // perpanjang gadai
     Route::get('/perpanjang-gadai/create', [PerpanjangGadaiController::class, 'create'])->name('perpanjang_gadai.create');
-    Route::post('/perpanjang-gadai/konfirmasi', [PerpanjangGadaiController::class, 'konfirmasi'])->name('perpanjang_gadai.konfirmasi');
-    Route::post('/perpanjang-gadai/store', [PerpanjangGadaiController::class, 'store'])->name('perpanjang_gadai.store');
+    Route::post('/perpanjang-gadai/submit', [PerpanjangGadaiController::class, 'submitForm'])->name('perpanjang_gadai.submit'); // <- proses form
+    Route::get('/perpanjang-gadai/konfirmasi', [PerpanjangGadaiController::class, 'konfirmasi'])->name('perpanjang_gadai.konfirmasi'); // <- tampil konfirmasi
+    Route::post('/perpanjang-gadai/store', [PerpanjangGadaiController::class, 'store'])->name('perpanjang_gadai.store'); // <- simpan akhir
     Route::get('/perpanjang-gadai/index', function () {
         return redirect('/barang_gadai');
     })->name('perpanjang_gadai.index');
+
 
 
 

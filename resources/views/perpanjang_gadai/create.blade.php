@@ -15,7 +15,7 @@
     </div>
     @endif
 
-    <form action="{{ route('perpanjang_gadai.konfirmasi') }}" method="POST">
+    <form action="{{ route('perpanjang_gadai.submit') }}" method="POST">
         @csrf
 
         <div class="row">

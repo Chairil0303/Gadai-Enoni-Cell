@@ -69,6 +69,8 @@
 
             <form action="{{ route('perpanjang_gadai.store') }}" method="POST" class="mt-3">
                 @csrf
+                <input type="hidden" name="harga_gadai" value="{{ $baru['harga_gadai'] }}">
+                <input type="hidden" name="bunga" value="{{ $bunga_baru }}">
                 <input type="hidden" name="no_bon_lama" value="{{ $lama->no_bon }}">
                 <input type="hidden" name="no_bon_baru" value="{{ $no_bon_baru }}">
                 <input type="hidden" name="tenor" value="{{ $tenor }}">

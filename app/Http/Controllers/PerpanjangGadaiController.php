@@ -68,13 +68,25 @@ class PerpanjangGadaiController extends Controller
         return redirect()->route('barang_gadai.index')->with('success', 'Perpanjangan berhasil disimpan.');
     }
 
-    
 
 
-    public function konfirmasi(Request $request)
-    {
 
-        // perpanjang gadai tanpa penambahan dan pengurangan harga gadai
+    public function konfirmasi()
+{
+    $data = session('konfirmasi_data');
+
+    if (!$data) {
+        return redirect()->route('perpanjang_gadai.create')->with('error', 'Data tidak ditemukan. Silakan isi ulang formulir.');
+    }
+
+    return view('perpanjang_gadai.detail', $data); // tampilkan view konfirmasi
+}
+
+
+
+    public function submitForm(Request $request)
+{
+     // perpanjang gadai tanpa penambahan dan pengurangan harga gadai
         // perpanjangan gadai dengan penambahan
         // perpanjangan gadai dengan pengurangan
         $request->validate([
@@ -181,7 +193,7 @@ class PerpanjangGadaiController extends Controller
         ];
 
         // Kirim data ke view konfirmasi
-        return view('perpanjang_gadai.detail', [
+        $data=[
             'lama' => $lama,
             'nasabah' => $nasabah,
             'no_bon_baru' => $request->no_bon_baru,
@@ -189,7 +201,7 @@ class PerpanjangGadaiController extends Controller
             'jenis_perpanjangan' => $request->jenis_perpanjangan,
             'penambahan' => $request->penambahan,
             'pengurangan' => $request->pengurangan,
-            'nominal' => $request->nominal,
+            'nominal' => $nominal,
             'bunga_lama' => $bunga_lama,
             'bunga_baru' => $bunga_baru,
             'total_lama' => $total_lama,
@@ -199,8 +211,14 @@ class PerpanjangGadaiController extends Controller
             'baru' => $baru,
             'denda' => $denda,
             'catatan' => $catatan,
-        ]);
-    }
+        ];
+
+        session(['konfirmasi_data' => $data]);
+    // Redirect GET
+    return redirect()->route('perpanjang_gadai.konfirmasi');
+}
+
+
 
 
 
