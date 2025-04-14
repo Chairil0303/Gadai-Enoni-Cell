@@ -46,7 +46,7 @@
             <p><strong>Tenor:</strong> {{ $lama->tenor }} hari</p>
             <p><strong>Tempo:</strong> {{ $lama->tempo }}</p>
             <p><strong>Harga Gadai:</strong> Rp {{ number_format($lama->harga_gadai, 0, ',', '.') }}</p>
-            <p><strong>Bunga:</strong> Rp {{ number_format($lama->bunga, 0, ',', '.') }}</p>
+            <p><strong>Bunga:</strong> Rp {{ number_format($bunga_lama, 0, ',', '.') }}</p>
             <p><strong>Denda Keterlambatan:</strong> Rp {{ number_format($denda_lama, 0, ',', '.') }}</p>
             <hr class="my-2">
             <p><strong>Total Bon Lama:</strong> Rp {{ number_format($total_lama, 0, ',', '.') }}</p>

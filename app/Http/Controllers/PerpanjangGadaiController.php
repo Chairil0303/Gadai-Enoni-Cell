@@ -109,19 +109,36 @@ class PerpanjangGadaiController extends Controller
         // Hitung Denda Keterlambatan
         $denda_lama = ($lama->harga_gadai * 0.01) * $lama->telat;
 
-
-        // Hitung bunga
-        $bunga_persen = match ((int) $request->tenor) {
+        // Hitung bunga dari bon lama (berdasarkan tenor lama)
+        $bunga_persen_lama = match ((int) $lama->tenor) {
             7 => 0.05,
             14 => 0.10,
             30 => 0.15,
             default => 0,
         };
-        $bunga_baru = $lama->harga_gadai + $request->harga_penambahan * $bunga_persen;
+        $bunga_lama = $lama->harga_gadai * $bunga_persen_lama;
 
-        $total_lama = $lama->harga_gadai + $lama->bunga + $denda_lama;
-        $total_baru = $request->harga_gadai + $lama->harga_gadai + $bunga_baru;
+        // Hitung bunga baru
+        $bunga_persen_baru = match ((int) $request->tenor) {
+            7 => 0.05,
+            14 => 0.10,
+            30 => 0.15,
+            default => 0,
+        };
+
+        // $bunga_baru = $lama->harga_gadai + $request->harga_penambahan * $bunga_persen;
+        // $total_lama = $lama->harga_gadai + $lama->bunga + $denda_lama;
+        // $total_baru = $request->harga_gadai + $lama->harga_gadai + $bunga_baru;
+        // $total_tagihan = $total_lama + $total_baru;
+
+        $total_gadai_baru = $lama->harga_gadai + $request->harga_penambahan;
+        $bunga_baru = $total_gadai_baru * $bunga_persen_baru;
+
+        // Hitung total
+        $total_lama = $lama->harga_gadai + $bunga_lama + $denda_lama;
+        $total_baru = $total_gadai_baru + $bunga_baru;
         $total_tagihan = $total_lama + $total_baru;
+
 
 
         $tempo_baru = Carbon::parse($lama->tempo)->addDays((int) $request->tenor);
@@ -129,7 +146,7 @@ class PerpanjangGadaiController extends Controller
         $baru = [
         'no_bon' => $request->no_bon_baru,
         'tenor' => $request->tenor,
-        'harga_gadai' => $request->harga_penambahan+ $lama->harga_gadai ,
+        'harga_gadai' => $total_gadai_baru ,
         'bunga' => $bunga_baru,
         'tempo' => $tempo_baru->format('Y-m-d'),
     ];
@@ -142,6 +159,7 @@ class PerpanjangGadaiController extends Controller
             'tenor' => $request->tenor,
             'harga_gadai' => $request->harga_gadai,
             'bunga_baru' => $bunga_baru,
+            'bunga_lama' => $bunga_lama,
             'total_lama' => $total_lama,
             'total_baru' => $total_baru,
             'total_tagihan' => $total_tagihan,

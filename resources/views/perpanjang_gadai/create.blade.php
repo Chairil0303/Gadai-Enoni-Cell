@@ -51,7 +51,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-700">Rp</span>
                         <input type="text" name="harga_gadai_display" id="harga_gadai_display"
                             class="pl-10 mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-green-300"
-                            placeholder="0" required>
+                            placeholder="0">
                         <input type="hidden" name="harga_gadai" id="harga_gadai">
                     </div>
                 </div>
