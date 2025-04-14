@@ -114,8 +114,15 @@ class PerpanjangGadaiController extends Controller
             $nominal = $request->pengurangan ?? 0; // Pengurangan harga gadai
         }
 
+        // Tambahkan logika untuk menghitung denda
+        $denda = 0;
+        if ($lama->telat > 0) {
+            // Misalnya denda dihitung 1% per hari keterlambatan
+            $denda = $lama->harga_gadai * 0.01 * $lama->telat;
+        }
+
         // Bunga baru berdasarkan tenor baru
-        $bunga_persen_baru = match ($request->tenor) {
+        $bunga_persen_baru = match (intval($request->tenor)) {
             7 => 0.05,
             14 => 0.10,
             30 => 0.15,
@@ -186,6 +193,7 @@ class PerpanjangGadaiController extends Controller
             'total_tagihan' => $total_tagihan,
             'denda_lama' => $denda_lama,
             'baru' => $baru,
+            'denda' => $denda,
             'catatan' => $catatan,
         ]);
     }

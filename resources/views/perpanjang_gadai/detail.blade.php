@@ -51,20 +51,18 @@
     {{-- Ringkasan dan Tombol --}}
     <div class="card">
         <div class="card-body">
-            <!-- <p><strong>Jenis Perpanjangan:</strong> 
-                @if ($jenis_perpanjangan === 'tanpa_perubahan')
-                    Tanpa Perubahan Harga
-                @elseif ($jenis_perpanjangan === 'penambahan')
-                    Penambahan Harga (Rp{{ number_format($nominal, 0, ',', '.') }})
-                @else
-                    Pengurangan Harga (Rp{{ number_format($nominal, 0, ',', '.') }})
-                @endif
-            </p> -->
-            <p><strong>Jenis Perpanjangan:</strong> {{ $catatan }}</p>
+            <p> {{ $catatan }}</p>
 
-            <h5>Total yang Harus Dibayar: 
-                <span class="text-primary fw-bold">Rp{{ number_format($total_tagihan, 0, ',', '.') }}</span>
-            </h5>
+            <h5>Total yang Harus Dibayar:</h5>
+            
+            <p><strong>Bunga Bon Lama:</strong> Rp{{ number_format($bunga_lama, 0, ',', '.') }}</p>
+            
+            @if($denda > 0)
+                <p><strong>Denda (jika ada):</strong> Rp{{ number_format($denda, 0, ',', '.') }}</p>
+            @endif
+
+            <h5>Tagihan Bon Baru:</h5>
+            <p><strong>Total Tagihan Bon Baru:</strong> Rp{{ number_format($total_baru, 0, ',', '.') }}</p>
 
             <form action="{{ route('perpanjang_gadai.store') }}" method="POST">
                 @csrf
@@ -79,5 +77,7 @@
             </form>
         </div>
     </div>
+
+
 </div>
 @endsection
