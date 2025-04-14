@@ -69,7 +69,8 @@
             $hariIni = Carbon::today();
 
             // Jika tempo sudah lewat, hitung keterlambatan. Jika belum, telat = 0.
-            return $hariIni->greaterThan($tempo) ? $hariIni->diffInDays($tempo) : 0;
+            return abs($hariIni->diffInDays($tempo, false)? $hariIni->diffInDays($tempo) : 0); // Pastikan nggak negatif
+
         }
 
         public function getDendaAttribute()

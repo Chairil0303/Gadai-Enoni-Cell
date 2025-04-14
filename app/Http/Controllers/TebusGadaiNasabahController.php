@@ -95,13 +95,6 @@ public function konfirmasi($no_bon)
         ->with('nasabah')
         ->first();
 
-    // Optional debug
-    // dd([
-    //     'userId' => $userId,
-    //     'id_nasabah' => $nasabah->id_nasabah,
-    //     'no_bon' => $no_bon,
-    //     'barangGadai' => $barangGadai,
-    // ]);
 
     if (!$barangGadai) {
         abort(404, 'Barang gadai tidak ditemukan atau tidak cocok dengan akun nasabah.');

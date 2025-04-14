@@ -67,8 +67,8 @@ class NasabahPaymentController extends Controller
             }
 
             // Hitung Denda
-            $telat = max($barangGadai->telat, 0);
-            $denda = ($barangGadai->harga_gadai * 0.01) * $telat;
+            $telat = ($barangGadai->telat);
+
 
             // Hitung Bunga
             $tenor = $barangGadai->tenor;
@@ -79,7 +79,7 @@ class NasabahPaymentController extends Controller
                 default => 0,
             };
             $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
-
+            $denda = $barangGadai->telat > 0 ? ($barangGadai->telat * 5000) : 0;
             $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
 
             // Midtrans config
