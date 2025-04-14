@@ -94,6 +94,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('perpanjang_gadai.index');
 
 
+
     Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
         Route::get('/dashboard/nasabah', function () {
             return view('components.dashboard.nasabah');

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;use App\Models\BarangGadai;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -39,7 +38,6 @@ class PerpanjangGadaiController extends Controller
         // Buat bon baru
         BarangGadai::create([
             'no_bon' => $request->no_bon_baru,
-            'no_bon_lama' => $lama->no_bon,
             'id_nasabah' => $lama->id_nasabah,
             'nama_barang' => $lama->nama_barang,
             'deskripsi' => $lama->deskripsi,
@@ -69,6 +67,8 @@ class PerpanjangGadaiController extends Controller
 
         return redirect()->route('barang_gadai.index')->with('success', 'Perpanjangan berhasil disimpan.');
     }
+
+    
 
 
     public function konfirmasi(Request $request)
@@ -205,6 +205,17 @@ class PerpanjangGadaiController extends Controller
 
 
 
+    private function hitungBunga($hargaGadai, $tenor)
+    {
+        $persen = match ($tenor) {
+            7 => 5,
+            14 => 10,
+            30 => 15,
+            default => 0,
+        };
+
+        return ($hargaGadai * $persen) / 100;
+    }
 
 
 
