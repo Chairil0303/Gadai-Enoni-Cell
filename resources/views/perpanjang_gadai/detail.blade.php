@@ -1,97 +1,83 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto bg-white py-1 px-6 rounded-xl shadow-md text-sm">
+<div class="container">
+    <h4 class="mb-4">Konfirmasi Perpanjangan Gadai</h4>
 
-    <!-- Header -->
-    <div class="text-center mb-3">
-        <h2 class="text-2xl font-semibold text-gray-800">Konfirmasi Perpanjangan Gadai</h2>
+    {{-- Detail Nasabah --}}
+    <div class="card mb-4">
+        <div class="card-header">Detail Nasabah</div>
+        <div class="card-body">
+            <p><strong>ID Nasabah:</strong> {{ $nasabah->id_nasabah }}</p>
+            <p><strong>Nama:</strong> {{ $nasabah->nama }}</p>
+            <p><strong>Alamat:</strong> {{ $nasabah->alamat }}</p>
+            <p><strong>No. HP:</strong> {{ $nasabah->no_hp }}</p>
+        </div>
     </div>
 
-    <!-- 3 Kolom: Nasabah, Bon Lama, Bon Baru -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Modal Pop-up -->
-        <div id="modalDetail" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden">
-            <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
-                <!-- Close Button -->
-                <button onclick="document.getElementById('modalDetail').classList.add('hidden')" class="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-lg">
-                    &times;
-                </button>
-                <h3 class="text-xl font-semibold text-gray-700 mb-4">Informasi Barang Gadai</h3>
-                <p><strong>Nama Barang:</strong> {{ $lama->nama_barang }}</p>
-                <p><strong>Deskripsi:</strong> {{ $lama->deskripsi ?? '-' }}</p>
-                <p><strong>IMEI:</strong> {{ $lama->imei }}</p>
-                <p><strong>Status:</strong> {{ $lama->status }}</p>
-                {{-- Jika kamu ingin tampilkan kategori, pastikan relasi ke model kategori sudah dibuat --}}
-                @if($lama->kategori)
-                    <p><strong>Kategori:</strong> {{ $lama->kategori->nama_kategori }}</p>
-                @endif
+    <div class="row">
+        {{-- Bon Lama --}}
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">Bon Lama</div>
+                <div class="card-body">
+                    <p><strong>No Bon:</strong> {{ $lama->no_bon }}</p>
+                    <p><strong>Nama Barang:</strong> {{ $lama->nama_barang }}</p>
+                    <p><strong>Deskripsi:</strong> {{ $lama->deskripsi }}</p>
+                    <p><strong>Harga Gadai:</strong> Rp{{ number_format($lama->harga_gadai, 0, ',', '.') }}</p>
+                    <p><strong>Bunga:</strong> Rp{{ number_format($bunga_lama, 0, ',', '.') }}</p>
+                    <p><strong>Denda Telat:</strong> Rp{{ number_format($denda_lama, 0, ',', '.') }}</p>
+                    <p><strong>Total Tagihan Lama:</strong> <span class="text-danger fw-bold">Rp{{ number_format($total_lama, 0, ',', '.') }}</span></p>
+                </div>
             </div>
         </div>
 
-
-        <!-- Informasi Nasabah -->
-        <div class="bg-gray-50 p-4 rounded-lg border">
-            <h3 class="text-lg font-semibold text-gray-700 mb-2">Informasi Nasabah</h3>
-            <p><strong>Nama:</strong> {{ $nasabah->nama }}</p>
-            <p><strong>NIK:</strong> {{ $nasabah->nik }}</p>
-            <p><strong>Alamat:</strong> {{ $nasabah->alamat }}</p>
-            <p><strong>Telepon:</strong> {{ $nasabah->telepon }}</p>
+        {{-- Bon Baru --}}
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">Bon Baru</div>
+                <div class="card-body">
+                    <p><strong>No Bon Baru:</strong> {{ $no_bon_baru }}</p>
+                    <p><strong>Tenor:</strong> {{ $tenor }} hari</p>
+                    <p><strong>Harga Gadai Baru:</strong> Rp{{ number_format($baru['harga_gadai'], 0, ',', '.') }}</p>
+                    <p><strong>Bunga Baru:</strong> Rp{{ number_format($bunga_baru, 0, ',', '.') }}</p>
+                    <p><strong>Jatuh Tempo Baru:</strong> {{ $baru['tempo'] }}</p>
+                    <p><strong>Total Bon Baru:</strong> <span class="text-success fw-bold">Rp{{ number_format($total_baru, 0, ',', '.') }}</span></p>
+                </div>
+            </div>
         </div>
-
-        <!-- Bon Lama -->
-        <div class="bg-gray-50 p-4 rounded-lg border relative">
-            <h3 class="text-lg font-semibold text-gray-700 mb-2">Detail Bon Lama</h3>
-            <p><strong>No BON:</strong> {{ $lama->no_bon }}</p>
-            <p><strong>Tenor:</strong> {{ $lama->tenor }} hari</p>
-            <p><strong>Tempo:</strong> {{ $lama->tempo }}</p>
-            <p><strong>Harga Gadai:</strong> Rp {{ number_format($lama->harga_gadai, 0, ',', '.') }}</p>
-            <p><strong>Bunga:</strong> Rp {{ number_format($bunga_lama, 0, ',', '.') }}</p>
-            <p><strong>Denda Keterlambatan:</strong> Rp {{ number_format($denda_lama, 0, ',', '.') }}</p>
-            <hr class="my-2">
-            <p><strong>Total Bon Lama:</strong> Rp {{ number_format($total_lama, 0, ',', '.') }}</p>
-            <!-- Tombol Detail -->
-            <button onclick="document.getElementById('modalDetail').classList.remove('hidden')"
-                class="bg-success hover:bg-blue-600 text-white px-4 py-1 rounded text-sm">
-                Detail Barang
-            </button>
-        </div>
-
-
-        <!-- Bon Baru -->
-        <div class="bg-gray-50 p-4 rounded-lg border">
-            <h3 class="text-lg font-semibold text-gray-700 mb-2">Detail Bon Baru</h3>
-            <p><strong>No BON Baru:</strong> {{ $baru['no_bon'] }}</p>
-            <p><strong>Tenor:</strong> {{ $baru['tenor'] }} hari</p>
-            <p><strong>Harga Gadai:</strong> Rp {{ number_format($baru['harga_gadai'], 0, ',', '.') }}</p>
-            <p><strong>Bunga:</strong> Rp {{ number_format($baru['bunga'], 0, ',', '.') }}</p>
-            <p><strong>Tempo:</strong> {{ $baru['tempo'] }}</p>
-            <hr class="my-2">
-            <p><strong>Total Bon Baru:</strong> Rp {{ number_format($total_baru, 0, ',', '.') }}</p>
-        </div>
-
     </div>
 
-    <!-- Total Keseluruhan -->
-    <div class="mt-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded text-center text-base">
-        <p><strong>Total Tagihan yang Harus Dibayar:</strong> Rp {{ number_format($total_tagihan, 0, ',', '.') }}</p>
-    </div>
+    {{-- Ringkasan dan Tombol --}}
+    <div class="card">
+        <div class="card-body">
+            <!-- <p><strong>Jenis Perpanjangan:</strong> 
+                @if ($jenis_perpanjangan === 'tanpa_perubahan')
+                    Tanpa Perubahan Harga
+                @elseif ($jenis_perpanjangan === 'penambahan')
+                    Penambahan Harga (Rp{{ number_format($nominal, 0, ',', '.') }})
+                @else
+                    Pengurangan Harga (Rp{{ number_format($nominal, 0, ',', '.') }})
+                @endif
+            </p> -->
+            <p><strong>Jenis Perpanjangan:</strong> {{ $catatan }}</p>
 
-    <!-- Form Simpan Final -->
-    <form action="{{ route('perpanjang_gadai.store') }}" method="POST" class="mt-6">
-        @csrf
-        <input type="hidden" name="no_bon_lama" value="{{ $lama->no_bon }}">
-        <input type="hidden" name="no_bon_baru" value="{{ $baru['no_bon'] }}">
-        <input type="hidden" name="tenor" value="{{ $baru['tenor'] }}">
-        <input type="hidden" name="harga_gadai" value="{{ $baru['harga_gadai'] }}">
-        <input type="hidden" name="bunga" value="{{ $baru['bunga'] }}">
+            <h5>Total yang Harus Dibayar: 
+                <span class="text-primary fw-bold">Rp{{ number_format($total_tagihan, 0, ',', '.') }}</span>
+            </h5>
 
-        <div class="flex justify-end gap-4">
-            <a href="{{ route('perpanjang_gadai.create') }}"
-                class="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600">Kembali</a>
-            <button type="submit"
-                class="bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700">Perpanjang Gadai</button>
+            <form action="{{ route('perpanjang_gadai.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="no_bon_lama" value="{{ $lama->no_bon }}">
+                <input type="hidden" name="no_bon_baru" value="{{ $no_bon_baru }}">
+                <input type="hidden" name="tenor" value="{{ $tenor }}">
+                <input type="hidden" name="jenis_perpanjangan" value="{{ $jenis_perpanjangan }}">
+                <input type="hidden" name="nominal" value="{{ $nominal }}">
+
+                <button type="submit" class="btn btn-success">Lanjutkan Perpanjangan</button>
+                <a href="{{ route('perpanjang_gadai.index') }}" class="btn btn-secondary">Batal</a>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
 @endsection

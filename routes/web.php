@@ -89,7 +89,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/perpanjang-gadai/create', [PerpanjangGadaiController::class, 'create'])->name('perpanjang_gadai.create');
     Route::post('/perpanjang-gadai/konfirmasi', [PerpanjangGadaiController::class, 'konfirmasi'])->name('perpanjang_gadai.konfirmasi');
     Route::post('/perpanjang-gadai/store', [PerpanjangGadaiController::class, 'store'])->name('perpanjang_gadai.store');
-
+    Route::get('/perpanjang-gadai/index', function () {
+        return redirect('/barang_gadai');
+    })->name('perpanjang_gadai.index');
 
 
     Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
