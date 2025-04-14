@@ -13,89 +13,69 @@ class PerpanjangGadaiController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'no_bon_lama' => 'required|exists:barang_gadai,no_bon',
-            'no_bon_baru' => 'required|unique:barang_gadai,no_bon',
-            'tenor' => 'required|in:7,14,30',
-            'harga_gadai' => 'required|numeric|min:0',
-            'bunga' => 'required|numeric|min:0',
-        ]);
+{
+    $data = session('konfirmasi_data');
 
-        $lama = BarangGadai::where('no_bon', $request->no_bon_lama)
+    if (!$data) {
+        return redirect()->route('perpanjang_gadai.create')->with('error', 'Data tidak ditemukan. Silakan isi ulang formulir.');
+    }
+
+    $request->validate([
+        'no_bon_lama' => 'required|exists:barang_gadai,no_bon',
+        'no_bon_baru' => 'required|unique:barang_gadai,no_bon',
+    ]);
+
+    $lama = BarangGadai::where('no_bon', $request->no_bon_lama)
         ->where('id_cabang', auth()->user()->id_cabang)
         ->firstOrFail();
 
-        $bunga_persen_lama = match ($lama->tenor) {
-            7 => 0.05,
-            14 => 0.10,
-            30 => 0.15,
-            default => 0,
-        };
-        $bunga_lama = $lama->harga_gadai * $bunga_persen_lama;
-        // Cek status bon lama
-        $denda_lama = ($lama->harga_gadai * 0.01) * $lama->telat;
-        $bunga_lama = $lama->harga_gadai * $bunga_persen_lama;
-        $harga_gadai_baru = $lama->harga_gadai;
-        $bunga_baru = 0;
-        $total_lama = $bunga_lama + $denda_lama; // hanya bunga lama dan denda yang dibayar sekarang
-        $total_baru = 0;
-        $total_tagihan = 0;
-        $catatan = '';
-        $total_baru = $harga_gadai_baru + $bunga_baru;
-        $total_tagihan = $total_lama + $total_baru;
+    // Gunakan data dari session, bukan hitung ulang
+    $harga_gadai_baru = $data['baru']['harga_gadai'];
+    $bunga_baru = $data['baru']['bunga'];
+    $tenor_baru = $data['baru']['tenor'];
+    $tempo_baru = $data['baru']['tempo'];
+    $total_baru = $data['total_baru'];
 
-        $lama = BarangGadai::where('no_bon', $request->no_bon_lama)->firstOrFail();
+    // Update status bon lama
+    $lama->update([
+        'status' => 'diperpanjang',
+    ]);
 
-        // Kalau tempo lama belum lewat, maka tempo_baru = tempo_lama + tenor
-        // Kalau tempo lama sudah lewat, maka tempo_baru = hari ini + tenor
-        $mulai_dari = Carbon::now()->gt(Carbon::parse($lama->tempo))
-            ? Carbon::now()
-            : Carbon::parse($lama->tempo);
+    $user = auth()->user();
 
-        $tempo_baru = $mulai_dari->copy()->addDays((int) $request->tenor);
+    // Buat bon baru
+    BarangGadai::create([
+        'no_bon' => $request->no_bon_baru,
+        'id_nasabah' => $lama->id_nasabah,
+        'nama_barang' => $lama->nama_barang,
+        'deskripsi' => $lama->deskripsi,
+        'imei' => $lama->imei,
+        'tenor' => $tenor_baru,
+        'tempo' => $tempo_baru,
+        'telat' => 0,
+        'harga_gadai' => $harga_gadai_baru, // total_baru = harga_gadai + bunga
+        'bunga' => $bunga_baru,
+        'status' => 'Tergadai',
+        'id_kategori' => $lama->id_kategori,
+        'id_cabang' => $user->id_cabang,
+    ]);
 
+    // Simpan histori perpanjangan
+    \App\Models\PerpanjanganGadai::create([
+        'no_bon_lama' => $request->no_bon_lama,
+        'no_bon_baru' => $request->no_bon_baru,
+        'tenor_baru' => $tenor_baru,
+        'harga_gadai_baru' => $harga_gadai_baru, // sesuai perhitungan submitForm
+        'bunga_baru' => $bunga_baru,
+        'tempo_baru' => $tempo_baru,
+    ]);
 
+    // Bersihkan session agar tidak dobel saat reload
+    session()->forget('konfirmasi_data');
 
-        // Update status bon lama
-        $lama->update([
-            'status' => 'diperpanjang',
-        ]);
+    return redirect()->route('barang_gadai.index')->with('success', );
+}
 
-        $user = auth()->user();
-
-        // Buat bon baru
-        BarangGadai::create([
-            'no_bon' => $request->no_bon_baru,
-            'id_nasabah' => $lama->id_nasabah,
-            'nama_barang' => $lama->nama_barang,
-            'deskripsi' => $lama->deskripsi,
-            'imei' => $lama->imei,
-            'tenor' => $request->tenor,
-            'tempo' => $tempo_baru,
-            'telat' => 0,
-            'harga_gadai' =>$total_baru,
-            'bunga' => $request->bunga,
-            'status' => 'Tergadai',
-            'id_kategori' => $lama->id_kategori,
-            'id_cabang' => $user->id_cabang,
-
-        ]);
-
-        // Simpan ke histori perpanjangan
-        \App\Models\PerpanjanganGadai::create([
-            'no_bon_lama' => $request->no_bon_lama,
-            'no_bon_baru' => $request->no_bon_baru,
-            'tenor_baru' => $request->tenor,
-            'harga_gadai_baru' =>$lama->harga_gadai + $request->harga_gadai,
-            'bunga_baru' => $request->bunga,
-            'tempo_baru' => $tempo_baru,
-            // 'id_cabang' => auth()->user()->id_cabang,
-
-        ]);
-
-        return redirect()->route('barang_gadai.index')->with('success', 'Perpanjangan berhasil disimpan.');
-    }
 
 
 
@@ -257,7 +237,7 @@ class PerpanjangGadaiController extends Controller
 
 
 
-   
+
 
 
 
