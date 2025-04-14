@@ -43,7 +43,12 @@
                 <div class="card-body">
                     <p><strong>No Bon Baru:</strong> {{ $no_bon_baru }}</p>
                     <p><strong>Tenor:</strong> {{ $tenor }} hari</p>
-                    <p><strong>Penambahan:</strong> Rp{{ number_format($nominal, 0, ',', '.') }}</p>
+
+                    @if ($jenis_perpanjangan === 'penambahan')
+                        <p><strong>Harga Penambahan: </strong> Rp{{ number_format($nominal, 0, ',', '.') }}</p>
+                    @elseif ($jenis_perpanjangan === 'pengurangan')
+                        <p><strong>Harga Pengurangan: </strong> Rp{{ number_format($nominal, 0, ',', '.') }}</p>
+                    @endif
                     <p><strong>Harga Gadai Baru:</strong> Rp{{ number_format($baru['harga_gadai'], 0, ',', '.') }}</p>
                     <p><strong>Bunga Baru:</strong> Rp{{ number_format($bunga_baru, 0, ',', '.') }}</p>
                     <p><strong>Jatuh Tempo Baru:</strong> {{ $baru['tempo'] }}</p>
@@ -58,11 +63,11 @@
         <div class="card-body">
             <p>{{ $catatan }}</p>
 
-            <h5>Total yang Harus Dibayar:</h5>
+            <h5>Total yang Harus Dibayar: <span class="text-danger">Rp {{ number_format($bunga_lama + $denda_lama, 0, ',', '.') }}</span></h5>
             <p><strong>Bunga Bon Lama:</strong> Rp{{ number_format($bunga_lama, 0, ',', '.') }}</p>
-
             @if($denda > 0)
-                <p><strong>Denda (jika ada):</strong> Rp{{ number_format($denda, 0, ',', '.') }}</p>
+                <!-- <p><strong>Denda (jika ada):</strong> Rp{{ number_format($denda, 0, ',', '.') }}</p> -->
+                <p><strong>Denda Telat:</strong> Rp{{ number_format($denda_lama, 0, ',', '.') }}</p>
             @endif
 
             <h5>Tagihan Bon Baru:</h5>

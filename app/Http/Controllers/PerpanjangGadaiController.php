@@ -47,8 +47,14 @@ class PerpanjangGadaiController extends Controller
 
         $lama = BarangGadai::where('no_bon', $request->no_bon_lama)->firstOrFail();
 
-        // Hitung tempo baru berdasarkan tenor
-        $tempo_baru = Carbon::parse($lama->tempo)->addDays((int) $request->tenor);
+        // Kalau tempo lama belum lewat, maka tempo_baru = tempo_lama + tenor
+        // Kalau tempo lama sudah lewat, maka tempo_baru = hari ini + tenor
+        $mulai_dari = Carbon::now()->gt(Carbon::parse($lama->tempo))
+            ? Carbon::now()
+            : Carbon::parse($lama->tempo);
+
+        $tempo_baru = $mulai_dari->copy()->addDays((int) $request->tenor);
+
 
 
         // Update status bon lama
@@ -202,7 +208,14 @@ class PerpanjangGadaiController extends Controller
             return redirect()->back()->with('error', 'Tenor tidak valid.');
         }
 
-        $tempo_baru = Carbon::parse($lama->tempo)->addDays($tenor);
+        // Kalau tempo lama belum lewat, maka tempo_baru = tempo_lama + tenor
+        // Kalau tempo lama sudah lewat, maka tempo_baru = hari ini + tenor
+        $mulai_dari = Carbon::now()->gt(Carbon::parse($lama->tempo))
+            ? Carbon::now()
+            : Carbon::parse($lama->tempo);
+
+        $tempo_baru = $mulai_dari->copy()->addDays((int) $request->tenor);
+
 
         // Siapkan data untuk bon baru
         $baru = [
