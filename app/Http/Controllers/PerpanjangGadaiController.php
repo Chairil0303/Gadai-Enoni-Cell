@@ -73,6 +73,10 @@ class PerpanjangGadaiController extends Controller
 
     public function konfirmasi(Request $request)
     {
+
+        // perpanjang gadai tanpa penambahan dan pengurangan harga gadai
+        // perpanjangan gadai dengan penambahan
+        // perpanjangan gadai dengan pengurangan
         $request->validate([
             'no_bon_lama' => 'required|string|exists:barang_gadai,no_bon',
             'no_bon_baru' => 'required|string|unique:barang_gadai,no_bon',
