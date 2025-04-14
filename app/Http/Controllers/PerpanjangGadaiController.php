@@ -22,6 +22,29 @@ class PerpanjangGadaiController extends Controller
             'bunga' => 'required|numeric|min:0',
         ]);
 
+        $lama = BarangGadai::where('no_bon', $request->no_bon_lama)
+        ->where('id_cabang', auth()->user()->id_cabang)
+        ->firstOrFail();
+
+        $bunga_persen_lama = match ($lama->tenor) {
+            7 => 0.05,
+            14 => 0.10,
+            30 => 0.15,
+            default => 0,
+        };
+        $bunga_lama = $lama->harga_gadai * $bunga_persen_lama;
+        // Cek status bon lama
+        $denda_lama = ($lama->harga_gadai * 0.01) * $lama->telat;
+        $bunga_lama = $lama->harga_gadai * $bunga_persen_lama;
+        $harga_gadai_baru = $lama->harga_gadai;
+        $bunga_baru = 0;
+        $total_lama = $bunga_lama + $denda_lama; // hanya bunga lama dan denda yang dibayar sekarang
+        $total_baru = 0;
+        $total_tagihan = 0;
+        $catatan = '';
+        $total_baru = $harga_gadai_baru + $bunga_baru;
+        $total_tagihan = $total_lama + $total_baru;
+
         $lama = BarangGadai::where('no_bon', $request->no_bon_lama)->firstOrFail();
 
         // Hitung tempo baru berdasarkan tenor
@@ -45,7 +68,7 @@ class PerpanjangGadaiController extends Controller
             'tenor' => $request->tenor,
             'tempo' => $tempo_baru,
             'telat' => 0,
-            'harga_gadai' =>$lama->harga_gadai + $request->harga_gadai,
+            'harga_gadai' =>$total_baru,
             'bunga' => $request->bunga,
             'status' => 'Tergadai',
             'id_kategori' => $lama->id_kategori,
@@ -86,9 +109,7 @@ class PerpanjangGadaiController extends Controller
 
     public function submitForm(Request $request)
 {
-     // perpanjang gadai tanpa penambahan dan pengurangan harga gadai
-        // perpanjangan gadai dengan penambahan
-        // perpanjangan gadai dengan pengurangan
+
         $request->validate([
             'no_bon_lama' => 'required|string|exists:barang_gadai,no_bon',
             'no_bon_baru' => 'required|string|unique:barang_gadai,no_bon',
@@ -223,17 +244,7 @@ class PerpanjangGadaiController extends Controller
 
 
 
-    private function hitungBunga($hargaGadai, $tenor)
-    {
-        $persen = match ($tenor) {
-            7 => 5,
-            14 => 10,
-            30 => 15,
-            default => 0,
-        };
-
-        return ($hargaGadai * $persen) / 100;
-    }
+   
 
 
 

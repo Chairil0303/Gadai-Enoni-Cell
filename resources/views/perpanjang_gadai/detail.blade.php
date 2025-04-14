@@ -43,6 +43,7 @@
                 <div class="card-body">
                     <p><strong>No Bon Baru:</strong> {{ $no_bon_baru }}</p>
                     <p><strong>Tenor:</strong> {{ $tenor }} hari</p>
+                    <p><strong>Penambahan:</strong> Rp{{ number_format($nominal, 0, ',', '.') }}</p>
                     <p><strong>Harga Gadai Baru:</strong> Rp{{ number_format($baru['harga_gadai'], 0, ',', '.') }}</p>
                     <p><strong>Bunga Baru:</strong> Rp{{ number_format($bunga_baru, 0, ',', '.') }}</p>
                     <p><strong>Jatuh Tempo Baru:</strong> {{ $baru['tempo'] }}</p>
