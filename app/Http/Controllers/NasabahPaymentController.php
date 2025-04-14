@@ -282,6 +282,20 @@ public function cancelPayment(Request $request)
     }
 
 
+    public function validatePending(Request $request)
+{
+    $orderId = $request->order_id;
+
+    $payment = PendingPayment::where('order_id', $orderId)
+        ->where('user_id', auth()->id())
+        ->where('status', 'pending')
+        ->first();
+
+    return response()->json(['is_pending' => $payment ? true : false]);
+}
+
+
+
 
 
 }

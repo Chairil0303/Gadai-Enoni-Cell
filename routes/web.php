@@ -171,5 +171,6 @@ Route::middleware(['auth'])->group(function () {
 
 Route::post('/nasabah/process-payment', [NasabahPaymentController::class, 'processPaymentJson']);
 Route::post('/nasabah/cancel-payment', [NasabahPaymentController::class, 'cancelPayment']);
+Route::post('/nasabah/validate-pending-payment', [NasabahPaymentController::class, 'validatePending']);
 
 require __DIR__.'/auth.php';
