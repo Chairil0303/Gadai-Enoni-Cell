@@ -70,7 +70,7 @@ let latestSnapToken = null; // Global variable
 
         const amount = totalTebusElement.value;
 
-        fetch('/nasabah/process-payment', {
+        fetch('/nasabah/process-tebus-payment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

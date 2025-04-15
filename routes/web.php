@@ -87,10 +87,10 @@ Route::middleware(['auth'])->group(function () {
     // Perpanjang gadai Nasabah Start
     Route::middleware(['auth'])->prefix('nasabah')->group(function () {
         Route::get('/perpanjang-gadai', [PerpanjangGadaiNasabahController::class, 'Details'])->name('nasabah.perpanjang.details');
-        // Route::get('/cari', [TebusGadaiNasabahController::class, 'cari'])->name('tebus.cari');
-        // Route::get('/konfirmasi/{no_bon}', [TebusGadaiNasabahController::class, 'konfirmasi'])->name('nasabah.konfirmasi');
-        // Route::post('/tebus/{no_bon}', [TebusGadaiNasabahController::class, 'tebus'])->name('tebus.tebus');
-    });
+        // Route::post('/nasabah/process-perpanjang-payment', [NasabahPaymentController::class, 'processPaymentPerpanjangJson']);
+        Route::post('/nasabah/process-perpanjang-payment', [PerpanjangGadaiController::class, 'processPaymentPerpanjangJson']);
+
+   });
     // Perpanjang gadai nasabah End
 
 
@@ -178,7 +178,7 @@ Route::middleware(['auth'])->group(function () {
 });
 // Route::post('/midtrans/webhook', [NasabahPaymentController::class, 'handleNotificationTEST']);
 
-Route::post('/nasabah/process-payment', [NasabahPaymentController::class, 'processPaymentJson']);
+Route::post('/nasabah/process-tebus-payment', [NasabahPaymentController::class, 'processPaymentJson']);
 Route::post('/nasabah/cancel-payment', [NasabahPaymentController::class, 'cancelPayment']);
 Route::post('/nasabah/validate-pending-payment', [NasabahPaymentController::class, 'validatePending']);
 

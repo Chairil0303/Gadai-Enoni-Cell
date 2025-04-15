@@ -96,10 +96,15 @@ Route::post('/nasabah/payment-notification', [NasabahPaymentController::class, '
 
 Route::middleware('auth:sanctum')->get('/nasabah/sample-payment-json/{noBon}', [NasabahPaymentController::class, 'getPaymentJsonByBon']);
 
+
+
 // Route::middleware('auth:sanctum')->get('/nasabah/sample-payment-json', [NasabahPaymentController::class, 'getSamplePaymentJson']);
 
 // Proses pembuatan Snap Token Midtrans
 Route::middleware('auth:sanctum')->post('/nasabah/payment/{no_bon}', [NasabahPaymentController::class, 'processPaymentJson']);
+
+Route::middleware('auth:sanctum')->post('/nasabah/payment/perpanjang/{no_bon}', [NasabahPaymentController::class, 'processPaymentPerpanjangJson']);
+
 
 // Endpoint notifikasi callback dari Midtrans
 Route::post('/midtrans/notification', [NasabahPaymentController::class, 'handleNotificationJson']);

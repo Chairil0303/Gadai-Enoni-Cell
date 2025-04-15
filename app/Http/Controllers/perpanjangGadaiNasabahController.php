@@ -4,6 +4,10 @@ namespace App\Http\Controllers;use App\Models\BarangGadai;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Nasabah;
+use App\Models\TransaksiTebus;
+use Midtrans\Config;
+use Midtrans\Snap;
+use Auth;
 
 class perpanjangGadaiNasabahController extends Controller
 {
@@ -56,4 +60,27 @@ class perpanjangGadaiNasabahController extends Controller
     }
 
 
+
+    public function handleNotification(Request $request)
+    {
+        $serverKey = config('midtrans.server_key');
+        $signatureKey = hash('sha512', $request->order_id.$request->status_code.$request->gross_amount.$serverKey);
+
+        if ($signatureKey !== $request->signature_key) {
+            return response()->json(['error' => 'Invalid signature'], 403);
+        }
+
+        if ($request->transaction_status == 'settlement') {
+            $transaksi = TransaksiTebus::where('order_id', $request->order_id)->first();
+            if ($transaksi) {
+                $barang = BarangGadai::where('no_bon', $transaksi->no_bon)->first();
+                if ($barang) {
+                    $barang->status = 'Ditebus';
+                    $barang->save();
+                }
+            }
+        }
+
+        return response()->json(['success' => true]);
+    }
 }
