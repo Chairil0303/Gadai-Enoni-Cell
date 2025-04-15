@@ -179,14 +179,12 @@ public function handleNotificationJson(Request $request)
         $noHp = preg_replace('/^0/', '62', $nasabah->telepon); // ubah 08xx ke 62xxx
 
         $message = "*📦 Transaksi Tebus Berhasil!*\n\n" .
-            "🆔 No BON: {$barang->no_bon}\n" .
-            "🏷 Nama Barang: {$barang->nama_barang}\n" .
-            "🏦 Cabang: {$barang->nasabah->user->cabang->nama_cabang}\n" .
-            "🏷 Barang: {$barang->nama_barang}\n" .
-            "🏦 Cabang: {$barang->nasabah->user->cabang->nama_cabang}\n" .
-            "👤 Nama: {$nasabah->nama}\n" .
-            "💰 Jumlah: Rp " . number_format($grossAmount, 0, ',', '.') . "\n" .
-            "📅 Tanggal: " . now()->format('d-m-Y') . "\n\n" .
+            "Nama: {$nasabah->nama}\n" .
+            "No BON: {$barang->no_bon}\n" .
+            "Nama Barang: {$barang->nama_barang}\n" .
+            "Cabang: {$barang->nasabah->user->cabang->nama_cabang}\n" .
+            "Jumlah: Rp " . number_format($grossAmount, 0, ',', '.') . "\n" .
+            "Tanggal: " . now()->format('d-m-Y') . "\n\n" .
             "Terima kasih telah menebus barang Anda di *Pegadaian Kami* 🙏";
 
         try {
