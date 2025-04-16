@@ -138,22 +138,17 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('notifikasi', NotifikasiController::class);
 
     // route superadmin
-    Route::middleware(['auth', RoleMiddleware::class . ':superadmin'])->prefix('superadmin')->group(function () {
-        Route::get('/cabang', [CabangController::class, 'index'])->name('superadmin.cabang.index');
-        Route::get('/cabang', [CabangController::class, 'index'])->name('cabang.index');
-        Route::get('/cabang/create', [CabangController::class, 'create'])->name('superadmin.cabang.create');
-        Route::post('/cabang', [CabangController::class, 'store'])->name('superadmin.cabang.store');
-        Route::get('/cabang/{cabang}/edit', [CabangController::class, 'edit'])->name('superadmin.cabang.edit');
-        Route::put('/cabang/{cabang}', [CabangController::class, 'update'])->name('superadmin.cabang.update');
-        Route::delete('/cabang/{cabang}', [CabangController::class, 'destroy'])->name('superadmin.cabang.destroy');
-    });
-    Route::prefix('dashboard/superadmin')->name('superadmin.')->group(function () {
-        Route::get('/cabang', [CabangController::class, 'index'])->name('cabang.index');
-        Route::get('/cabang/create', [CabangController::class, 'create'])->name('cabang.create');
-        Route::post('/cabang', [CabangController::class, 'store'])->name('cabang.store');
-    });
-
-
+    Route::middleware(['auth', RoleMiddleware::class . ':superadmin'])
+        ->prefix('dashboard/superadmin')
+        ->name('superadmin.')
+        ->group(function () {
+            Route::get('/cabang', [CabangController::class, 'index'])->name('cabang.index');
+            Route::get('/cabang/create', [CabangController::class, 'create'])->name('cabang.create');
+            Route::post('/cabang', [CabangController::class, 'store'])->name('cabang.store');
+            Route::get('/cabang/{cabang}/edit', [CabangController::class, 'edit'])->name('cabang.edit');
+            Route::put('/cabang/{cabang}', [CabangController::class, 'update'])->name('cabang.update');
+            Route::delete('/cabang/{cabang}', [CabangController::class, 'destroy'])->name('cabang.destroy');
+        });
 
     // Route untuk profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
