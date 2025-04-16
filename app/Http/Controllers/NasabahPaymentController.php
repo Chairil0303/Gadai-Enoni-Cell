@@ -97,7 +97,7 @@ class NasabahPaymentController extends Controller
 
             if ($paymentType === 'perpanjang') {
                 // Total pembayaran perpanjangan (bunga + denda)
-                $totalBayar = $denda;
+                $totalBayar = $totalPerpanjang;
             } else {
                 // Total pembayaran penebusan (harga_gadai + bunga + denda)
                 $totalBayar = $totalTebus;
