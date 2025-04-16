@@ -136,7 +136,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('barang_gadai', BarangGadaiController::class);
     // Menambahkan route untuk halaman barang_gadai.index
     Route::get('/barang_gadai', [BarangGadaiController::class, 'index'])->name('barang_gadai.index');
-
+    Route::get('barang_gadai/edit',[BarangGadaiController::class,'edit'])->name('barang_gadai.update');
 
     // route untuk view
     Route::resource('nasabah', NasabahController::class);
