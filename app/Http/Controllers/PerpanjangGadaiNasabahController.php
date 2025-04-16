@@ -84,3 +84,5 @@ class perpanjangGadaiNasabahController extends Controller
         return response()->json(['success' => true]);
     }
 }
+
+// perpanjang gadai nasabah

@@ -291,3 +291,5 @@
         });
         </script>
 @endsection
+
+{{-- pepanjang gadai --}}
