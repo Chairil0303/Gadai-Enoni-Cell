@@ -37,29 +37,36 @@
         </tbody>
     </table>
 
-        <!-- Button untuk tebus -->
-    <div class="mt-4 flex justify-end">
-        <input type="hidden" id="no-bon-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->no_bon }}">
-        <input type="hidden" id="total-tebus-{{ $barangGadai->no_bon }}" value="{{ $totalTebus }}">
-        <input type="hidden" id="denda-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->denda }}">
-        <button id="confirmTebusBtn"  class="bg-green-500 text-white px-4 py-2 rounded">
-            Tebus Sekarang
-        </button>
-        <div id="continue-payment-container" ></div>
-        {{-- <div id="continue-payment-container" ></div>
-         --}}
-        <button onclick="window.location.href='{{ route('profile') }}'" class="btn btn-danger">Cancel</button>
-    </div>
+       <!-- Button untuk Tebus -->
+        <div class="mt-4 flex justify-end">
+            <input type="hidden" id="no-bon-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->no_bon }}">
+            <input type="hidden" id="total-tebus-{{ $barangGadai->no_bon }}" value="{{ $totalTebus }}">
+            <input type="hidden" id="denda-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->denda }}">
+
+            <!-- Tombol Tebus -->
+            <button id="confirmTebusBtn" class="bg-green-500 text-white px-4 py-2 rounded">
+                Tebus Sekarang
+            </button>
+
+            <!-- Tombol Perpanjang -->
+            {{-- <button id="confirmPerpanjangBtn" class="bg-yellow-500 text-white px-4 py-2 rounded ml-2">
+                Perpanjang
+            </button> --}}
+
+            <div id="continue-payment-container"></div>
+
+            <button onclick="window.location.href='{{ route('profile') }}'" class="btn btn-danger">Cancel</button>
+        </div>
+
 
 
 <!-- SweetAlert2 Script -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-// script midtrans
-let latestSnapToken = null; // Global variable
+<script>// script midtrans
+    let latestSnapToken = null; // Global variable
 
-    function payWithMidtrans(noBon) {
+    function payWithMidtrans(noBon, paymentType) {
         const noBonElement = document.getElementById("no-bon-" + noBon);
         const totalTebusElement = document.getElementById("total-tebus-" + noBon);
 
@@ -78,7 +85,7 @@ let latestSnapToken = null; // Global variable
             },
             body: JSON.stringify({
                 no_bon: noBon,
-                payment_method: 'bank_transfer',
+                payment_type: paymentType,  // Kirim payment_type yang dipilih
                 amount: amount
             })
         })
@@ -247,34 +254,6 @@ let latestSnapToken = null; // Global variable
         }
     }
 
-    // Cek di page load apakah ada pembayaran pending
-    document.addEventListener('DOMContentLoaded', function () {
-    const stored = localStorage.getItem('pending_payment');
-    const payment = stored ? JSON.parse(stored) : null;
-
-    if (payment && payment.order_id) {
-        fetch('/nasabah/validate-pending-payment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ order_id: payment.order_id })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.is_pending) {
-                showContinueButton();
-            } else {
-                localStorage.removeItem('pending_payment'); // bersihkan jika udah gak valid
-            }
-        });
-    }
-});
-
-
-
-
     document.getElementById('confirmTebusBtn').addEventListener('click', function() {
         Swal.fire({
             title: 'Apakah Anda yakin?',
@@ -288,10 +267,28 @@ let latestSnapToken = null; // Global variable
         }).then((result) => {
             if (result.isConfirmed) {
                 // Jika pengguna mengkonfirmasi, panggil fungsi untuk memproses pembayaran
-                payWithMidtrans(document.getElementById('no-bon-{{ $barangGadai->no_bon }}').value);
+                payWithMidtrans(document.getElementById('no-bon-{{ $barangGadai->no_bon }}').value, 'tebus');
             }
         });
     });
-</script>
+
+    document.getElementById('confirmPerpanjangBtn').addEventListener('click', function() {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Anda akan memperpanjang barang ini!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Perpanjang!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Jika pengguna mengkonfirmasi, panggil fungsi untuk memproses pembayaran perpanjang
+                payWithMidtrans(document.getElementById('no-bon-{{ $barangGadai->no_bon }}').value, 'perpanjang');
+            }
+        });
+    });
+    </script>
 
 @endsection
