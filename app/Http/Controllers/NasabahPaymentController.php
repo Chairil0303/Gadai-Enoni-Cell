@@ -90,14 +90,14 @@ class NasabahPaymentController extends Controller
 
             // Jika jenis pembayaran adalah perpanjang
             $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
-            $denda = $barangGadai->telat > 0 ? ($barangGadai->telat * 5000) : 0;
+            $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
             $totalPerpanjang=  $barangGadai->harga_gadai * ($bungaPersen / 100) +$denda ;
             $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
 
 
             if ($paymentType === 'perpanjang') {
                 // Total pembayaran perpanjangan (bunga + denda)
-                $totalBayar = $totalPerpanjang;
+                $totalBayar = $denda;
             } else {
                 // Total pembayaran penebusan (harga_gadai + bunga + denda)
                 $totalBayar = $totalTebus;
