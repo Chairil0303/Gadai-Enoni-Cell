@@ -21,7 +21,7 @@
     </div>
 
     @foreach ($barangGadai as $barang)
-   
+
     <div class="bg-white shadow-lg rounded-lg p-6 transform hover:scale-105 transition-transform duration-300">
         <input type="hidden" id="created-at-{{ $barang->id }}" value="{{ $barang->created_at }}">
         <input type="hidden" id="tempo-{{ $barang->id }}" value="{{ $barang->tempo }}">
@@ -87,8 +87,12 @@
                         <dd class="mt-2 pt-3 text-base text-gray-600">Lakukan pembayaran untuk menebus barang yang telah digadaikan.</dd>
                     </a>
                     @endforeach
+
+                    @foreach ($barangGadai as $barang)
+
+
                     <!-- Perpanjang Gadai -->
-                    <a href="{{ url('/transaksi_gadai/perpanjang_gadai') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
+                    <a href="{{ route('nasabah.perpanjang.details', $barang->no_bon) }}"class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
                         <dt class="text-base font-semibold text-gray-900 flex items-center space-x-4">
                             <div class="absolute top-4 left-7 flex size-10 items-center justify-center rounded-lg bg-green-600 group-hover:bg-green-700 transition">
                                 <svg class="size-6 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -99,7 +103,7 @@
                         </dt>
                         <dd class="mt-2 pt-3 text-base text-gray-600">Tambahkan jangka waktu untuk gadai barang.</dd>
                     </a>
-
+                    @endforeach
 
                     <!-- Lelangan -->
                     <a href="{{ url('/transaksi_gadai/terima_jual') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">

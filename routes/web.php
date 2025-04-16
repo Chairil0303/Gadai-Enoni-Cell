@@ -16,6 +16,7 @@ use App\Http\Controllers\TebusGadaiController;
 use App\Http\Controllers\TebusGadaiNasabahController;
 use App\Http\Controllers\NasabahPaymentController;
 use App\Http\Controllers\PerpanjangGadaiController;
+use App\Http\Controllers\PerpanjangGadaiNasabahController;
 
 
 
@@ -83,6 +84,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/konfirmasi/{no_bon}', [TebusGadaiNasabahController::class, 'konfirmasi'])->name('nasabah.konfirmasi');
         Route::post('/tebus/{no_bon}', [TebusGadaiNasabahController::class, 'tebus'])->name('tebus.tebus');
     });
+
+    // Perpanjang gadai Nasabah Start
+    Route::middleware(['auth'])->prefix('nasabah')->group(function () {
+        Route::get('/perpanjang-gadai', [PerpanjangGadaiNasabahController::class, 'Details'])->name('nasabah.perpanjang.details');
+        // Route::get('/cari', [TebusGadaiNasabahController::class, 'cari'])->name('tebus.cari');
+        // Route::get('/konfirmasi/{no_bon}', [TebusGadaiNasabahController::class, 'konfirmasi'])->name('nasabah.konfirmasi');
+        // Route::post('/tebus/{no_bon}', [TebusGadaiNasabahController::class, 'tebus'])->name('tebus.tebus');
+    });
+    // Perpanjang gadai nasabah End
 
 
     // perpanjang gadai

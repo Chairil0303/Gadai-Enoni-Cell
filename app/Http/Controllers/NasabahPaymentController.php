@@ -66,21 +66,42 @@ class NasabahPaymentController extends Controller
                 return response()->json(['message' => 'Masih ada transaksi pembayaran yang belum selesai untuk barang ini.'], 403);
             }
 
-            // Hitung Denda
-            $telat = max($barangGadai->telat, 0);
-            $denda = ($barangGadai->harga_gadai * 0.01) * $telat;
+            // Hitung Denda dan Bunga
+            $telat = $barangGadai->telat;
+            $paymentType = $request->input('payment_type', 'tebus'); // default tebus
+            $bungaPersen = 0;
 
-            // Hitung Bunga
+            // Hitung Bunga berdasarkan tenor
             $tenor = $barangGadai->tenor;
-            $bungaPersen = match ($tenor) {
-                7 => 5,
-                14 => 10,
-                30 => 15,
-                default => 0,
-            };
-            $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+            switch ($tenor) {
+                case 7:
+                    $bungaPersen = 5;
+                    break;
+                case 14:
+                    $bungaPersen = 10;
+                    break;
+                case 30:
+                    $bungaPersen = 15;
+                    break;
+                default:
+                    $bungaPersen = 0;
+                    break;
+            }
 
+            // Jika jenis pembayaran adalah perpanjang
+            $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+            $denda = $barangGadai->telat > 0 ? ($barangGadai->telat * 5000) : 0;
+            $totalPerpanjang=  $barangGadai->harga_gadai * ($bungaPersen / 100) +$denda ;
             $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
+
+
+            if ($paymentType === 'perpanjang') {
+                // Total pembayaran perpanjangan (bunga + denda)
+                $totalBayar = $denda;
+            } else {
+                // Total pembayaran penebusan (harga_gadai + bunga + denda)
+                $totalBayar = $totalTebus;
+            }
 
             // Midtrans config
             Config::$serverKey = config('midtrans.server_key');
@@ -90,10 +111,11 @@ class NasabahPaymentController extends Controller
 
             $orderId = $barangGadai->no_bon . '-' . time();
 
+            // Parameter untuk Snap
             $params = [
                 'transaction_details' => [
                     'order_id' => $orderId,
-                    'gross_amount' => (int) $totalTebus,
+                    'gross_amount' => (int) $totalBayar,
                 ],
                 'customer_details' => [
                     'first_name' => $barangGadai->nasabah->nama,
@@ -101,20 +123,22 @@ class NasabahPaymentController extends Controller
                 ],
             ];
 
+            // Mendapatkan Snap Token
             $snapToken = Snap::getSnapToken($params);
 
+            // Simpan data transaksi pending
             PendingPayment::create([
                 'order_id' => $orderId,
                 'no_bon' => $barangGadai->no_bon,
                 'id_nasabah' => $nasabah->id_nasabah,
                 'id_cabang' => optional($nasabah->user->cabang)->id_cabang,
-                'jumlah_pembayaran' => (int) $totalTebus,
+                'jumlah_pembayaran' => (int) $totalBayar,
                 'status' => 'pending',
             ]);
 
             return response()->json([
                 'snap_token' => $snapToken,
-                'total_tebus' => $totalTebus,
+                'total_bayar' => $totalBayar,
                 'order_id' => $orderId,
                 'detail' => [
                     'harga_gadai' => $barangGadai->harga_gadai,
