@@ -93,15 +93,15 @@ Route::middleware(['auth'])->group(function () {
         // Route::post('/nasabah/process-perpanjang-payment', [NasabahPaymentController::class, 'processPaymentPerpanjangJson']);
         Route::post('/nasabah/process-perpanjang-payment', [PerpanjangGadaiController::class, 'processPaymentPerpanjangJson'])->name('nasabah.process-perpanjang-payment');
 
-   });
+    });
     // Perpanjang gadai nasabah End
 
 
     // perpanjang gadai
     Route::get('/perpanjang-gadai/create', [PerpanjangGadaiController::class, 'create'])->name('perpanjang_gadai.create');
-    Route::post('/perpanjang-gadai/konfirmasi', [PerpanjangGadaiController::class, 'konfirmasi'])->name('perpanjang_gadai.konfirmasi');
-    Route::post('/perpanjang-gadai/store', [PerpanjangGadaiController::class, 'store'])->name('perpanjang_gadai.store');
-
+    Route::post('/perpanjang-gadai/submit', [PerpanjangGadaiController::class, 'submitForm'])->name('perpanjang_gadai.submit'); // <- proses form
+    Route::get('/perpanjang-gadai/konfirmasi', [PerpanjangGadaiController::class, 'konfirmasi'])->name('perpanjang_gadai.konfirmasi'); // <- tampil konfirmasi
+    Route::post('/perpanjang-gadai/store', [PerpanjangGadaiController::class, 'store'])->name('perpanjang_gadai.store'); // <- simpan akhir
 
 
     Route::middleware(RoleMiddleware::class . ':Nasabah')->group(function () {
