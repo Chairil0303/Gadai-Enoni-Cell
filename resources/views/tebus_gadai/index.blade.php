@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h2>Cari Barang Gadai</h2>
-    <form action="{{ route('tebus.cari') }}" method="GET">
+    <form action="{{ route('admin.tebus.cari') }}" method="GET">
         @csrf
         <div class="mb-3">
             <label for="search_no_bon" class="form-label">Cari No. Bon</label>

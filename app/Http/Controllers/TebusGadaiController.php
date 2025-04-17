@@ -92,6 +92,7 @@ class TebusGadaiController extends Controller
             'id_user' => auth()->id(),
             'id_nasabah' => $barangGadai->id_nasabah,
             'tanggal_tebus' => Carbon::now(),
+            'id_cabang' => auth()->user()->id_cabang,
             'jumlah_pembayaran' => $totalTebus,
             'status' => 'Berhasil',
         ]);

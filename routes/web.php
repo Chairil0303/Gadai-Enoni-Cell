@@ -75,11 +75,10 @@ Route::middleware(['auth'])->group(function () {
 
         // tebus gadai
     Route::prefix('transaksi_gadai')->group(function () {
-        Route::get('/tebus_gadai', [TebusGadaiController::class, 'index'])->name('tebus.search');
-        Route::get('/tebus_gadai/cari', [TebusGadaiController::class, 'cari'])->name('tebus.cari');
-        Route::post('/tebus_gadai/{noBon}', [TebusGadaiController::class, 'tebus'])->name('tebus.tebus');
+        Route::get('/tebus_gadai', [TebusGadaiController::class, 'index'])->name('admin.tebus.index');
+        Route::get('/tebus_gadai/cari', [TebusGadaiController::class, 'cari'])->name('admin.tebus.cari');
+        Route::post('/tebus_gadai/{noBon}', [TebusGadaiController::class, 'tebus'])->name('admin.tebus.proses');
     });
-
 
       // tebus gadaiNasabah
         Route::middleware(['auth'])->prefix('nasabah')->group(function () {
