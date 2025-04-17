@@ -84,7 +84,7 @@
                 <input type="hidden" name="nominal" value="{{ $nominal }}">
 
                 <button type="submit" class="btn btn-success">Lanjutkan Perpanjangan</button>
-                <a href="{{ route('perpanjang_gadai.index') }}" class="btn btn-secondary">Batal</a>
+                <a href="{{ route('perpanjang_gadai.create') }}" class="btn btn-secondary">Batal</a>
             </form>
         </div>
     </div>
