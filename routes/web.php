@@ -66,8 +66,11 @@ Route::middleware(['auth'])->group(function () {
 
     // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
     Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
-        Route::get('/dashboard', [NasabahController::class, 'show'])->name('profile');
+        Route::get('/dashboard', [NasabahController::class, 'show'])->name('dashboard.nasabah');
     });
+
+    // profil nasabah
+    route::get('/nasabah/profil', [NasabahController::class, 'profil'])->name('nasabah.profil');
 
 
         // tebus gadai

@@ -17,14 +17,16 @@ class NasabahController extends Controller
         return view('nasabah.index', compact('nasabah'));
     }
 
-    // public function myProfile()
-    // {
-    //     $nasabah = Nasabah::with('barangGadai')
-    //         ->where('id_user', auth()->user()->id_users)
-    //         ->firstOrFail();
+    public function Profil()
+    {
+        $nasabah = Nasabah::with('barangGadai')
+            ->where('id_user', auth()->user()->id_users)
+            ->firstOrFail();
 
-    //     return view('components.dashboard_nasabah.show', compact('nasabah'));
-    // }
+        return view('nasabah.show', compact('nasabah'));
+    }
+
+
 
 
     public function show()
@@ -49,7 +51,7 @@ class NasabahController extends Controller
     public function myProfile()
     {
         $nasabah = Nasabah::where('id_users', auth()->user()->id_users)->firstOrFail();
-        
+
         return view('components.dashboard.nasabah', compact('nasabah'));
 
 

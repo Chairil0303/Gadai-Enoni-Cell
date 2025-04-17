@@ -31,6 +31,124 @@ class NasabahPaymentController extends Controller
         Config::$is3ds = true;
     }
 
+    public function processPayment(Request $request)
+    {
+        $noBon = $request->no_bon;
+        $userId = auth()->user()->id_users;
+        $nasabah = Nasabah::where('id_user', $userId)->first();
+
+        if (!$nasabah) {
+            return response()->json(['message' => 'Nasabah tidak ditemukan'], 404);
+        }
+
+        $barangGadai = BarangGadai::where('no_bon', $noBon)
+            ->where('id_nasabah', $nasabah->id_nasabah)
+            ->with('nasabah')
+            ->first();
+
+        if (!$barangGadai) {
+            return response()->json(['message' => 'Barang tidak ditemukan'], 404);
+        }
+
+        // Cek apakah barang sudah ditebus
+        if ($barangGadai->status === 'Ditebus') {
+            return response()->json(['message' => 'Barang ini sudah ditebus sebelumnya.'], 403);
+        }
+
+        // Cek apakah sudah ada transaksi pending untuk no_bon ini
+        $pendingExists = PendingPayment::where('no_bon', $noBon)
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($pendingExists) {
+            return response()->json(['message' => 'Masih ada transaksi pembayaran yang belum selesai untuk barang ini.'], 403);
+        }
+
+        // Hitung Denda dan Bunga
+        $telat = $barangGadai->telat;
+        $paymentType = $request->input('payment_type', 'tebus'); // default tebus
+        $bungaPersen = 0;
+
+        // Hitung Bunga berdasarkan tenor
+        $tenor = $barangGadai->tenor;
+        switch ($tenor) {
+            case 7:
+                $bungaPersen = 5;
+                break;
+            case 14:
+                $bungaPersen = 10;
+                break;
+            case 30:
+                $bungaPersen = 15;
+                break;
+            default:
+                $bungaPersen = 0;
+                break;
+        }
+
+        // Jika jenis pembayaran adalah perpanjang
+        $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+        $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
+        $totalPerpanjang=  $barangGadai->harga_gadai * ($bungaPersen / 100) +$denda ;
+        $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
+
+
+        if ($paymentType === 'perpanjang') {
+            // Total pembayaran perpanjangan (bunga + denda)
+            $totalBayar = $denda;
+        } else {
+            // Total pembayaran penebusan (harga_gadai + bunga + denda)
+            $totalBayar = $totalTebus;
+        };
+
+        // Midtrans config
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = config('midtrans.is_sanitized');
+        Config::$is3ds = config('midtrans.is_3ds');
+
+        $orderId = $barangGadai->no_bon . '-' . time();
+
+        $params = [
+            'transaction_details' => [
+                'order_id' => $orderId,
+                'gross_amount' => (int) $totalTebus,
+            ],
+            'customer_details' => [
+                'first_name' => $barangGadai->nasabah->nama,
+                'phone' => $barangGadai->nasabah->telepon,
+            ],
+        ];
+
+        $snapToken = Snap::getSnapToken($params);
+
+            // Simpan data transaksi pending
+            PendingPayment::create([
+                'order_id' => $orderId,
+                'no_bon' => $barangGadai->no_bon,
+                'id_nasabah' => $nasabah->id_nasabah,
+                'id_cabang' => optional($nasabah->user->cabang)->id_cabang,
+                'jumlah_pembayaran' => (int) $totalBayar,
+                'status' => 'pending',
+            ]);
+
+
+        return response()->json([
+            'snap_token' => $snapToken,
+            'total_tebus' => $totalBayar,
+            'order_id' => $orderId,
+            'detail' => [
+                'harga_gadai' => $barangGadai->harga_gadai,
+                'bunga' => $bunga,
+                'denda' => $denda,
+                'telat' => $telat,
+                'tenor' => $tenor,
+                'nama_nasabah' => $barangGadai->nasabah->nama,
+                'telepon' => $barangGadai->nasabah->telepon,
+            ]
+        ]);
+    }
+
 
         // pemisah
         public function processPaymentJson(Request $request)
@@ -97,7 +215,7 @@ class NasabahPaymentController extends Controller
 
             if ($paymentType === 'perpanjang') {
                 // Total pembayaran perpanjangan (bunga + denda)
-                $totalBayar = $denda;
+                $totalBayar = $totalPerpanjang;
             } else {
                 // Total pembayaran penebusan (harga_gadai + bunga + denda)
                 $totalBayar = $totalTebus;
