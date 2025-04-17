@@ -21,6 +21,7 @@
                     <table class="table table-striped table-hover">
                         <thead class="table-dark">
                             <tr>
+                                <th>Cabang</th>
                                 <th>No Bon</th>
                                 <th>Kategori</th>
                                 <th>Tipe Barang</th>
@@ -40,6 +41,7 @@
                         <tbody>
                             @foreach($barangGadai as $barang)
                             <tr>
+                                <td>{{$barang->cabang->nama_cabang}}</td>
                                 <td>{{ $barang->no_bon }}</td>
                                 <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
                                 <td>{{ $barang->nama_barang }}</td>
@@ -98,5 +100,29 @@
         </div>
     </div>
 </div>
+@if (session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: '{{ session('success') }}',
+        timer: 3000,
+        showConfirmButton: false
+    });
+</script>
+@endif
+
+@if (session('error'))
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops!',
+        text: '{{ session('error') }}',
+        timer: 3000,
+        showConfirmButton: false
+    });
+</script>
+@endif
+
 @endsection
 {{-- index blade barang gadai --}}

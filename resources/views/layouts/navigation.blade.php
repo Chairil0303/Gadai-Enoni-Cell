@@ -40,18 +40,17 @@
                         </button>
 
                         <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden">
-                            {{-- @if (auth()->user()->isNasabah()) --}}
+                            @if (auth()->user()->isAdmin()or auth()->user()->isSuperadmin())
                             <div class="block px-4 py-2 text-gray-800 hover:bg-gray-200" >
                                 {{ strtoupper(auth()->user()->nama) }}
                             </div>
+                            @endif
 
-                            {{-- @endif --}}
-
-                            {{-- @if(auth()->user()->isNasabah())
-                            <a href="{{ route('profile') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
-                                Profile
+                            @if(auth()->user()->isNasabah())
+                            <a href="{{ route('nasabah.profil') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 no-underline">
+                                {{ strtoupper(auth()->user()->nama) }}
                             </a>
-                            @endif --}}
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -38,7 +38,9 @@ class TebusGadaiNasabahController extends Controller
         $nasabah = Nasabah::find($barangGadai->id_nasabah);
 
         // Hitung Denda (1% dari harga gadai dikali hari telat)
-        $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
+        // $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
+        $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
+
 
          // Hitung Bunga Berdasarkan Tenor
         if ($barangGadai->tenor == 7) {
@@ -59,28 +61,6 @@ class TebusGadaiNasabahController extends Controller
         return view('nasabah.konfirmasi', compact('barangGadai', 'nasabah', 'denda', 'totalTebus','bungaPersen','bunga'));
     }
 
-    // public function konfirmasi($no_bon)
-// {
-//  dd("Masuk ke halaman konfirmasi untuk no bon: $no_bon");
-
-
-//     $userId = auth()->user()->id;
-
-//     $barangGadai = BarangGadai::where('no_bon', $no_bon)
-//         ->where('id_nasabah', $userId)
-//         ->with('nasabah')
-//         ->firstOrFail();
-//         dd([
-//             'userId' => $userId,
-//             'no_bon' => $no_bon,
-//             'barangGadai' => $barangGadai,
-//         ]);
-
-
-//     // lanjut render view
-//     return view('nasabah.tebus.konfirmasi', compact('barangGadai', 'bunga', 'bungaPersen', 'denda', 'totalTebus'));
-// }
-
 
 public function konfirmasi($no_bon)
 {
@@ -95,13 +75,6 @@ public function konfirmasi($no_bon)
         ->with('nasabah')
         ->first();
 
-    // Optional debug
-    // dd([
-    //     'userId' => $userId,
-    //     'id_nasabah' => $nasabah->id_nasabah,
-    //     'no_bon' => $no_bon,
-    //     'barangGadai' => $barangGadai,
-    // ]);
 
     if (!$barangGadai) {
         abort(404, 'Barang gadai tidak ditemukan atau tidak cocok dengan akun nasabah.');
@@ -119,7 +92,7 @@ public function konfirmasi($no_bon)
 
     $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
     // Hitung bunga, denda, dll
-    $denda = $barangGadai->telat > 0 ? ($barangGadai->telat * 5000) : 0;
+    $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
     $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
 
     return view('nasabah.konfirmasi', compact('barangGadai', 'bunga', 'bungaPersen', 'denda', 'totalTebus'));

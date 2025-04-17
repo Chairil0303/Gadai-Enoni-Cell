@@ -91,7 +91,7 @@ class BarangGadaiController extends Controller
 
     public function edit(BarangGadai $barangGadai)
     {
-        if ($barangGadai->id_user !== auth()->id()) {
+        if (!auth()->user()->isSuperadmin() && $barangGadai->id_user !== auth()->id()) {
             abort(403, 'Unauthorized action.');
         }
 

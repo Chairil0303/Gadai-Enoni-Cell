@@ -16,6 +16,7 @@ use App\Http\Controllers\TebusGadaiController;
 use App\Http\Controllers\TebusGadaiNasabahController;
 use App\Http\Controllers\NasabahPaymentController;
 use App\Http\Controllers\PerpanjangGadaiController;
+use App\Http\Controllers\PerpanjangGadaiNasabahController;
 
 
 
@@ -65,8 +66,11 @@ Route::middleware(['auth'])->group(function () {
 
     // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
     Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
-        Route::get('/dashboard', [NasabahController::class, 'show'])->name('profile');
+        Route::get('/dashboard', [NasabahController::class, 'show'])->name('dashboard.nasabah');
     });
+
+    // profil nasabah
+    route::get('/nasabah/profil', [NasabahController::class, 'profil'])->name('nasabah.profil');
 
 
         // tebus gadai
@@ -83,6 +87,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/konfirmasi/{no_bon}', [TebusGadaiNasabahController::class, 'konfirmasi'])->name('nasabah.konfirmasi');
         Route::post('/tebus/{no_bon}', [TebusGadaiNasabahController::class, 'tebus'])->name('tebus.tebus');
     });
+    // Perpanjang gadai Nasabah Start
+    Route::middleware(['auth'])->prefix('nasabah')->group(function () {
+        Route::get('/perpanjang-gadai', [PerpanjangGadaiNasabahController::class, 'Details'])->name('nasabah.perpanjang.details');
+        // Route::post('/nasabah/process-perpanjang-payment', [NasabahPaymentController::class, 'processPaymentPerpanjangJson']);
+        Route::post('/nasabah/process-perpanjang-payment', [PerpanjangGadaiController::class, 'processPaymentPerpanjangJson'])->name('nasabah.process-perpanjang-payment');
+
+   });
+    // Perpanjang gadai nasabah End
 
 
     // perpanjang gadai
@@ -127,7 +139,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('barang_gadai', BarangGadaiController::class);
     // Menambahkan route untuk halaman barang_gadai.index
     Route::get('/barang_gadai', [BarangGadaiController::class, 'index'])->name('barang_gadai.index');
-
+    Route::get('barang_gadai/edit',[BarangGadaiController::class,'edit'])->name('barang_gadai.update');
 
     // route untuk view
     Route::resource('nasabah', NasabahController::class);
@@ -164,7 +176,8 @@ Route::middleware(['auth'])->group(function () {
 });
 // Route::post('/midtrans/webhook', [NasabahPaymentController::class, 'handleNotificationTEST']);
 
-Route::post('/nasabah/process-payment', [NasabahPaymentController::class, 'processPaymentJson']);
+Route::post('/nasabah/process-tebus-payment', [NasabahPaymentController::class, 'processPaymentJson']);
 Route::post('/nasabah/cancel-payment', [NasabahPaymentController::class, 'cancelPayment']);
+Route::post('/nasabah/validate-pending-payment', [NasabahPaymentController::class, 'validatePending']);
 
 require __DIR__.'/auth.php';
