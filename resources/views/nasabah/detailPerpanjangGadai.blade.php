@@ -9,7 +9,7 @@
     <!-- Info Nasabah -->
     <div class="mb-4">
         <p><strong>Nama Nasabah:</strong> {{ $nasabah->nama }}</p>
-        <p><strong>No HP:</strong> {{ $nasabah->no_hp }}</p>
+        <p><strong>No HP:</strong> {{ $nasabah->telepon }}</p>
     </div>
 
     <!-- Info Barang Gadai -->

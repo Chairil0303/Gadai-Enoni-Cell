@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\perpanjangGadaiNasabahController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -94,12 +95,15 @@ Route::middleware('auth:sanctum')->get('/nasabah/konfirmasi-json/{no_bon}', [Teb
 Route::post('/nasabah/payment-notification', [NasabahPaymentController::class, 'handleNotification']);
 
 
-Route::middleware('auth:sanctum')->get('/nasabah/sample-payment-json/{noBon}', [NasabahPaymentController::class, 'getPaymentJsonByBon']);
+Route::middleware('auth:sanctum')->get('/nasabah/sample-payment-json/{noBon}', [perpanjangGadaiNasabahController::class, 'getPaymentJsonByBon']);
 
 // Route::middleware('auth:sanctum')->get('/nasabah/sample-payment-json', [NasabahPaymentController::class, 'getSamplePaymentJson']);
 
 // Proses pembuatan Snap Token Midtrans
 Route::middleware('auth:sanctum')->post('/nasabah/payment/{no_bon}', [NasabahPaymentController::class, 'processPayment']);
+
+// Proses pembuatan Snap Token Midtrans untuk perpanjang gadai
+Route::middleware('auth:sanctum')->post('/nasabah/payment-perpanjang/{no_bon}', [perpanjangGadaiNasabahController::class, 'processPayment']);
 
 // Endpoint notifikasi callback dari Midtrans
 Route::post('/midtrans/notification', [NasabahPaymentController::class, 'handleNotificationJson']);

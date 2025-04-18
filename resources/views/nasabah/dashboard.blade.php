@@ -50,10 +50,11 @@
                 </p>
                 {{-- <p><strong>No Bon:</strong> {{ $barang->no_bon }}</p> --}}
                 @if (Str::startsWith($barang->no_bon, 'DM-') || Str::endsWith($barang->no_bon, '-DM'))
-                <p><strong>No Bon:</strong> Sedang menunggu verifikasi admin</p>
-                     @else
-                <p><strong>No Bon:</strong> {{ $barang->no_bon }}</p>
-                    @endif
+                    <p><strong>No Bon:</strong> Sedang menunggu verifikasi admin</p>
+                @else
+                    <p><strong>No Bon:</strong> {{ $barang->no_bon }}</p>
+                @endif
+
                 <p><strong>Barang Gadai :</strong> {{ $barang->nama_barang }}</p>
                 <p class="text-sm text-gray-600">Barang ini akan jatuh Tempo  di Hari {{$barang->tempo_formatted }} </p>
             </div>
@@ -98,7 +99,7 @@
 
 
                     <!-- Perpanjang Gadai -->
-                    <a href="{{ route('nasabah.perpanjang.details', $barang->no_bon) }}"class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
+                    <a href="{{ route('nasabah.perpanjang.details', $barang->no_bon) }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
                         <dt class="text-base font-semibold text-gray-900 flex items-center space-x-4">
                             <div class="absolute top-4 left-7 flex size-10 items-center justify-center rounded-lg bg-green-600 group-hover:bg-green-700 transition">
                                 <svg class="size-6 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

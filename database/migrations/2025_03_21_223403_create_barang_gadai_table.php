@@ -13,7 +13,7 @@ return new class extends Migration
     {
 
     Schema::create('barang_gadai', function (Blueprint $table) {
-    $table->string('no_bon', 10)->primary();  // PRIMARY KEY ganti jadi string
+    $table->string('no_bon', 14)->primary();  // PRIMARY KEY ganti jadi string
     $table->string('no_bon_lama')->nullable();
     $table->unsignedBigInteger('id_nasabah');
     $table->unsignedBigInteger('id_cabang')->nullable();

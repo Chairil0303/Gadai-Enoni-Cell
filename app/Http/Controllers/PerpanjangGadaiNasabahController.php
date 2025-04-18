@@ -13,11 +13,39 @@ use Illuminate\Support\Str;
 
 class perpanjangGadaiNasabahController extends Controller
 {
-    public function details(Request $request)
+    public function details($no_bon)
     {
-        // $query = BarangGadai::query();
+        // Ambil data barang gadai dengan no_bon
+        $barangGadai = BarangGadai::where('status', 'tergadai')
+                                   ->where('no_bon', $no_bon)
+                                   ->first();
+
+        // Cek apakah barang gadai ditemukan
+        if (!$barangGadai) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        }
+
+        // Ambil data nasabah terkait
+        $nasabah = Nasabah::find($barangGadai->id_nasabah);
+
+        // Hitung Denda dan Bunga
+        $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
+        $bungaPersen = ($barangGadai->tenor == 7) ? 5 : (($barangGadai->tenor == 14) ? 10 : (($barangGadai->tenor == 30) ? 15 : 0));
+        $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+        $totalPerpanjang = $barangGadai->harga_gadai + $bunga + $denda;
+
+        // Kirim data ke view
+        return view('nasabah.detailPerpanjangGadai', compact('barangGadai', 'nasabah', 'denda', 'totalPerpanjang', 'bungaPersen', 'bunga'));
+    }
+
+
+    public function konfirmasi(Request $request)
+    {
         $query = BarangGadai::where('status', 'tergadai');
 
+        $tenor = (int)$request->query('tenor');
+        $cicilan = $request->query('cicilan');
+        $type = $request->query('type'); // 'biasa' atau 'cicil'
 
         if ($request->has('no_bon')) {
             $query->where('no_bon', $request->input('no_bon'));
@@ -35,96 +63,48 @@ class perpanjangGadaiNasabahController extends Controller
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
         }
 
-        // Ambil data nasabah terkait
+        // Ambil data nasabah
         $nasabah = Nasabah::find($barangGadai->id_nasabah);
 
-        // Hitung Denda (1% dari harga gadai dikali hari telat)
+        // Hitung denda (1% dari harga gadai dikali hari telat)
         $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
+        $tempobaru = Carbon::parse($barangGadai->tempo)->addDays($tenor)->translatedFormat('l, d F Y');
 
-         // Hitung Bunga Berdasarkan Tenor
-        if ($barangGadai->tenor == 7) {
+        // Hitung bunga berdasarkan tenor baru
+        if ($tenor == 7) {
             $bungaPersen = 5;
-        } elseif ($barangGadai->tenor == 14) {
+        } elseif ($tenor == 14) {
             $bungaPersen = 10;
-        } elseif ($barangGadai->tenor == 30) {
+        } elseif ($tenor == 30) {
             $bungaPersen = 15;
         } else {
-            $bungaPersen = 0; // Kalau tenor tidak sesuai
+            $bungaPersen = 0;
         }
 
         $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
 
-        // Hitung Total Perpanjang
-        $totalPerpanjang=  $barangGadai->harga_gadai * ($bungaPersen / 100) +$denda ;
+        // Hitung total perpanjang berdasarkan tipe
+        if ($type === 'cicil') {
+            $hargaGadai = $barangGadai->harga_gadai;
+            $hargaGadaiBaru = $hargaGadai -$cicilan + $bunga + $denda;
+            $totalPerpanjang = $bunga + $denda;
+        } else {
+            $totalPerpanjang = $bunga + $denda;
+        }
 
-        return view('nasabah.detailPerpanjangGadai', compact('barangGadai', 'nasabah', 'denda', 'totalPerpanjang','bungaPersen','bunga'));
+        return view('nasabah.konfirmasiPerpanjangGadai', compact(
+            'barangGadai',
+            'tenor',
+            'cicilan',
+            'type',
+            'nasabah',
+            'denda',
+            'bunga',
+            'bungaPersen',
+            'totalPerpanjang',
+            'tempobaru',
+        ));
     }
-    public function konfirmasi(Request $request)
-{
-    $query = BarangGadai::where('status', 'tergadai');
-
-    $tenor = (int)$request->query('tenor');
-    $cicilan = $request->query('cicilan');
-    $type = $request->query('type'); // 'biasa' atau 'cicil'
-
-    if ($request->has('no_bon')) {
-        $query->where('no_bon', $request->input('no_bon'));
-    }
-
-    if ($request->has('nama_nasabah')) {
-        $query->whereHas('nasabah', function ($q) use ($request) {
-            $q->where('nama', 'like', '%' . $request->input('nama_nasabah') . '%');
-        });
-    }
-
-    $barangGadai = $query->first();
-
-    if (!$barangGadai) {
-        return redirect()->back()->with('error', 'Data tidak ditemukan.');
-    }
-
-    // Ambil data nasabah
-    $nasabah = Nasabah::find($barangGadai->id_nasabah);
-
-    // Hitung denda (1% dari harga gadai dikali hari telat)
-    $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
-    $tempobaru = Carbon::parse($barangGadai->tempo)->addDays($tenor)->translatedFormat('l, d F Y');
-
-    // Hitung bunga berdasarkan tenor baru
-    if ($tenor == 7) {
-        $bungaPersen = 5;
-    } elseif ($tenor == 14) {
-        $bungaPersen = 10;
-    } elseif ($tenor == 30) {
-        $bungaPersen = 15;
-    } else {
-        $bungaPersen = 0;
-    }
-
-    $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
-
-    // Hitung total perpanjang berdasarkan tipe
-    if ($type === 'cicil') {
-        $hargaGadai = $barangGadai->harga_gadai;
-        $hargaGadaiBaru = $hargaGadai -$cicilan + $bunga + $denda;
-        $totalPerpanjang = $bunga + $denda;
-    } else {
-        $totalPerpanjang = $bunga + $denda;
-    }
-
-    return view('nasabah.konfirmasiPerpanjangGadai', compact(
-        'barangGadai',
-        'tenor',
-        'cicilan',
-        'type',
-        'nasabah',
-        'denda',
-        'bunga',
-        'bungaPersen',
-        'totalPerpanjang',
-        'tempobaru',
-    ));
-}
 
 
 
@@ -186,9 +166,9 @@ class perpanjangGadaiNasabahController extends Controller
         // Jika jenis pembayaran adalah perpanjang
         $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
         $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
-        $cicilan = $request->input('cicilan', 0); // pastikan ini tetap di atas
-        $totalPerpanjang = ($barangGadai->harga_gadai * ($bungaPersen / 100) + $denda) - $cicilan;
-        if ($totalPerpanjang < 0) $totalPerpanjang = 0;
+        $cicilan = $request->input('cicilan', 0);
+        $totalPerpanjang = ($barangGadai->harga_gadai * ($bungaPersen / 100) + $denda);
+
         $tenor = $request->input('tenor', $barangGadai->tenor); // fallback ke tenor lama kalau tidak dikirim
 
 
@@ -198,7 +178,7 @@ class perpanjangGadaiNasabahController extends Controller
         Config::$isSanitized = config('midtrans.is_sanitized');
         Config::$is3ds = config('midtrans.is_3ds');
 
-        $orderId = $barangGadai->no_bon . '-' . strtoupper(Str::random(6)) . '-perpanjang';
+        $orderId = $barangGadai->no_bon . '-' . strtoupper(Str::random(2)) . '-perpanjang';
 
 
         // Parameter untuk Snap
@@ -219,7 +199,10 @@ class perpanjangGadaiNasabahController extends Controller
         $snapToken = Snap::getSnapToken($params);
         $tempobaru=Carbon::parse($barangGadai->tempo)->addDays($tenor);
 
+
+
         $newBon = $barangGadai->no_bon . '-DM';
+
 
         $hargaGadaiBaru = $barangGadai->harga_gadai -$cicilan;
         // simpan bon baru dengan status tergadai
@@ -232,7 +215,7 @@ class perpanjangGadaiNasabahController extends Controller
             'tenor' => $tenor,
             'tempo' => $tempobaru,
             'telat' => 0,
-            'harga_gadai' => $barangGadai->harga_gadai, // total_baru = harga_gadai + bunga
+            'harga_gadai' => $barangGadai->harga_gadai-$cicilan, // total_baru = harga_gadai + bunga
             'bunga' => $barangGadai->bunga,
             'status' => 'Tergadai',
             'id_kategori' => $barangGadai->id_kategori,
