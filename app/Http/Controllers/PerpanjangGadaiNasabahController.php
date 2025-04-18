@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;use App\Models\BarangGadai;
+use App\Models\PerpanjanganGadai;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Nasabah;
@@ -226,11 +227,20 @@ class perpanjangGadaiNasabahController extends Controller
             'tempo' => $tempobaru,
             'telat' => 0,
             'harga_gadai' => $barangGadai->harga_gadai-$cicilan, // total_baru = harga_gadai + bunga
-            'bunga' => $barangGadai->bunga,
+            'bunga' => $bungaPersen,
             'status' => 'Tergadai',
             'id_kategori' => $barangGadai->id_kategori,
             'id_cabang' => $barangGadai->id_cabang,
         ]);
+
+        PerpanjanganGadai::create([
+        'no_bon_lama' => $barangGadai->no_bon,
+        'no_bon_baru' => $newBon,
+        'tenor_baru' => $tenor,
+        'harga_gadai_baru' => $barangGadai->harga_gadai-$cicilan, // sesuai perhitungan submitForm
+        'bunga_baru' => $bungaPersen,
+        'tempo_baru' => $tempobaru,
+    ]);
 
         // Simpan data transaksi pending
         PendingPayment::create([
