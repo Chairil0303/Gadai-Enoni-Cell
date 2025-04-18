@@ -88,7 +88,8 @@ Route::middleware(['auth'])->group(function () {
     });
     // Perpanjang gadai Nasabah Start
         Route::middleware(['auth'])->prefix('nasabah')->group(function () {
-            Route::get('/perpanjang-gadai', [PerpanjangGadaiNasabahController::class, 'Details'])->name('nasabah.perpanjang.details');
+            Route::get('/perpanjang-gadai/detail', [PerpanjangGadaiNasabahController::class, 'Details'])->name('nasabah.perpanjang.details');
+            Route::get('/perpanjang-gadai/konfirmasi', [PerpanjangGadaiNasabahController::class, 'konfirmasi'])->name('nasabah.konfirmasi.Perpanjang');
             Route::post('process-perpanjang-payment', [PerpanjangGadaiNasabahController::class, 'processPayment']);
 
         });

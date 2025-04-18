@@ -9,6 +9,7 @@ use Midtrans\Config;
 use Midtrans\Snap;
 use Auth;
 use App\Models\PendingPayment;
+use Illuminate\Support\Str;
 
 class perpanjangGadaiNasabahController extends Controller
 {
@@ -58,6 +59,72 @@ class perpanjangGadaiNasabahController extends Controller
 
         return view('nasabah.detailPerpanjangGadai', compact('barangGadai', 'nasabah', 'denda', 'totalPerpanjang','bungaPersen','bunga'));
     }
+    public function konfirmasi(Request $request)
+{
+    $query = BarangGadai::where('status', 'tergadai');
+
+    $tenor = $request->query('tenor');
+    $cicilan = $request->query('cicilan');
+    $type = $request->query('type'); // 'biasa' atau 'cicil'
+
+    if ($request->has('no_bon')) {
+        $query->where('no_bon', $request->input('no_bon'));
+    }
+
+    if ($request->has('nama_nasabah')) {
+        $query->whereHas('nasabah', function ($q) use ($request) {
+            $q->where('nama', 'like', '%' . $request->input('nama_nasabah') . '%');
+        });
+    }
+
+    $barangGadai = $query->first();
+
+    if (!$barangGadai) {
+        return redirect()->back()->with('error', 'Data tidak ditemukan.');
+    }
+
+    // Ambil data nasabah
+    $nasabah = Nasabah::find($barangGadai->id_nasabah);
+
+    // Hitung denda (1% dari harga gadai dikali hari telat)
+    $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
+
+    // Hitung bunga berdasarkan tenor baru
+    if ($tenor == 7) {
+        $bungaPersen = 5;
+    } elseif ($tenor == 14) {
+        $bungaPersen = 10;
+    } elseif ($tenor == 30) {
+        $bungaPersen = 15;
+    } else {
+        $bungaPersen = 0;
+    }
+
+    $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+
+    // Hitung total perpanjang berdasarkan tipe
+    if ($type === 'cicil') {
+        $hargaGadai = $barangGadai->harga_gadai;
+        $hargaGadaiBaru = $hargaGadai -$cicilan + $bunga + $denda;
+        $totalPerpanjang = $bunga + $denda;
+    } else {
+        $totalPerpanjang = $bunga + $denda;
+    }
+
+    return view('nasabah.konfirmasiPerpanjangGadai', compact(
+        'barangGadai',
+        'tenor',
+        'cicilan',
+        'type',
+        'nasabah',
+        'denda',
+        'bunga',
+        'bungaPersen',
+        'totalPerpanjang'
+    ));
+}
+
+
 
     public function processPayment(Request $request)
     {
@@ -117,8 +184,9 @@ class perpanjangGadaiNasabahController extends Controller
         // Jika jenis pembayaran adalah perpanjang
         $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
         $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
-        $totalPerpanjang=  $barangGadai->harga_gadai * ($bungaPersen / 100) +$denda ;
-        $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
+        $cicilan = $request->input('cicilan', 0); // pastikan ini tetap di atas
+        $totalPerpanjang = ($barangGadai->harga_gadai * ($bungaPersen / 100) + $denda) - $cicilan;
+        if ($totalPerpanjang < 0) $totalPerpanjang = 0;
 
 
 
@@ -128,13 +196,16 @@ class perpanjangGadaiNasabahController extends Controller
         Config::$isSanitized = config('midtrans.is_sanitized');
         Config::$is3ds = config('midtrans.is_3ds');
 
-        $orderId = $barangGadai->no_bon . '-' . time();
+        $orderId = $barangGadai->no_bon . '-' . strtoupper(Str::random(6)) . '-perpanjang';
+
 
         // Parameter untuk Snap
         $params = [
             'transaction_details' => [
+
                 'order_id' => $orderId,
                 'gross_amount' => (int) $totalPerpanjang,
+
             ],
             'customer_details' => [
                 'first_name' => $barangGadai->nasabah->nama,
@@ -144,6 +215,26 @@ class perpanjangGadaiNasabahController extends Controller
 
         // Mendapatkan Snap Token
         $snapToken = Snap::getSnapToken($params);
+
+        $newBon = $barangGadai->no_bon . '-' . strtoupper(Str::random(2));
+
+        $hargaGadaiBaru = $barangGadai->harga_gadai -$cicilan;
+        // simpan bon baru dengan status tergadai
+        BarangGadai::create([
+            'no_bon' => $newBon,
+            'id_nasabah' => $barangGadai->id_nasabah,
+            'nama_barang' => $barangGadai->nama_barang,
+            'deskripsi' => $barangGadai->deskripsi,
+            'imei' => $barangGadai->imei,
+            'tenor' => $barangGadai->tenor,
+            'tempo' => $barangGadai->tempo,
+            'telat' => 0,
+            'harga_gadai' => $barangGadai->harga_gadai, // total_baru = harga_gadai + bunga
+            'bunga' => $barangGadai->bunga,
+            'status' => 'Tergadai',
+            'id_kategori' => $barangGadai->id_kategori,
+            'id_cabang' => $barangGadai->id_cabang,
+        ]);
 
         // Simpan data transaksi pending
         PendingPayment::create([

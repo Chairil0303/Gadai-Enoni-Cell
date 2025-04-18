@@ -209,17 +209,9 @@ class NasabahPaymentController extends Controller
             // Jika jenis pembayaran adalah perpanjang
             $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
             $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
-            $totalPerpanjang=  $barangGadai->harga_gadai * ($bungaPersen / 100) +$denda ;
             $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
 
 
-            if ($paymentType === 'perpanjang') {
-                // Total pembayaran perpanjangan (bunga + denda)
-                $totalBayar = $totalPerpanjang;
-            } else {
-                // Total pembayaran penebusan (harga_gadai + bunga + denda)
-                $totalBayar = $totalTebus;
-            }
 
             // Midtrans config
             Config::$serverKey = config('midtrans.server_key');
@@ -233,7 +225,7 @@ class NasabahPaymentController extends Controller
             $params = [
                 'transaction_details' => [
                     'order_id' => $orderId,
-                    'gross_amount' => (int) $totalBayar,
+                    'gross_amount' => (int) $totalTebus,
                 ],
                 'customer_details' => [
                     'first_name' => $barangGadai->nasabah->nama,
@@ -250,13 +242,13 @@ class NasabahPaymentController extends Controller
                 'no_bon' => $barangGadai->no_bon,
                 'id_nasabah' => $nasabah->id_nasabah,
                 'id_cabang' => optional($nasabah->user->cabang)->id_cabang,
-                'jumlah_pembayaran' => (int) $totalBayar,
+                'jumlah_pembayaran' => (int) $totalTebus,
                 'status' => 'pending',
             ]);
 
             return response()->json([
                 'snap_token' => $snapToken,
-                'total_bayar' => $totalBayar,
+                'total_bayar' => $totalTebus,
                 'order_id' => $orderId,
                 'detail' => [
                     'harga_gadai' => $barangGadai->harga_gadai,
@@ -281,6 +273,7 @@ public function handleNotificationJson(Request $request)
     $grossAmount = $data['gross_amount'] ?? 0;
 
     $noBon = explode('-', $orderId)[0];
+    $isPerpanjang = str_contains($orderId, 'perpanjang');
 
     $barang = BarangGadai::with('nasabah.user.cabang')->where('no_bon', $noBon)->first();
 
@@ -288,77 +281,77 @@ public function handleNotificationJson(Request $request)
         return response()->json(['message' => 'Barang tidak ditemukan'], 404);
     }
 
-    // Cek status transaksi dan update status pembayaran sesuai dengan kondisi
     $pending = PendingPayment::where('order_id', $orderId)->first();
-
     if (!$pending) {
         return response()->json(['message' => 'Transaksi tidak valid atau tidak ditemukan di pending payments.']);
     }
 
-    // Proses jika transaksi berhasil (settlement atau capture)
     if (in_array($transaction, ['settlement', 'capture'])) {
-        $barang->status = 'Ditebus';
-        $barang->save();
-
-        // Update status pending payment menjadi 'paid'
         $pending->status = 'paid';
         $pending->save();
 
-        // Buat transaksi tebus baru
-        $id_cabang = optional($barang->nasabah->user->cabang)->id_cabang;
-
-        TransaksiTebus::create([
-            'no_bon' => $barang->no_bon,
-            'id_cabang' => $id_cabang,
-            'id_nasabah' => $barang->id_nasabah,
-            'tanggal_tebus' => Carbon::now(),
-            'jumlah_pembayaran' => (int) $grossAmount,
-            'status' => 'Berhasil', // Status transaksi tebus
-        ]);
-
-        // Kirim notifikasi WhatsApp ke nasabah
         $nasabah = $barang->nasabah;
-        $noHp = preg_replace('/^0/', '62', $nasabah->telepon); // ubah 08xx ke 62xxx
+        $noHp = preg_replace('/^0/', '62', $nasabah->telepon); // 08xx → 62xx
+        $id_cabang = optional($nasabah->user->cabang)->id_cabang;
 
-        $message = "*📦 Transaksi Tebus Berhasil!*\n\n" .
-            "🆔 No BON: {$barang->no_bon}\n" .
-            "🏷 Nama Barang: {$barang->nama_barang}\n" .
-            "🏦 Cabang: {$barang->nasabah->user->cabang->nama_cabang}\n" .
-            "🏷 Barang: {$barang->nama_barang}\n" .
-            "🏦 Cabang: {$barang->nasabah->user->cabang->nama_cabang}\n" .
-            "👤 Nama: {$nasabah->nama}\n" .
-            "💰 Jumlah: Rp " . number_format($grossAmount, 0, ',', '.') . "\n" .
-            "📅 Tanggal: " . now()->format('d-m-Y') . "\n\n" .
-            "Terima kasih telah menebus barang Anda di *Pegadaian Kami* 🙏";
+        if ($isPerpanjang) {
+            // ================= PERPANJANG =================
+            // Perpanjang jatuh tempo (misal 30 hari)
+            $barang->status = 'Diperpanjang';
+            $barang->tempo = Carbon::parse($barang->tempo)->addDays(30);
+            $barang->save();
+
+            $message = "*🔁 Perpanjangan Berhasil!*\n\n" .
+                "🆔 No BON: {$barang->no_bon}\n" .
+                "🏷 Nama Barang: {$barang->nama_barang}\n" .
+                "👤 Nama: {$nasabah->nama}\n" .
+                "💰 Jumlah: Rp " . number_format($grossAmount, 0, ',', '.') . "\n" .
+                "📅 Tanggal: " . now()->format('d-m-Y') . "\n\n" .
+                "Barang Anda telah berhasil diperpanjang di *Pegadaian Kami*. Terima kasih 🙏";
+        } else {
+            // ================= TEBUS =================
+            $barang->status = 'Ditebus';
+            $barang->save();
+
+            TransaksiTebus::create([
+                'no_bon' => $barang->no_bon,
+                'id_cabang' => $id_cabang,
+                'id_nasabah' => $barang->id_nasabah,
+                'tanggal_tebus' => now(),
+                'jumlah_pembayaran' => (int) $grossAmount,
+                'status' => 'Berhasil',
+            ]);
+
+            $message = "*📦 Transaksi Tebus Berhasil!*\n\n" .
+                "🆔 No BON: {$barang->no_bon}\n" .
+                "🏷 Nama Barang: {$barang->nama_barang}\n" .
+                "👤 Nama: {$nasabah->nama}\n" .
+                "🏦 Cabang: {$barang->nasabah->user->cabang->nama_cabang}\n" .
+                "💰 Jumlah: Rp " . number_format($grossAmount, 0, ',', '.') . "\n" .
+                "📅 Tanggal: " . now()->format('d-m-Y') . "\n\n" .
+                "Terima kasih telah menebus barang Anda di *Pegadaian Kami* 🙏";
+        }
 
         try {
             $responseWA = WhatsappHelper::send($noHp, $message);
         } catch (\Exception $e) {
-            // Log error jika WA gagal dikirim
             \Log::error('Gagal kirim WA: ' . $e->getMessage());
             $responseWA = 'Gagal kirim WA';
         }
     }
 
-    // Proses jika transaksi expired
+    // Status lainnya
     if ($transaction === 'expire') {
         $pending->status = 'expired';
         $pending->save();
-    }
-
-    // Proses jika transaksi dibatalkan
-    if ($transaction === 'cancel') {
+    } elseif ($transaction === 'cancel') {
         $pending->status = 'cancelled';
         $pending->save();
     }
 
-    // Proses jika transaksi masih dalam status pending
-    if ($transaction === 'pending') {
-        // Tidak perlu melakukan apa-apa karena sudah berstatus pending
-    }
-
     return response()->json(['message' => 'Notifikasi diproses.', 'wa_notif' => $responseWA ?? 'Tidak ada WA']);
 }
+
 
 
 public function cancelPayment(Request $request)
