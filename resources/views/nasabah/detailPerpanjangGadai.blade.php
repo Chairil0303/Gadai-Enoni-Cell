@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Konfirmasi Perpanjangan')
+@section('title', 'Detail Perpanjangan')
 
 @section('content')
 <div class="max-w-4xl mx-auto bg-white shadow-md p-6 rounded mt-6">

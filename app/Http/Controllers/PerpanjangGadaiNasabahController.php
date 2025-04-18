@@ -251,30 +251,6 @@ class perpanjangGadaiNasabahController extends Controller
 
 
 
-
-
-    public function handleNotification(Request $request)
-    {
-        $serverKey = config('midtrans.server_key');
-        $signatureKey = hash('sha512', $request->order_id.$request->status_code.$request->gross_amount.$serverKey);
-
-        if ($signatureKey !== $request->signature_key) {
-            return response()->json(['error' => 'Invalid signature'], 403);
-        }
-
-        if ($request->transaction_status == 'settlement') {
-            $transaksi = TransaksiTebus::where('order_id', $request->order_id)->first();
-            if ($transaksi) {
-                $barang = BarangGadai::where('no_bon', $transaksi->no_bon)->first();
-                if ($barang) {
-                    $barang->status = 'Ditebus';
-                    $barang->save();
-                }
-            }
-        }
-
-        return response()->json(['success' => true]);
-    }
 }
 
 // perpanjang gadai nasabah
