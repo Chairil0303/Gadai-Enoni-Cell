@@ -16,7 +16,7 @@ use App\Models\LelangBarang;
 use App\Helpers\WhatsappHelper;
 use Illuminate\Support\Str;
 use App\Models\PendingPayment;
-
+use App\Models\PerpanjanganGadai;
 
 
 class NasabahPaymentController extends Controller
@@ -365,19 +365,29 @@ public function cancelPayment(Request $request)
     if (!$pending) {
         return response()->json(['message' => 'Data tidak ditemukan atau status bukan pending'], 404);
     }
+
+    // Cek dan hapus data di BarangGadai jika ada no_bon
     if ($pending->new_bon) {
+        // Cek data di BarangGadai berdasarkan no_bon_baru
         $bonBaru = BarangGadai::where('no_bon', $pending->new_bon)->first();
         if ($bonBaru && $bonBaru->status === 'Tergadai') {
             $bonBaru->delete();
         }
+
+        // Cek dan hapus data di PerpanjanganGadai berdasarkan no_bon_baru
+        $perpanjanganGadai = PerpanjanganGadai::where('no_bon_baru', $pending->new_bon)->first();
+        if ($perpanjanganGadai) {
+            $perpanjanganGadai->delete();
+        }
     }
 
-
+    // Ubah status pending menjadi cancelled
     $pending->status = 'cancelled';
     $pending->save();
 
     return response()->json(['message' => 'Status pembayaran diubah menjadi cancelled.']);
 }
+
 
     // public function getPaymentJsonByBon($noBon)
     // {
