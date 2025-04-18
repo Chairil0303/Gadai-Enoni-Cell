@@ -8,7 +8,7 @@ class PendingPayment extends Model
 {
     protected $fillable = [
         'order_id', 'no_bon', 'id_nasabah', 'id_cabang',
-        'jumlah_pembayaran', 'status',
+        'jumlah_pembayaran', 'status','new_bon',
     ];
 
     public function nasabah()

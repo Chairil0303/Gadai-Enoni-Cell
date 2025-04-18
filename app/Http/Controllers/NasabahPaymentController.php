@@ -365,6 +365,13 @@ public function cancelPayment(Request $request)
     if (!$pending) {
         return response()->json(['message' => 'Data tidak ditemukan atau status bukan pending'], 404);
     }
+    if ($pending->new_bon) {
+        $bonBaru = BarangGadai::where('no_bon', $pending->new_bon)->first();
+        if ($bonBaru && $bonBaru->status === 'Tergadai') {
+            $bonBaru->delete();
+        }
+    }
+
 
     $pending->status = 'cancelled';
     $pending->save();

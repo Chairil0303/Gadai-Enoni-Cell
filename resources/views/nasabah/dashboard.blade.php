@@ -40,6 +40,7 @@
 
             <div class="flex-1">
                 <p class="text-lg font-semibold text-gray-800">Total Tebus</p>
+
                 <p class="text-xl font-bold text-green-600">
                     Rp {{ number_format(
                         $barang->harga_gadai +
@@ -48,6 +49,11 @@
                     ) }}
                 </p>
                 {{-- <p><strong>No Bon:</strong> {{ $barang->no_bon }}</p> --}}
+                @if (Str::startsWith($barang->no_bon, 'DM-') || Str::endsWith($barang->no_bon, '-DM'))
+                <p><strong>No Bon:</strong> Sedang menunggu verifikasi admin</p>
+                     @else
+                <p><strong>No Bon:</strong> {{ $barang->no_bon }}</p>
+                    @endif
                 <p><strong>Barang Gadai :</strong> {{ $barang->nama_barang }}</p>
                 <p class="text-sm text-gray-600">Barang ini akan jatuh Tempo  di Hari {{$barang->tempo_formatted }} </p>
             </div>

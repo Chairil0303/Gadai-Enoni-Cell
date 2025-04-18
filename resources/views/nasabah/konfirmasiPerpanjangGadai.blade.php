@@ -25,11 +25,11 @@
             </div>
             <div class="p-4">
                 <p><strong>Nama Barang:</strong> {{ $barangGadai->nama_barang }}</p>
-                <p><strong>No Bon:</strong> {{ $barangGadai->no_bon }}</p>
+                <p><strong>No Bon:</strong> "Menunggu Admin Untuk Menginput Nomor BON"</p>
                 <p><strong>Harga Gadai saat ini :</strong> Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}</p>
                 <p><strong>Harga Gadai Baru:</strong> Rp {{ number_format($barangGadai->harga_gadai - $cicilan, 0, ',', '.') }}</p>
-                <p><strong>Tenor:</strong> {{ $barangGadai->tenor }} hari</p>
-                <p><strong>Jatuh Tempo:</strong> {{ $barangGadai->tempo }}</p>
+                <p><strong>Tenor:</strong> {{ $tenor }} hari</p>
+                <p><strong>Jatuh Tempo:</strong> {{ $tempobaru }}</p>
                 <p><strong>Bunga:</strong> {{ $bungaPersen }}% (Rp {{ number_format($bunga, 0, ',', '.') }})</p>
                 <p><strong>Telat:</strong> {{ $barangGadai->telat }} hari</p>
                 <p><strong>Denda:</strong> Rp {{ number_format($denda, 0, ',', '.') }}</p>

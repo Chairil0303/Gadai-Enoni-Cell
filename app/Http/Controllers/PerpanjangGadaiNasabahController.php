@@ -63,7 +63,7 @@ class perpanjangGadaiNasabahController extends Controller
 {
     $query = BarangGadai::where('status', 'tergadai');
 
-    $tenor = $request->query('tenor');
+    $tenor = (int)$request->query('tenor');
     $cicilan = $request->query('cicilan');
     $type = $request->query('type'); // 'biasa' atau 'cicil'
 
@@ -88,6 +88,7 @@ class perpanjangGadaiNasabahController extends Controller
 
     // Hitung denda (1% dari harga gadai dikali hari telat)
     $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
+    $tempobaru = Carbon::parse($barangGadai->tempo)->addDays($tenor)->translatedFormat('l, d F Y');
 
     // Hitung bunga berdasarkan tenor baru
     if ($tenor == 7) {
@@ -120,7 +121,8 @@ class perpanjangGadaiNasabahController extends Controller
         'denda',
         'bunga',
         'bungaPersen',
-        'totalPerpanjang'
+        'totalPerpanjang',
+        'tempobaru',
     ));
 }
 
@@ -187,7 +189,7 @@ class perpanjangGadaiNasabahController extends Controller
         $cicilan = $request->input('cicilan', 0); // pastikan ini tetap di atas
         $totalPerpanjang = ($barangGadai->harga_gadai * ($bungaPersen / 100) + $denda) - $cicilan;
         if ($totalPerpanjang < 0) $totalPerpanjang = 0;
-
+        $tenor = $request->input('tenor', $barangGadai->tenor); // fallback ke tenor lama kalau tidak dikirim
 
 
         // Midtrans config
@@ -215,8 +217,9 @@ class perpanjangGadaiNasabahController extends Controller
 
         // Mendapatkan Snap Token
         $snapToken = Snap::getSnapToken($params);
+        $tempobaru=Carbon::parse($barangGadai->tempo)->addDays($tenor);
 
-        $newBon = $barangGadai->no_bon . '-' . strtoupper(Str::random(2));
+        $newBon = $barangGadai->no_bon . '-DM';
 
         $hargaGadaiBaru = $barangGadai->harga_gadai -$cicilan;
         // simpan bon baru dengan status tergadai
@@ -226,8 +229,8 @@ class perpanjangGadaiNasabahController extends Controller
             'nama_barang' => $barangGadai->nama_barang,
             'deskripsi' => $barangGadai->deskripsi,
             'imei' => $barangGadai->imei,
-            'tenor' => $barangGadai->tenor,
-            'tempo' => $barangGadai->tempo,
+            'tenor' => $tenor,
+            'tempo' => $tempobaru,
             'telat' => 0,
             'harga_gadai' => $barangGadai->harga_gadai, // total_baru = harga_gadai + bunga
             'bunga' => $barangGadai->bunga,
@@ -243,6 +246,7 @@ class perpanjangGadaiNasabahController extends Controller
             'id_nasabah' => $nasabah->id_nasabah,
             'id_cabang' => optional($nasabah->user->cabang)->id_cabang,
             'jumlah_pembayaran' => (int) $totalPerpanjang,
+            'new_bon' => $newBon,
             'status' => 'pending',
         ]);
 
