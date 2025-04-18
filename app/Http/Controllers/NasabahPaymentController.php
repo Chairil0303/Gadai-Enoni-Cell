@@ -153,10 +153,10 @@ class NasabahPaymentController extends Controller
         // pemisah
         public function processPaymentJson(Request $request)
         {
+
             $noBon = $request->no_bon;
             $userId = auth()->user()->id_users;
             $nasabah = Nasabah::where('id_user', $userId)->first();
-
             if (!$nasabah) {
                 return response()->json(['message' => 'Nasabah tidak ditemukan'], 404);
             }

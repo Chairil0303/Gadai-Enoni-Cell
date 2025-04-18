@@ -66,7 +66,7 @@ Route::middleware(['auth'])->group(function () {
 
     // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
     Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
-        Route::get('/dashboard', [NasabahController::class, 'show'])->name('dashboard.nasabah');
+        Route::get('/dashboard', [NasabahController::class, 'show'])->name('profile');
     });
 
     // profil nasabah
@@ -87,12 +87,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/tebus/{no_bon}', [TebusGadaiNasabahController::class, 'tebus'])->name('tebus.tebus');
     });
     // Perpanjang gadai Nasabah Start
-    Route::middleware(['auth'])->prefix('nasabah')->group(function () {
-        Route::get('/perpanjang-gadai', [PerpanjangGadaiNasabahController::class, 'Details'])->name('nasabah.perpanjang.details');
-        // Route::post('/nasabah/process-perpanjang-payment', [NasabahPaymentController::class, 'processPaymentPerpanjangJson']);
-        Route::post('/nasabah/process-perpanjang-payment', [PerpanjangGadaiController::class, 'processPaymentPerpanjangJson'])->name('nasabah.process-perpanjang-payment');
+        Route::middleware(['auth'])->prefix('nasabah')->group(function () {
+            Route::get('/perpanjang-gadai', [PerpanjangGadaiNasabahController::class, 'Details'])->name('nasabah.perpanjang.details');
+            Route::post('process-perpanjang-payment', [PerpanjangGadaiNasabahController::class, 'processPayment']);
 
-    });
+        });
+
     // Perpanjang gadai nasabah End
 
 
