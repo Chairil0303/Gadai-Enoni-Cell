@@ -10,6 +10,8 @@ use Midtrans\Snap;
 use Auth;
 use App\Models\PendingPayment;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Session;
+use App\Models\Cabang;
 
 class perpanjangGadaiNasabahController extends Controller
 {
@@ -39,6 +41,7 @@ class perpanjangGadaiNasabahController extends Controller
     }
 
 
+
     public function konfirmasi(Request $request)
     {
         $query = BarangGadai::where('status', 'tergadai');
@@ -63,14 +66,12 @@ class perpanjangGadaiNasabahController extends Controller
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
         }
 
-        // Ambil data nasabah
         $nasabah = Nasabah::find($barangGadai->id_nasabah);
 
         // Hitung denda (1% dari harga gadai dikali hari telat)
         $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
         $tempobaru = Carbon::parse($barangGadai->tempo)->addDays($tenor)->translatedFormat('l, d F Y');
 
-        // Hitung bunga berdasarkan tenor baru
         if ($tenor == 7) {
             $bungaPersen = 5;
         } elseif ($tenor == 14) {
@@ -83,14 +84,22 @@ class perpanjangGadaiNasabahController extends Controller
 
         $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
 
-        // Hitung total perpanjang berdasarkan tipe
         if ($type === 'cicil') {
             $hargaGadai = $barangGadai->harga_gadai;
-            $hargaGadaiBaru = $hargaGadai -$cicilan + $bunga + $denda;
+            $hargaGadaiBaru = $hargaGadai - $cicilan + $bunga + $denda;
             $totalPerpanjang = $bunga + $denda;
         } else {
             $totalPerpanjang = $bunga + $denda;
         }
+
+        // ✅ Simpan data ke session
+        session([
+            'perpanjangan.tenor' => $tenor,
+            'perpanjangan.type' => $type,
+            'perpanjangan.cicilan' => $cicilan,
+            'perpanjangan.no_bon' => $barangGadai->no_bon,
+            'perpanjangan.total' => $totalPerpanjang
+        ]);
 
         return view('nasabah.konfirmasiPerpanjangGadai', compact(
             'barangGadai',
@@ -105,6 +114,7 @@ class perpanjangGadaiNasabahController extends Controller
             'tempobaru',
         ));
     }
+
 
 
 
@@ -145,9 +155,9 @@ class perpanjangGadaiNasabahController extends Controller
         $telat = $barangGadai->telat;
         $paymentType = $request->input('payment_type', 'tebus'); // default tebus
         $bungaPersen = 0;
-
+        $cicilan = session('perpanjangan.cicilan');
         // Hitung Bunga berdasarkan tenor
-        $tenor = $barangGadai->tenor;
+        $tenor = session('perpanjangan.tenor');
         switch ($tenor) {
             case 7:
                 $bungaPersen = 5;
@@ -166,10 +176,10 @@ class perpanjangGadaiNasabahController extends Controller
         // Jika jenis pembayaran adalah perpanjang
         $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
         $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
-        $cicilan = $request->input('cicilan', 0);
+        // $cicilan = $request->input('cicilan', 0);
         $totalPerpanjang = ($barangGadai->harga_gadai * ($bungaPersen / 100) + $denda);
 
-        $tenor = $request->input('tenor', $barangGadai->tenor); // fallback ke tenor lama kalau tidak dikirim
+        // $tenor = $request->input('tenor', $barangGadai->tenor); // fallback ke tenor lama kalau tidak dikirim
 
 
         // Midtrans config
