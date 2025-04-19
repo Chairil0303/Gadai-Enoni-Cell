@@ -36,7 +36,7 @@
                     <p><strong>Bunga:</strong> {{ $bungaPersen }}% (Rp {{ number_format($bunga, 0, ',', '.') }})</p>
                     <p><strong>Telat:</strong> {{ $barangGadai->telat }} hari</p>
                     <p><strong>Denda:</strong> Rp {{ number_format($denda, 0, ',', '.') }}</p>
-                    <p><strong>Total Perpanjang:</strong> <span class="text-success fw-bold">Rp {{ number_format($totalPerpanjang, 0, ',', '.') }}</span></p>
+                    <p><strong>Total Perpanjang:</strong> <span class="text-success fw-bold">Rp {{ number_format($totalPerpanjang + $cicilan, 0, ',', '.') }}</span></p>
                     <p><strong>Penerima Tebusan:</strong> {{ auth()->user()->name }}</p>
                 </div>
             </div>
