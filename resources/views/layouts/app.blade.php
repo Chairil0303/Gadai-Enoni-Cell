@@ -6,6 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Enoni Cell') }}</title>
+
+    <!-- sweetalert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {{-- midtrans --}}
@@ -21,6 +23,8 @@
      --}}
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
+     <!-- Bootstrap JS (pastikan ini ada sebelum tag </body>) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
     <!-- Scripts -->

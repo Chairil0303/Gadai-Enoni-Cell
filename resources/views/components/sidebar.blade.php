@@ -42,7 +42,7 @@
     </ul>
 
     {{-- Profil & Logout - Hanya muncul di Mobile --}}
-    <div class="block border-t border-gray-600 mt-4 pt-4 px-4">
+    <div class="block border-t border-gray-600 pt-2 px-4">
         <div class="text-sm text-white mb-2">
             <i class="fas fa-user-circle mr-1"></i> {{ strtoupper(auth()->user()->nama) }}
         </div>
