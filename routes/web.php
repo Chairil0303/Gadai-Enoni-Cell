@@ -120,9 +120,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // cabang controller
-    Route::middleware(['auth', 'role:Superadmin'])->prefix('superadmin')->group(function () {
-        Route::resource('cabang', \App\Http\Controllers\Superadmin\CabangController::class);
-    });
+    // Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->group(function () {
+    //     Route::resource('cabang', \App\Http\Controllers\Superadmin\CabangController::class);
+    // });
     Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
         Route::get('/dashboard/{id}', [App\Http\Controllers\Admin\DashboardController::class, 'index']);
     });
@@ -170,6 +170,9 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/cabang/{cabang}', [CabangController::class, 'update'])->name('cabang.update');
             Route::delete('/cabang/{cabang}', [CabangController::class, 'destroy'])->name('cabang.destroy');
         });
+        Route::get('/cabang', function () {
+            return redirect()->route('superadmin.cabang.index');
+        })->name('cabang.index');
 
     // Route untuk profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

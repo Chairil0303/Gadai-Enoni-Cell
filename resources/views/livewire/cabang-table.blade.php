@@ -1,3 +1,10 @@
+@if (session()->has('message'))
+    <div class="bg-green-100 text-green-700 p-3 rounded mb-3">
+        {{ session('message') }}
+    </div>
+@endif
+
+
 <table class="w-full border-collapse border border-gray-300 shadow-md mt-4">
     <thead class="bg-gray-200 text-gray-700">
         <tr>

@@ -11,7 +11,7 @@
                 <div class="card-body">
                     <form action="{{ route('superadmin.cabang.store') }}" method="POST">
                         @csrf
-
+                        
                         <div class="mb-3">
                             <label for="namaCabang" class="form-label"><i class="fas fa-building"></i> Nama Cabang</label>
                             <input type="text"autocomplete="off" class="form-control" id="namaCabang" name="nama_cabang" placeholder="Masukkan nama cabang" required>

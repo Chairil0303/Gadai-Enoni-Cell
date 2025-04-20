@@ -20,6 +20,10 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // ✅ Daftar middleware alias
+        $this->app->make(Router::class)->aliasMiddleware('role', RoleMiddleware::class);
+
+        // ✅ Setup route groups
         $this->routes(function () {
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
@@ -28,12 +32,13 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
         });
-        parent::boot();
+
+        // ✅ Route model binding
         Route::model('cabang', Cabang::class);
 
-        Route::middleware('role')->group(base_path('routes/web.php'));
-
+        parent::boot(); // ✅ Pindahkan ke bawah, bukan di tengah-tengah
     }
+
 
     /**
      * Custom redirect based on role

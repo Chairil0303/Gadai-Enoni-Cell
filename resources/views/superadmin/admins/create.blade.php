@@ -8,6 +8,9 @@
             @csrf
 
             <div class="mb-4">
+                <a href="{{ route('superadmin.cabang.index') }}">Kembali ke daftar cabang</a>
+            </div>
+            <div class="mb-4">
                 <label class="block text-sm font-medium">Nama</label>
                 <input type="text" name="nama" class="w-full border rounded px-3 py-2 " autocomplete="off" required>
             </div>
