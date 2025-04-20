@@ -16,7 +16,7 @@
             <tr><th>Alamat</th><td>{{ $barangGadai->nasabah->alamat }}</td></tr>
             <tr><th>No Telp</th><td>{{ $barangGadai->nasabah->telepon }}</td></tr>
         </tbody>
-    </table>
+    </table>    
 
     <!-- Tabel Data Barang Gadai -->
     <table class="table table-bordered mt-4">

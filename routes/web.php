@@ -17,6 +17,7 @@ use App\Http\Controllers\TebusGadaiNasabahController;
 use App\Http\Controllers\NasabahPaymentController;
 use App\Http\Controllers\PerpanjangGadaiController;
 use App\Http\Controllers\PerpanjangGadaiNasabahController;
+use App\Http\Controllers\Superadmin\AdminController;
 
 
 
@@ -134,6 +135,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/nasabah/{id}/edit', [NasabahController::class, 'edit'])->name('superadmin.nasabah.edit');
     Route::put('/nasabah/{id}', [NasabahController::class, 'update'])->name('superadmin.nasabah.update');
     Route::delete('/nasabah/{id}', [NasabahController::class, 'destroy'])->name('superadmin.nasabah.destroy');
+
+    // Route untuk lihat semua Admin
+    Route::get('/admins', [AdminController::class, 'index'])->name('superadmin.admins.index');
+
 });
 
 
