@@ -8,9 +8,6 @@
             @csrf
 
             <div class="mb-4">
-                <a href="{{ route('superadmin.cabang.index') }}">Kembali ke daftar cabang</a>
-            </div>
-            <div class="mb-4">
                 <label class="block text-sm font-medium">Nama</label>
                 <input type="text" name="nama" class="w-full border rounded px-3 py-2 " autocomplete="off" required>
             </div>
@@ -32,10 +29,13 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-medium">Cabang</label>
-                <select name="id_cabang" class="w-full border rounded px-3 py-2">
+                <select name="id_cabang" class="w-full border rounded px-3 py-2" required>
                     <option value="">-- Pilih Cabang --</option>
                     @foreach($cabangs as $cabang)
-                        <option value="{{ $cabang->id_cabang }}">{{ $cabang->nama_cabang }}</option>
+                        <option value="{{ $cabang->id_cabang }}" 
+                            {{ (old('id_cabang', $idCabang ?? '') == $cabang->id_cabang) ? 'selected' : '' }}>
+                            {{ $cabang->nama_cabang }}
+                        </option>
                     @endforeach
                 </select>
             </div>

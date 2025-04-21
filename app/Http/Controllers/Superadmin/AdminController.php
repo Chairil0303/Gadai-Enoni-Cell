@@ -17,34 +17,37 @@ class AdminController extends Controller
     }
 
     
-    public function create()
+    public function create(Request $request)
     {
-        $cabangs = Cabang::all();
-        return view('superadmin.admins.create', compact('cabangs'));
+        $idCabang = $request->get('id_cabang');
+        $cabangs = Cabang::all(); // ambil semua untuk dropdown
+
+        return view('superadmin.admins.create', compact('idCabang', 'cabangs'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+
+        $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'nullable|email|unique:users,email',
             'username' => 'required|unique:users,username',
-            'password' => 'required|min:6',
+            'password' => 'required|string|min:6', // hapus 'confirmed' kalau gak dipakai
             'id_cabang' => 'nullable|exists:cabang,id_cabang',
-            'password' => 'nullable|string|min:6|confirmed',
         ]);
 
-        User::create([
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
+        $user = User::create([
+            'nama' => $validated['nama'],
+            'email' => $validated['email'],
+            'username' => $validated['username'],
+            'password' => Hash::make($validated['password']),
             'role' => 'Admin',
-            'id_cabang' => $request->id_cabang,
+            'id_cabang' => $validated['id_cabang'],
         ]);
 
         return redirect()->route('superadmin.admins.index')->with('success', 'Admin berhasil ditambahkan.');
     }
+
 
 
     public function edit($id)
