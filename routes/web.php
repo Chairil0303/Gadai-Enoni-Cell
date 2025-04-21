@@ -170,9 +170,6 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/cabang/{cabang}', [CabangController::class, 'update'])->name('cabang.update');
             Route::delete('/cabang/{cabang}', [CabangController::class, 'destroy'])->name('cabang.destroy');
         });
-        Route::get('/cabang', function () {
-            return redirect()->route('superadmin.cabang.index');
-        })->name('cabang.index');
 
     // Route untuk profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

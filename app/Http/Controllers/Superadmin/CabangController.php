@@ -31,7 +31,7 @@ class CabangController extends Controller
 
         Cabang::create($request->all());
 
-        return redirect()->route('cabang.index')->with('success', 'Cabang berhasil ditambahkan');
+        return redirect()->route('superadmin.cabang.index')->with('success', 'Cabang berhasil ditambahkan');
     }
 
     public function edit(Cabang $cabang)
@@ -50,13 +50,13 @@ class CabangController extends Controller
 
         $cabang->update($request->all());
 
-        return redirect()->route('cabang.index')->with('success', 'Cabang berhasil diperbarui');
+        return redirect()->route('superadmin.cabang.index')->with('success', 'Cabang berhasil diperbarui');
     }
 
     public function destroy(Cabang $cabang)
     {
         $cabang->delete();
 
-        return redirect()->route('cabang.index')->with('success', 'Cabang berhasil dihapus');
+        return redirect()->route('superadmin.cabang.index')->with('success', 'Cabang berhasil dihapus');
     }
 }
