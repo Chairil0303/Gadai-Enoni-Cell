@@ -10,12 +10,16 @@ use Illuminate\Http\Request;
 
 class CabangController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $cabangs = Cabang::all();
+        $search = $request->input('search');
+
+        $cabangs = Cabang::when($search, function($query, $search) {
+            return $query->where('nama_cabang', 'like', "%{$search}%");
+        })->orderBy('nama_cabang')->paginate(10);
+
         return view('superadmin.cabang.index', compact('cabangs'));
     }
-
     public function create()
     {
         return view('superadmin.cabang.create');
