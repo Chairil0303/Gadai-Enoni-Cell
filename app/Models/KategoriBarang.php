@@ -1,15 +1,19 @@
 <?php
 
 namespace App\Models;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Database\Eloquent\Model;
 
 class KategoriBarang extends Model
 {
-    use HasFactory;
+    protected $table = 'kategori_barang'; // ini penting kalau nama tabel non-jamak
 
-    protected $table = 'kategori_barang';
-    protected $primaryKey = 'id_kategori';
-    protected $fillable = ['nama_kategori'];
+    protected $primaryKey = 'id_kategori'; // karena kamu pakai id_kategori, bukan id
+
+    protected $fillable = [
+        'nama_kategori',
+        'deskripsi',
+    ];
+
+    public $timestamps = true;
 }

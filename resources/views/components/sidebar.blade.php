@@ -23,6 +23,11 @@
         @if(auth()->user()->isSuperadmin())
             <li><a href="{{ route('transaksi_gadai.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-hand-holding-usd mr-2"></i> Transaksi Gadai</a></li>
             <li><a href="{{ route('barang_gadai.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-box-open mr-2"></i> Barang Gadai</a></li>
+            <li>
+                <a href="{{ route('superadmin.kategori-barang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">
+                    <i class="fas fa-tags mr-2"></i> Kategori Barang
+                </a>
+            </li>
             <li><a href="{{ route('nasabah.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-user-tie mr-2"></i> Nasabah</a></li>
             <li><a href="{{ route('superadmin.cabang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-building mr-2"></i> Cabang</a></li>
             <li><a href="{{ route('superadmin.admins.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">

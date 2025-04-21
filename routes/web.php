@@ -137,12 +137,17 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/nasabah/{id}', [NasabahController::class, 'destroy'])->name('superadmin.nasabah.destroy');
 });
 
+
+    // crud admin di superadmin
     Route::prefix('superadmin')
         ->middleware(['auth', RoleMiddleware::class . ':Superadmin'])
         ->name('superadmin.')
         ->group(function () {
             Route::resource('admins', \App\Http\Controllers\Superadmin\AdminController::class);
+            Route::resource('kategori-barang', \App\Http\Controllers\Superadmin\KategoriBarangController::class);
     });
+
+
 
 
     Route::resource('barang_gadai', BarangGadaiController::class);
