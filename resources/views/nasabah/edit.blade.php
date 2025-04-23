@@ -49,7 +49,7 @@
                                     
                             <div class="mb-3">
                                 <label for="username" class="form-label"><i class="fas fa-user-circle"></i> Username</label>
-                                <input type="text" class="form-control" id="username" name="username" value="{{ $nasabah->username }}" required>
+                                <input type="text" class="form-control" id="username" autocomplete="off" name="username" value="{{ $nasabah->username }}" required>
                             </div>
                                     
                             <div class="mb-3">

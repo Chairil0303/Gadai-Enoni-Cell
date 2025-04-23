@@ -109,7 +109,7 @@ class NasabahController extends Controller
             'password' => $request->password ? Hash::make($request->password) : $nasabah->user->password,
         ]);
 
-        return redirect()->route('superadmin.nasabah.index')->with('success', 'Nasabah berhasil diperbarui');
+        return redirect()->route('nasabah.index')->with('success', 'Nasabah berhasil diperbarui');
     }
 
     public function destroy($id)
