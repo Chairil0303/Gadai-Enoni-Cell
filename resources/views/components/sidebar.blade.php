@@ -1,4 +1,4 @@
-<aside>
+<aside class="overflow-y-auto max-h-screen pb-5">
     <!-- Tombol ✖ hanya untuk mobile -->
     <button 
         class="absolute top-2 right-2 text-white text-xl md:hidden"
@@ -57,7 +57,7 @@
             <button type="button" onclick="confirmLogoutMobile()" class="w-full text-left px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-white">
                 <i class="fas fa-sign-out-alt mr-2"></i> Log Out
             </button>
-        </form>
+        </form >
     </div>
 </aside>
 
