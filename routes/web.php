@@ -138,6 +138,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+    //Route::resource() secara otomatis membuat semua route RESTful (index, create, store, show, edit, update, destroy).
     // crud admin di superadmin
     Route::prefix('superadmin')
         ->middleware(['auth', RoleMiddleware::class . ':Superadmin'])
@@ -145,6 +146,7 @@ Route::middleware(['auth'])->group(function () {
         ->group(function () {
             Route::resource('admins', \App\Http\Controllers\Superadmin\AdminController::class);
             Route::resource('kategori-barang', \App\Http\Controllers\Superadmin\KategoriBarangController::class);
+            Route::resource('cabang', CabangController::class);
     });
 
 
@@ -163,18 +165,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('laporan', LaporanController::class);
     Route::resource('notifikasi', NotifikasiController::class);
 
-    // route superadmin
-    Route::middleware(['auth', RoleMiddleware::class . ':superadmin'])
-        ->prefix('dashboard/superadmin')
-        ->name('superadmin.')
-        ->group(function () {
-            Route::get('/cabang', [CabangController::class, 'index'])->name('cabang.index');
-            Route::get('/cabang/create', [CabangController::class, 'create'])->name('cabang.create');
-            Route::post('/cabang', [CabangController::class, 'store'])->name('cabang.store');
-            Route::get('/cabang/{cabang}/edit', [CabangController::class, 'edit'])->name('cabang.edit');
-            Route::put('/cabang/{cabang}', [CabangController::class, 'update'])->name('cabang.update');
-            Route::delete('/cabang/{cabang}', [CabangController::class, 'destroy'])->name('cabang.destroy');
-        });
 
     // Route untuk profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
