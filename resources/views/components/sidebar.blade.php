@@ -33,6 +33,11 @@
             <li><a href="{{ route('superadmin.admins.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">
                 <i class="fas fa-users-cog mr-2"></i> Admin
             </a></li>
+            <li>
+                <a href="{{ route('superadmin.bunga-tenor.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">
+                    <i class="fas fa-percentage mr-2"></i> Bunga & Tenor
+                </a>
+            </li>
             <li><a href="{{ route('lelang_barang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-balance-scale mr-2"></i> Lelang</a></li>
             <li><a href="{{ route('laporan.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-file-alt mr-2"></i> Laporan</a></li>
         @endif

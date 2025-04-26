@@ -147,6 +147,7 @@ Route::middleware(['auth'])->group(function () {
             Route::resource('admins', \App\Http\Controllers\Superadmin\AdminController::class);
             Route::resource('kategori-barang', \App\Http\Controllers\Superadmin\KategoriBarangController::class);
             Route::resource('cabang', CabangController::class);
+            Route::resource('bunga-tenor', \App\Http\Controllers\Superadmin\BungaTenorController::class);
     });
 
 
