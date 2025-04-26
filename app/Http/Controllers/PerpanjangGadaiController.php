@@ -51,7 +51,7 @@ class PerpanjangGadaiController extends Controller
         'nama_barang' => $lama->nama_barang,
         'deskripsi' => $lama->deskripsi,
         'imei' => $lama->imei,
-        'tenor' => $tenor_baru,
+        'id_bunga_tenor' => $data['baru']['id_bunga_tenor'],
         'tempo' => $tempo_baru,
         'telat' => 0,
         'harga_gadai' => $harga_gadai_baru, // total_baru = harga_gadai + bunga
