@@ -10,96 +10,81 @@ class BarangGadaiSeeder extends Seeder
 {
     public function run()
     {
-        // Nonaktifkan pemeriksaan foreign key
+        // Nonaktifkan foreign key check sementara
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        // Bersihkan data sebelumnya
-        DB::table('barang_gadai')->delete();
+        // Hapus data sebelumnya
+        DB::table('barang_gadai')->truncate();
 
-        // Ambil ID dari Admin A (adminA) dan Admin B (adminB) dari tabel users
-        $adminA = DB::table('users')->where('username', 'adminA')->value('id_users');
-        $adminB = DB::table('users')->where('username', 'adminB')->value('id_users');
-
-        // Ambil ID dari Nasabah Satu dan Nasabah Dua dari tabel nasabah
+        // Ambil ID user dan nasabah
         $nasabah1 = DB::table('nasabah')->where('nama', 'Nasabah Satu')->value('id_nasabah');
         $nasabah2 = DB::table('nasabah')->where('nama', 'Nasabah Dua')->value('id_nasabah');
         $nasabah3 = DB::table('nasabah')->where('nama', 'nasabah Tiga')->value('id_nasabah');
 
-        // Data barang gadai dengan perhitungan bunga otomatis berdasarkan tenor
+        // Ambil ID bunga_tenor berdasarkan tenor
+        $tenor7 = DB::table('bunga_tenor')->where('tenor', 7)->value('id');
+        $tenor14 = DB::table('bunga_tenor')->where('tenor', 14)->value('id');
+        $tenor30 = DB::table('bunga_tenor')->where('tenor', 30)->value('id');
+
+        // Data barang gadai
         $barangGadaiData = [
             [
                 'no_bon' => 'BON001',
                 'id_nasabah' => $nasabah1,
                 'id_cabang' => 1,
+                'id_kategori' => 1,
+                'id_bunga_tenor' => $tenor30,
                 'nama_barang' => 'Laptop Asus ROG',
                 'deskripsi' => 'high-end.',
                 'imei' => '123456789012345',
-                'tenor' => 30,
                 'tempo' => Carbon::now()->addDays(30),
                 'telat' => 0,
                 'harga_gadai' => 1500000.00,
                 'status' => 'Tergadai',
-                'id_kategori' => 1,
+                'bunga' => 15,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'no_bon' => 'BON002',
                 'id_nasabah' => $nasabah2,
-                'id_user' => 2,
+                'id_cabang' => 2,
+                'id_kategori' => 2,
+                'id_bunga_tenor' => $tenor14,
                 'nama_barang' => 'Samsung Galaxy J2',
                 'deskripsi' => 'RAM 8GB, dan memori internal 128GB.',
                 'imei' => '987654321098765',
-                'tenor' => 14,
                 'tempo' => Carbon::now()->addDays(14),
                 'telat' => 0,
                 'harga_gadai' => 800000.00,
                 'status' => 'Tergadai',
-                'id_kategori' => 2,
+                'bunga' => 10,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'no_bon' => 'BON003',
                 'id_nasabah' => $nasabah3,
-                'id_user' => 3,
+                'id_cabang' => 2,
+                'id_kategori' => 2,
+                'id_bunga_tenor' => $tenor14,
                 'nama_barang' => 'Samsung Galaxy J3',
                 'deskripsi' => 'RAM 8GB, dan memori internal 128GB.',
                 'imei' => '987654321098765',
-                'tenor' => 14,
                 'tempo' => Carbon::now()->addDays(14),
                 'telat' => 0,
                 'harga_gadai' => 800000.00,
                 'status' => 'Tergadai',
-                'id_kategori' => 2,
+                'bunga' => 10,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ];
 
-        // Simpan persentase bunga berdasarkan tenor
-        foreach ($barangGadaiData as &$data) {
-            switch ($data['tenor']) {
-                case 7:
-                    $data['bunga'] = 5;
-                    break;
-                case 14:
-                    $data['bunga'] = 10;
-                    break;
-                case 30:
-                    $data['bunga'] = 15;
-                    break;
-                default:
-                    $data['bunga'] = 0;
-            }
-        }
-
-        // Insert data ke tabel barang_gadai
+        // Insert ke DB
         DB::table('barang_gadai')->insert($barangGadaiData);
 
-        // Aktifkan kembali foreign key checks
+        // Aktifkan lagi foreign key check
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
-
-// seeder barang gadai

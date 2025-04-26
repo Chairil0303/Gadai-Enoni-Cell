@@ -73,10 +73,9 @@
                                 <div class="mb-3">
                                     <label for="tenor" class="form-label">Tenor</label>
                                     <select name="tenor" class="form-control" required>
-                                        <option value="">Pilih Tenor</option>
-                                        <option value="7">7 hari</option>
-                                        <option value="14">14 hari</option>
-                                        <option value="30">30 hari</option>
+                                        @foreach($bunga_tenors as $bunga)
+                                            <option value="{{ $bunga->tenor }}">{{ $bunga->tenor }} hari (Bunga {{ $bunga->bunga_percent }}%)</option>
+                                        @endforeach
                                     </select>
                                 </div>
 

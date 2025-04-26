@@ -16,11 +16,17 @@ class TebusGadaiController extends Controller
         return view('tebus_gadai.index'); // Pastikan kamu sudah membuat file view `tebus_gadai/index.blade.php`
     }
 
-    private function hitungBunga($hargaGadai, $tenor)
+    private function hitungBunga($barangGadai)
     {
-        $bungaTenor = BungaTenor::where('tenor', $tenor)->first();
-        $bungaPersen = $bungaTenor ? $bungaTenor->bunga_percent : 0;
-        $bunga = $hargaGadai * ($bungaPersen / 100);
+        $bungaTenor = $barangGadai->bungaTenor;
+
+        if ($bungaTenor) {
+            $bungaPersen = $bungaTenor->bunga_percent;
+            $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+        } else {
+            $bungaPersen = 0;
+            $bunga = 0;
+        }
 
         return [
             'bunga' => $bunga,
@@ -30,6 +36,7 @@ class TebusGadaiController extends Controller
 
     public function cari(Request $request)
     {
+        // Initialize the query variable
         $query = BarangGadai::query();
 
         if ($request->has('no_bon')) {
@@ -42,7 +49,7 @@ class TebusGadaiController extends Controller
             });
         }
 
-        $barangGadai = $query->first();
+        $barangGadai = $query->with('bungaTenor')->first(); // Fetch the first result with the related bungaTenor
 
         if (!$barangGadai) {
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
@@ -55,21 +62,22 @@ class TebusGadaiController extends Controller
         $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
 
         // Hitung Bunga dan ambil persentasenya
-        $hasilBunga = $this->hitungBunga($barangGadai->harga_gadai, $barangGadai->tenor);
+        $hasilBunga = $this->hitungBunga($barangGadai);
         $bunga = $hasilBunga['bunga'];
         $bungaPersen = $hasilBunga['bungaPersen'];
-
 
         // Hitung Total Tebus
         $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
 
-        return view('tebus_gadai.konfirmasi', compact('barangGadai', 'nasabah', 'denda', 'totalTebus','bungaPersen','bunga'));
+        return view('tebus_gadai.konfirmasi', compact('barangGadai', 'nasabah', 'denda', 'totalTebus', 'bungaPersen', 'bunga'));
     }
+
 
     public function tebus(Request $request, $noBon)
     {
         // Ambil data barang gadai berdasarkan noBon
-        $barangGadai = BarangGadai::where('no_bon', $noBon)->first();
+        $barangGadai = BarangGadai::with('bungaTenor')->where('no_bon', $noBon)->first();
+
 
         if (!$barangGadai) {
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
@@ -79,7 +87,7 @@ class TebusGadaiController extends Controller
         $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
 
         // Hitung Bunga dan ambil persentasenya
-        $hasilBunga = $this->hitungBunga($barangGadai->harga_gadai, $barangGadai->tenor);
+        $hasilBunga = $this->hitungBunga($barangGadai);
         $bunga = $hasilBunga['bunga'];
         $bungaPersen = $hasilBunga['bungaPersen'];
 

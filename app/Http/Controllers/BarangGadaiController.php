@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\BarangGadai;
 use App\Models\Nasabah;
 use App\Models\KategoriBarang;
+use App\Models\BungaTenor;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 
@@ -34,25 +35,29 @@ class BarangGadaiController extends Controller
 
 
     public function create()
-{
-    $nasabah = Nasabah::all();
-    $kategori = KategoriBarang::all();
-    return view('transaksi_gadai.create', [
-        'nasabah' => $nasabah,
-        'kategori_barang' => $kategori // Ubah nama variabel yang dikirim ke Blade
-    ]);
-}
+    {
+        $nasabah = Nasabah::all();
+        $kategori = KategoriBarang::all();
+        $bunga_tenors = BungaTenor::all(); // ambil data bunga tenors
 
+        return view('transaksi_gadai.create', [
+            'nasabah' => $nasabah,
+            'kategori_barang' => $kategori,
+            'bunga_tenors' => $bunga_tenors // lempar ke view
+        ]);
+    }
 
     public function store(Request $request)
     {
+        $validTenors = BungaTenor::pluck('tenor')->toArray();
+
         // Validasi input
         $request->validate([
             'id_nasabah'   => 'required|exists:nasabah,id_nasabah',
             'nama_barang'  => 'required|string|max:255',
             'deskripsi'    => 'nullable|string',
             'imei'         => 'required|string|unique:barang_gadai,imei', // Wajib diisi dan unik
-            'tenor'        => 'required|in:7,14,30',
+            'tenor'        => 'required|in:' . implode(',', $validTenors),
             'harga_gadai'  => 'required|numeric|min:0',
             'status'       => 'required|in:Tergadai,Ditebus,Dilelang',
             'id_kategori'  => 'nullable|exists:kategori_barang,id_kategori',
@@ -72,6 +77,7 @@ class BarangGadaiController extends Controller
             'deskripsi'    => $request->deskripsi,
             'imei'         => $request->imei,
             'tenor'        => $request->tenor,
+            'bunga'        => $bungaTenor->bunga_percent,
             'tempo'        => $tempo, // Menyimpan tanggal jatuh tempo
             'telat'        => 0, // Default keterlambatan 0
             'harga_gadai'  => $request->harga_gadai,

@@ -17,11 +17,10 @@ return new class extends Migration
     $table->string('no_bon_lama')->nullable();
     $table->unsignedBigInteger('id_nasabah');
     $table->unsignedBigInteger('id_cabang')->nullable();
+    $table->unsignedBigInteger('id_bunga_tenor')->nullable();
     $table->string('nama_barang');
     $table->text('deskripsi')->nullable();
     $table->string('imei');
-    $table->integer('tenor'); //gua ubah ke integer biar bisa namabahinke bagian tempo gua bikin logic tambah tempo berdasarkan
-    // $table->enum('tenor', ['7', '14', '30'])->default('7'); ini error karna dia string hasilnya
     $table->date('tempo');
     $table->integer('telat')->default(0);
     $table->decimal('harga_gadai', 15, 2);
@@ -31,7 +30,7 @@ return new class extends Migration
     $table->foreign('id_nasabah')->references('id_nasabah')->on('nasabah')->onDelete('cascade');
     $table->foreign('id_kategori')->references('id_kategori')->on('kategori_barang')->onDelete('set null');
     $table->foreign('id_cabang')->references('id_cabang')->on('cabang')->onDelete('set null');
-
+    $table->foreign('id_bunga_tenor')->references('id')->on('bunga_tenor')->onDelete('set null');
 
     $table->timestamps();
 });

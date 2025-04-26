@@ -27,7 +27,7 @@
             <tr><th>Nama Barang</th><td>{{ $barangGadai->nama_barang }}</td></tr>
             <tr><th>No Bon</th><td>{{ $barangGadai->no_bon }}</td></tr>
             <tr><th>Harga Gadai</th><td>Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}</td></tr>
-            <tr><th>Tenor</th><td>{{ $barangGadai->tenor }} hari</td></tr>
+            <tr><th>Tenor</th><td>{{ $barangGadai->bungaTenor->tenor }} hari</td></tr>
             <tr><th>Jatuh Tempo</th><td>{{ $barangGadai->tempo }}</td></tr>
             <tr><th>Bunga</th><td>{{ $bungaPersen }}% (Rp {{ number_format($bunga, 0, ',', '.') }})</td></tr>
             <tr><th>Telat</th><td>{{ $barangGadai->telat }} hari</td></tr>

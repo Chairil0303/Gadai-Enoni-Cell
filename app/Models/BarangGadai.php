@@ -124,4 +124,8 @@
         {
             return $this->belongsTo(Cabang::class, 'id_cabang', 'id_cabang');
         }
+        public function bungaTenor()
+        {
+            return $this->belongsTo(BungaTenor::class, 'id_bunga_tenor', 'id');
+        }
     }

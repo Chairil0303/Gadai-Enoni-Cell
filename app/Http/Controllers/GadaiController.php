@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\TransaksiGadai;
 use Illuminate\Support\Str;
+use App\Models\BungaTenor; 
 
 class GadaiController extends Controller
 {
@@ -21,21 +22,22 @@ class GadaiController extends Controller
 }
 
     public function create()
-{
-    $barangGadai = BarangGadai::with(['kategori', 'nasabah'])->get();
-    $nasabah = Nasabah::all();
-    $kategori = KategoriBarang::all();
-    return view('transaksi_gadai.create', [
-        'nasabah' => $nasabah,
-        'kategori_barang' => $kategori // Ubah nama variabel yang dikirim ke Blade
-    ]);
-}
+    {
+        $nasabah = Nasabah::all();
+        $kategori = KategoriBarang::all();
+        $bunga_tenors = BungaTenor::all();
+
+        return view('transaksi_gadai.create', compact('nasabah', 'kategori', 'bunga_tenors'));
+
+    }
+
 
 
 
 
 public function store(Request $request)
 {
+    $validTenors = BungaTenor::pluck('tenor')->toArray();
     // Validasi Input SEBELUM penyimpanan data
     $request->validate([
         'nama' => 'required|string|max:255',
@@ -45,21 +47,19 @@ public function store(Request $request)
         'nama_barang' => 'required|string|max:255',
         'deskripsi' => 'nullable|string',
         'imei' => 'nullable|string',
-        'tenor' => 'required|integer|in:7,14,30',
+        'tenor'        => 'required|in:' . implode(',', $validTenors),
         'harga_gadai' => 'required|numeric',
         'id_kategori' => 'required|integer|exists:kategori_barang,id_kategori',
     ]);
 
     $tenor = (int) $request->tenor;
 
-    // Tentukan bunga berdasarkan tenor
-    $bunga_persen = match ($tenor) {
-        7 => 5,
-        14 => 10,
-        30 => 15,
-        default => 0,
-    };
-    $bunga = ($request->harga_gadai * $bunga_persen) / 100;
+    // Cari ID BungaTenor berdasarkan tenor
+    $bungaTenor = BungaTenor::where('tenor', $tenor)->first();
+
+    if (!$bungaTenor) {
+        return back()->withErrors(['tenor' => 'Bunga untuk tenor ini belum diatur.']);
+    }
 
     // Buat User Baru
     $user = User::create([
@@ -89,8 +89,8 @@ public function store(Request $request)
         'nama_barang' => $request->nama_barang,
         'deskripsi' => $request->deskripsi,
         'imei' => $request->imei,
-        'tenor' => $tenor,
-        'bunga' => $bunga_persen,
+        'id_bunga_tenor' => $bungaTenor->id,
+        'bunga' => $bungaTenor->bunga_percent,
         'tempo' => now()->addDays($tenor),
         'harga_gadai' => $request->harga_gadai,
         'id_kategori' => $request->id_kategori,
@@ -104,7 +104,7 @@ public function store(Request $request)
         'no_bon' => $request->no_bon,
         'tanggal_gadai' => now(),
         'jumlah_pinjaman' => $request->harga_gadai,
-        'bunga' => $bunga_persen,
+        'bunga' => $bungaTenor->bunga_percent,
         'jatuh_tempo' => now()->addDays($tenor),
         'created_at' => now(),
         'updated_at' => now(),
