@@ -76,10 +76,6 @@ class PerpanjangGadaiController extends Controller
     return redirect()->route('barang_gadai.index')->with('success', );
 }
 
-
-
-
-
     public function konfirmasi()
 {
     $data = session('konfirmasi_data');

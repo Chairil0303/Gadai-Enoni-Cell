@@ -42,7 +42,7 @@
         <form id="tebusForm" action="{{ route('admin.tebus.proses', $barangGadai->no_bon) }}" method="POST">
             @csrf
             <button type="button" class="btn btn-success" id="adminConfirmTebusBtnFix">Tebus</button>
-            <a href="{{ route('admin.tebus.cari') }}" class="btn btn-danger">Cancel</a>
+            <a href="{{ route('admin.tebus.index') }}" class="btn btn-danger">Cancel</a>
         </form>
     </div>
 </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BarangGadai;
 use App\Models\Nasabah;
+use App\Models\BungaTenor;
 use Illuminate\Http\Request;
 use App\Models\TransaksiTebus;
 use Carbon\Carbon;
@@ -13,6 +14,18 @@ class TebusGadaiController extends Controller
     public function index()
     {
         return view('tebus_gadai.index'); // Pastikan kamu sudah membuat file view `tebus_gadai/index.blade.php`
+    }
+
+    private function hitungBunga($hargaGadai, $tenor)
+    {
+        $bungaTenor = BungaTenor::where('tenor', $tenor)->first();
+        $bungaPersen = $bungaTenor ? $bungaTenor->bunga_percent : 0;
+        $bunga = $hargaGadai * ($bungaPersen / 100);
+
+        return [
+            'bunga' => $bunga,
+            'bungaPersen' => $bungaPersen,
+        ];
     }
 
     public function cari(Request $request)
@@ -41,18 +54,11 @@ class TebusGadaiController extends Controller
         // Hitung Denda (1% dari harga gadai dikali hari telat)
         $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
 
-         // Hitung Bunga Berdasarkan Tenor
-        if ($barangGadai->tenor == 7) {
-            $bungaPersen = 5;
-        } elseif ($barangGadai->tenor == 14) {
-            $bungaPersen = 10;
-        } elseif ($barangGadai->tenor == 30) {
-            $bungaPersen = 15;
-        } else {
-            $bungaPersen = 0; // Kalau tenor tidak sesuai
-        }
+        // Hitung Bunga dan ambil persentasenya
+        $hasilBunga = $this->hitungBunga($barangGadai->harga_gadai, $barangGadai->tenor);
+        $bunga = $hasilBunga['bunga'];
+        $bungaPersen = $hasilBunga['bungaPersen'];
 
-        $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
 
         // Hitung Total Tebus
         $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
@@ -72,18 +78,11 @@ class TebusGadaiController extends Controller
         // Hitung Denda
         $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
 
-        // Hitung Bunga Berdasarkan Tenor
-        if ($barangGadai->tenor == 7) {
-            $bungaPersen = 5;
-        } elseif ($barangGadai->tenor == 14) {
-            $bungaPersen = 10;
-        } elseif ($barangGadai->tenor == 30) {
-            $bungaPersen = 15;
-        } else {
-            $bungaPersen = 0;
-        }
+        // Hitung Bunga dan ambil persentasenya
+        $hasilBunga = $this->hitungBunga($barangGadai->harga_gadai, $barangGadai->tenor);
+        $bunga = $hasilBunga['bunga'];
+        $bungaPersen = $hasilBunga['bungaPersen'];
 
-        $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
         $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
 
         // Simpan transaksi tebus

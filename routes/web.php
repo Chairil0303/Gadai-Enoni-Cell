@@ -139,7 +139,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     //Route::resource() secara otomatis membuat semua route RESTful (index, create, store, show, edit, update, destroy).
-    // crud admin di superadmin
+    // crud admin di superadmin 
     Route::prefix('superadmin')
         ->middleware(['auth', RoleMiddleware::class . ':Superadmin'])
         ->name('superadmin.')
