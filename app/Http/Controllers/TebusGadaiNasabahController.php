@@ -43,17 +43,9 @@ class TebusGadaiNasabahController extends Controller
 
 
          // Hitung Bunga Berdasarkan Tenor
-        if ($barangGadai->tenor == 7) {
-            $bungaPersen = 5;
-        } elseif ($barangGadai->tenor == 14) {
-            $bungaPersen = 10;
-        } elseif ($barangGadai->tenor == 30) {
-            $bungaPersen = 15;
-        } else {
-            $bungaPersen = 0; // Kalau tenor tidak sesuai
-        }
-
-        $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+         $hasilBunga = $this->hitungBunga($barangGadai);
+         $bunga = $hasilBunga['bunga'];
+         $bungaPersen = $hasilBunga['bungaPersen'];
 
         // Hitung Total Tebus
         $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
@@ -61,6 +53,24 @@ class TebusGadaiNasabahController extends Controller
         return view('nasabah.konfirmasi', compact('barangGadai', 'nasabah', 'denda', 'totalTebus','bungaPersen','bunga'));
     }
 
+
+    private function hitungBunga($barangGadai)
+    {
+        $bungaTenor = $barangGadai->bungaTenor;
+
+        if ($bungaTenor) {
+            $bungaPersen = $bungaTenor->bunga_percent;
+            $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+        } else {
+            $bungaPersen = 0;
+            $bunga = 0;
+        }
+
+        return [
+            'bunga' => $bunga,
+            'bungaPersen' => $bungaPersen,
+        ];
+    }
 
 public function konfirmasi($no_bon)
 {
@@ -80,17 +90,10 @@ public function konfirmasi($no_bon)
         abort(404, 'Barang gadai tidak ditemukan atau tidak cocok dengan akun nasabah.');
     }
     // Hitung Bunga Berdasarkan Tenor
-    if ($barangGadai->tenor == 7) {
-        $bungaPersen = 5;
-    } elseif ($barangGadai->tenor == 14) {
-        $bungaPersen = 10;
-    } elseif ($barangGadai->tenor == 30) {
-        $bungaPersen = 15;
-    } else {
-        $bungaPersen = 0; // Kalau tenor tidak sesuai
-    }
+    $hasilBunga = $this->hitungBunga($barangGadai);
+    $bunga = $hasilBunga['bunga'];
+    $bungaPersen = $hasilBunga['bungaPersen'];
 
-    $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
     // Hitung bunga, denda, dll
     $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
     $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
