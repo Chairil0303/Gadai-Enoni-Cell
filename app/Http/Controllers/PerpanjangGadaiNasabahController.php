@@ -179,7 +179,8 @@ class perpanjangGadaiNasabahController extends Controller
         // $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
         $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
         // $cicilan = $request->input('cicilan', 0);
-        $totalPerpanjang = ($barangGadai->harga_gadai * ($bungaPersen / 100) + $denda + $cicilan);
+        $totalPerpanjang = ($bunga  + $denda + $cicilan);
+        // $totalPerpanjang = ($barangGadai->harga_gadai * ($bungaPersen / 100) + $denda + $cicilan); Permasalahan 1
 
         // $tenor = $request->input('tenor', $barangGadai->tenor); // fallback ke tenor lama kalau tidak dikirim
 
@@ -224,7 +225,7 @@ class perpanjangGadaiNasabahController extends Controller
             'nama_barang' => $barangGadai->nama_barang,
             'deskripsi' => $barangGadai->deskripsi,
             'imei' => $barangGadai->imei,
-            'tenor' => $tenor,
+            // 'tenor' => $tenor,permasalahan 2
             'tempo' => $tempobaru,
             'telat' => 0,
             'harga_gadai' => $barangGadai->harga_gadai-$cicilan, // total_baru = harga_gadai + bunga
