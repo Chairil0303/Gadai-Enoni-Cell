@@ -15,13 +15,25 @@
 <div class="container mx-auto mt-6" 
      x-data="{ show: false, selectedAdmin: null, admins: @js($admins->keyBy('id_users')) }">
 
-    <div class="row justify-content-left">
+    <!-- <div class="row justify-content-around">
         <div class="col-md-3">
             <h1 class="text-2xl font-bold">Daftar Admin</h1>
         </div>
         <div class="col-md-9">
             <a href="{{ route('superadmin.admins.create') }}"
                 class="no-underline mb-2 inline-block bg-success text-white px-4 py-2 rounded hover:bg-green-300">
+                + Tambah Admin
+            </a>
+        </div>
+    </div> -->
+
+    <div class="row justify-content-left mb-4">
+        <div class="col-md-6">
+            <h1 class="text-2xl font-bold">Daftar Admin</h1>
+        </div>
+        <div class="col-md-6 text-right">
+            <a href="{{ route('superadmin.admins.create') }}"
+               class="no-underline mb-2 inline-block bg-success text-white px-4 py-2 rounded hover:bg-blue-700">
                 + Tambah Admin
             </a>
         </div>
