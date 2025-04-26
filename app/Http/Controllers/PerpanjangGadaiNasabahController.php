@@ -13,6 +13,7 @@ use App\Models\PendingPayment;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 use App\Models\Cabang;
+use app\Models\BungaTenor;
 
 class perpanjangGadaiNasabahController extends Controller
 {
@@ -30,18 +31,19 @@ class perpanjangGadaiNasabahController extends Controller
 
         // Ambil data nasabah terkait
         $nasabah = Nasabah::find($barangGadai->id_nasabah);
+        $bungaTenor = $barangGadai->bungaTenor;
 
         // Hitung Denda dan Bunga
         $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
         $hasilBunga = $this->hitungBunga($barangGadai);
         $bunga = $hasilBunga['bunga'];
-        $bungaPersen = $hasilBunga['bungaPersen'];
-        // $bungaPersen = ($barangGadai->tenor == 7) ? 5 : (($barangGadai->tenor == 14) ? 10 : (($barangGadai->tenor == 30) ? 15 : 0));
+        // $bungaPersen = $hasilBunga['bungaPersen'];
+        // $bungaPersen = ($bungaTenor->bungaTenor == 7) ? 5 : (($bungaTenor->bungaTenor == 14) ? 10 : (($bungaTenor->bungaTenor == 30) ? 15 : 0));
         // $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
         $totalPerpanjang = $barangGadai->harga_gadai + $bunga + $denda;
 
         // Kirim data ke view
-        return view('nasabah.detailPerpanjangGadai', compact('barangGadai', 'nasabah', 'denda', 'totalPerpanjang', 'bungaPersen', 'bunga'));
+        return view('nasabah.detailPerpanjangGadai', compact('barangGadai', 'nasabah', 'denda', 'totalPerpanjang', 'bunga'));
     }
 
     private function hitungBunga($barangGadai)
