@@ -33,12 +33,33 @@ class perpanjangGadaiNasabahController extends Controller
 
         // Hitung Denda dan Bunga
         $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
-        $bungaPersen = ($barangGadai->tenor == 7) ? 5 : (($barangGadai->tenor == 14) ? 10 : (($barangGadai->tenor == 30) ? 15 : 0));
-        $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+        $hasilBunga = $this->hitungBunga($barangGadai);
+        $bunga = $hasilBunga['bunga'];
+        $bungaPersen = $hasilBunga['bungaPersen'];
+        // $bungaPersen = ($barangGadai->tenor == 7) ? 5 : (($barangGadai->tenor == 14) ? 10 : (($barangGadai->tenor == 30) ? 15 : 0));
+        // $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
         $totalPerpanjang = $barangGadai->harga_gadai + $bunga + $denda;
 
         // Kirim data ke view
         return view('nasabah.detailPerpanjangGadai', compact('barangGadai', 'nasabah', 'denda', 'totalPerpanjang', 'bungaPersen', 'bunga'));
+    }
+
+    private function hitungBunga($barangGadai)
+    {
+        $bungaTenor = $barangGadai->bungaTenor;
+
+        if ($bungaTenor) {
+            $bungaPersen = $bungaTenor->bunga_percent;
+            $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+        } else {
+            $bungaPersen = 0;
+            $bunga = 0;
+        }
+
+        return [
+            'bunga' => $bunga,
+            'bungaPersen' => $bungaPersen,
+        ];
     }
 
 
@@ -72,18 +93,9 @@ class perpanjangGadaiNasabahController extends Controller
         // Hitung denda (1% dari harga gadai dikali hari telat)
         $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
         $tempobaru = Carbon::parse($barangGadai->tempo)->addDays($tenor)->translatedFormat('l, d F Y');
-
-        if ($tenor == 7) {
-            $bungaPersen = 5;
-        } elseif ($tenor == 14) {
-            $bungaPersen = 10;
-        } elseif ($tenor == 30) {
-            $bungaPersen = 15;
-        } else {
-            $bungaPersen = 0;
-        }
-
-        $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+        $hasilBunga = $this->hitungBunga($barangGadai);
+        $bunga = $hasilBunga['bunga'];
+        $bungaPersen = $hasilBunga['bungaPersen'];
 
         if ($type === 'cicil') {
             $hargaGadai = $barangGadai->harga_gadai;
@@ -159,23 +171,12 @@ class perpanjangGadaiNasabahController extends Controller
         $cicilan = session('perpanjangan.cicilan');
         // Hitung Bunga berdasarkan tenor
         $tenor = session('perpanjangan.tenor');
-        switch ($tenor) {
-            case 7:
-                $bungaPersen = 5;
-                break;
-            case 14:
-                $bungaPersen = 10;
-                break;
-            case 30:
-                $bungaPersen = 15;
-                break;
-            default:
-                $bungaPersen = 0;
-                break;
-        }
+        $hasilBunga = $this->hitungBunga($barangGadai);
+        $bunga = $hasilBunga['bunga'];
+        $bungaPersen = $hasilBunga['bungaPersen'];
 
         // Jika jenis pembayaran adalah perpanjang
-        $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+        // $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
         $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
         // $cicilan = $request->input('cicilan', 0);
         $totalPerpanjang = ($barangGadai->harga_gadai * ($bungaPersen / 100) + $denda + $cicilan);
