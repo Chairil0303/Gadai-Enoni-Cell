@@ -50,7 +50,7 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('dashboard.admin');
         } elseif (auth()->user()->role === 'Nasabah') {
             return redirect()->route('profile');//gua ubah jadi profile
-        }elseif (auth()->user()->role === 'staff') {
+        }elseif (auth()->user()->role === 'Staf') {
             return redirect()->route('dashboard.staff');
         }
         // Jika role tidak dikenali, arahkan ke halaman login
@@ -65,7 +65,7 @@ Route::middleware(['auth'])->group(function () {
         })->name('dashboard.admin');
     });
 
-    Route::middleware(RoleMiddleware::class . ':Staff')->group(function () {
+    Route::middleware(RoleMiddleware::class . ':Staf')->group(function () {
         Route::get('/dashboard/Staff', function () {
             return view('components.dashboard.staff');
         })->name('dashboard.staff');

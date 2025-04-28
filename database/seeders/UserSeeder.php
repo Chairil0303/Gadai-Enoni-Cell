@@ -30,11 +30,11 @@ class UserSeeder extends Seeder
                 'id_cabang' => 1,
             ],
             [
-                'nama' => 'staff Kalisuren',
-                'email' => 'staff.kalisuren@example.com',
-                'username' => 'staffA',
+                'nama' => 'Staf Kalisuren',
+                'email' => 'Staf.kalisuren@example.com',
+                'username' => 'StafA',
                 'password' => Hash::make('password'),
-                'role' => 'staff',
+                'role' => 'Staf',
                 'id_cabang' => 1,
             ],
             [
@@ -54,11 +54,11 @@ class UserSeeder extends Seeder
                 'id_cabang' => 3,
             ],
             [
-                'nama' => 'staff lebakwangi',
-                'email' => 'staff.lebakwangi@example.com',
-                'username' => 'staffB',
+                'nama' => 'Staf lebakwangi',
+                'email' => 'Staf.lebakwangi@example.com',
+                'username' => 'StafB',
                 'password' => Hash::make('password'),
-                'role' => 'staff',
+                'role' => 'Staf',
                 'id_cabang' => 2,
             ],
             [
