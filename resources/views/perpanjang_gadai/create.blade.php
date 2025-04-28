@@ -36,9 +36,10 @@
                 <div class="mb-4">
                     <label for="tenor" class="block text-sm font-medium text-gray-700">Tenor Baru</label>
                     <select name="tenor" id="tenor" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm" required>
-                        <option value="7">7 Hari</option>
-                        <option value="14">14 Hari</option>
-                        <option value="30">30 Hari</option>
+                        <option value="">-- Pilih Tenor --</option>
+                        @foreach ($tenors as $tenor)
+                            <option value="{{ $tenor->tenor }}">{{ $tenor->tenor }} Hari - Bunga {{ $tenor->bunga_percent }}%</option>
+                        @endforeach
                     </select>
                 </div>
             </div>

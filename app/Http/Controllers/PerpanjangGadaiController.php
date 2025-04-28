@@ -10,72 +10,77 @@ class PerpanjangGadaiController extends Controller
 {
     public function create()
     {
-        return view('perpanjang_gadai.create');
+        $tenors = \App\Models\BungaTenor::all(); // ambil semua tenor dari DB
+        return view('perpanjang_gadai.create', compact('tenors'));
     }
 
     public function store(Request $request)
-{
-    $data = session('konfirmasi_data');
+    {
+        $data = session('konfirmasi_data');
 
-    if (!$data) {
-        return redirect()->route('perpanjang_gadai.create')->with('error', 'Data tidak ditemukan. Silakan isi ulang formulir.');
+        if (!$data) {
+            return redirect()->route('perpanjang_gadai.create')->with('error', 'Data tidak ditemukan. Silakan isi ulang formulir.');
+        }
+
+        // Optional: kalau mau lihat isi id_bunga_tenor saat development
+        // dump($data['id_bunga_tenor']);
+
+        $request->validate([
+            'no_bon_lama' => 'required|exists:barang_gadai,no_bon',
+            'no_bon_baru' => 'required|unique:barang_gadai,no_bon',
+        ]);
+
+        $lama = BarangGadai::where('no_bon', $request->no_bon_lama)
+            ->where('id_cabang', auth()->user()->id_cabang)
+            ->firstOrFail();
+
+        // Data baru dari session
+        $harga_gadai_baru = $data['baru']['harga_gadai'];
+        $bunga_baru = $data['baru']['bunga'];
+        $tenor_baru = $data['id_bunga_tenor'];
+        $tempo_baru = $data['baru']['tempo'];
+        $total_baru = $data['total_baru'];
+
+        // Update status bon lama
+        $lama->update([
+            'status' => 'diperpanjang',
+        ]);
+
+        $user = auth()->user();
+
+        // Buat bon baru
+        BarangGadai::create([
+            'no_bon' => $request->no_bon_baru,
+            'id_nasabah' => $lama->id_nasabah,
+            'nama_barang' => $lama->nama_barang,
+            'deskripsi' => $lama->deskripsi,
+            'imei' => $lama->imei,
+            'id_bunga_tenor' => $tenor_baru, // <-- sekarang ini akan kesimpan
+            'tempo' => $tempo_baru,
+            'telat' => 0,
+            'harga_gadai' => $harga_gadai_baru,
+            'bunga' => $bunga_baru,
+            'status' => 'Tergadai',
+            'id_kategori' => $lama->id_kategori,
+            'id_cabang' => $user->id_cabang,
+        ]);
+
+        // Simpan histori perpanjangan
+        \App\Models\PerpanjanganGadai::create([
+            'no_bon_lama' => $request->no_bon_lama,
+            'no_bon_baru' => $request->no_bon_baru,
+            'tenor_baru' => $tenor_baru,
+            'harga_gadai_baru' => $harga_gadai_baru,
+            'bunga_baru' => $bunga_baru,
+            'tempo_baru' => $tempo_baru,
+        ]);
+
+        // Bersihkan session supaya ga dobel
+        session()->forget('konfirmasi_data');
+
+        return redirect()->route('barang_gadai.index')->with('success', 'Perpanjangan berhasil disimpan.');
     }
 
-    $request->validate([
-        'no_bon_lama' => 'required|exists:barang_gadai,no_bon',
-        'no_bon_baru' => 'required|unique:barang_gadai,no_bon',
-    ]);
-
-    $lama = BarangGadai::where('no_bon', $request->no_bon_lama)
-        ->where('id_cabang', auth()->user()->id_cabang)
-        ->firstOrFail();
-
-    // Gunakan data dari session, bukan hitung ulang
-    $harga_gadai_baru = $data['baru']['harga_gadai'];
-    $bunga_baru = $data['baru']['bunga'];
-    $tenor_baru = $data['baru']['tenor'];
-    $tempo_baru = $data['baru']['tempo'];
-    $total_baru = $data['total_baru'];
-
-    // Update status bon lama
-    $lama->update([
-        'status' => 'diperpanjang',
-    ]);
-
-    $user = auth()->user();
-
-    // Buat bon baru
-    BarangGadai::create([
-        'no_bon' => $request->no_bon_baru,
-        'id_nasabah' => $lama->id_nasabah,
-        'nama_barang' => $lama->nama_barang,
-        'deskripsi' => $lama->deskripsi,
-        'imei' => $lama->imei,
-        'id_bunga_tenor' => $data['baru']['id_bunga_tenor'],
-        'tempo' => $tempo_baru,
-        'telat' => 0,
-        'harga_gadai' => $harga_gadai_baru, // total_baru = harga_gadai + bunga
-        'bunga' => $bunga_baru,
-        'status' => 'Tergadai',
-        'id_kategori' => $lama->id_kategori,
-        'id_cabang' => $user->id_cabang,
-    ]);
-
-    // Simpan histori perpanjangan
-    \App\Models\PerpanjanganGadai::create([
-        'no_bon_lama' => $request->no_bon_lama,
-        'no_bon_baru' => $request->no_bon_baru,
-        'tenor_baru' => $tenor_baru,
-        'harga_gadai_baru' => $harga_gadai_baru, // sesuai perhitungan submitForm
-        'bunga_baru' => $bunga_baru,
-        'tempo_baru' => $tempo_baru,
-    ]);
-
-    // Bersihkan session agar tidak dobel saat reload
-    session()->forget('konfirmasi_data');
-
-    return redirect()->route('barang_gadai.index')->with('success', );
-}
 
     public function konfirmasi()
 {
@@ -91,11 +96,13 @@ class PerpanjangGadaiController extends Controller
 
     public function submitForm(Request $request)
     {
+        // Ambil semua tenor dari tabel
+        $tenorValid = BungaTenor::pluck('tenor')->toArray();
 
             $request->validate([
                 'no_bon_lama' => 'required|string|exists:barang_gadai,no_bon',
                 'no_bon_baru' => 'required|string|unique:barang_gadai,no_bon',
-                'tenor' => 'required|integer|in:7,14,30',
+                'tenor' => 'required|integer|in:' . implode(',', $tenorValid),
                 'jenis_perpanjangan' => 'required|in:tanpa_perubahan,penambahan,pengurangan',
                 'penambahan' => 'nullable|numeric|min:0',
                 'pengurangan' => 'nullable|numeric|min:0',
@@ -197,15 +204,15 @@ class PerpanjangGadaiController extends Controller
             // Siapkan data untuk bon baru
             $baru = [
                 'no_bon' => $request->no_bon_baru,
-                'tenor' => $request->tenor,
                 'harga_gadai' => $harga_gadai_baru,
                 'bunga' => $bunga_baru,
                 'tempo' => $tempo_baru->format('Y-m-d'),
-                'id_bunga_tenor' => $bungaTenorBaru->id,
+                // 'id_bunga_tenor' => $bungaTenorBaru->id, pondah langsung ke $data bukan ada di $baru lagi
             ];
 
             // Kirim data ke view konfirmasi
             $data=[
+                'id_bunga_tenor' => $bungaTenorBaru->id,
                 'lama' => $lama,
                 'nasabah' => $nasabah,
                 'no_bon_baru' => $request->no_bon_baru,
@@ -225,8 +232,10 @@ class PerpanjangGadaiController extends Controller
                 'catatan' => $catatan,
             ];
 
+
             session(['konfirmasi_data' => $data]);
 
+            
         // Redirect GET
         return redirect()->route('perpanjang_gadai.konfirmasi');
     }
