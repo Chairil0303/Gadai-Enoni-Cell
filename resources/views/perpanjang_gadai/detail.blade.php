@@ -25,9 +25,9 @@
                 <div class="card-body">
                     <p><strong>No Bon:</strong> {{ $lama->no_bon }}</p>
                     <p><strong>Nama Barang:</strong> {{ $lama->nama_barang }}</p>
-                    <p><strong>Tenor:</strong> {{ $lama->tenor }} hari</p>
+                    <p><strong>Tenor:</strong> {{ $lama->bungaTenor->tenor }} hari</p>
                     <p><strong>Harga Gadai:</strong> Rp{{ number_format($lama->harga_gadai, 0, ',', '.') }}</p>
-                    <p><strong>Bunga:</strong> Rp{{ number_format($bunga_lama, 0, ',', '.') }}</p>
+                    <p><strong>Bunga {{$lama->bungaTenor->bunga_percent}}%:</strong> Rp{{ number_format($bunga_lama, 0, ',', '.') }}</p>
                     <p><strong>Denda Telat:</strong> Rp{{ number_format($denda_lama, 0, ',', '.') }}</p>
                     <p><strong>Tempo:</strong> {{ $lama->tempo }}</p>
                     <p class="text-danger fw-bold"><strong>Total Tagihan Lama:</strong> Rp{{ number_format($total_lama, 0, ',', '.') }}</p>
@@ -63,7 +63,7 @@
         <div class="card-body">
             <p>{{ $catatan }}</p>
 
-            <h5>Total yang Harus Dibayar: <span class="text-danger">Rp {{ number_format($bunga_lama + $denda_lama, 0, ',', '.') }}</span></h5>
+            <h5>Total yang Harus Dibayar: <span class="text-danger">Rp {{ number_format($bunga_lama + $denda_lama + $pengurangan, 0, ',', '.') }}</span></h5>
             <p><strong>Bunga Bon Lama:</strong> Rp{{ number_format($bunga_lama, 0, ',', '.') }}</p>
             @if($denda > 0)
                 <!-- <p><strong>Denda (jika ada):</strong> Rp{{ number_format($denda, 0, ',', '.') }}</p> -->
