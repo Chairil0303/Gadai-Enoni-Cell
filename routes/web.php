@@ -50,6 +50,8 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('dashboard.admin');
         } elseif (auth()->user()->role === 'Nasabah') {
             return redirect()->route('profile');//gua ubah jadi profile
+        }elseif (auth()->user()->role === 'staff') {
+            return redirect()->route('dashboard.staff');
         }
         // Jika role tidak dikenali, arahkan ke halaman login
         return redirect('/login');
@@ -61,6 +63,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/admin', function () {
             return view('components.dashboard.admin');
         })->name('dashboard.admin');
+    });
+
+    Route::middleware(RoleMiddleware::class . ':Staff')->group(function () {
+        Route::get('/dashboard/Staff', function () {
+            return view('components.dashboard.staff');
+        })->name('dashboard.staff');
     });
 
 
@@ -139,7 +147,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     //Route::resource() secara otomatis membuat semua route RESTful (index, create, store, show, edit, update, destroy).
-    // crud admin di superadmin 
+    // crud admin di superadmin
     Route::prefix('superadmin')
         ->middleware(['auth', RoleMiddleware::class . ':Superadmin'])
         ->name('superadmin.')

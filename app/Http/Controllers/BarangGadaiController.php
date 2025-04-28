@@ -56,38 +56,40 @@ class BarangGadaiController extends Controller
             'id_nasabah'   => 'required|exists:nasabah,id_nasabah',
             'nama_barang'  => 'required|string|max:255',
             'deskripsi'    => 'nullable|string',
-            'imei'         => 'required|string|unique:barang_gadai,imei', // Wajib diisi dan unik
+            'imei'         => 'required|string|unique:barang_gadai,imei',
             'tenor'        => 'required|in:' . implode(',', $validTenors),
             'harga_gadai'  => 'required|numeric|min:0',
             'status'       => 'required|in:Tergadai,Ditebus,Dilelang',
             'id_kategori'  => 'nullable|exists:kategori_barang,id_kategori',
         ]);
 
-        // Konversi tenor ke integer agar kompatibel dengan Carbon
-            $tenor = (int) $request->tenor;
-            $tempo = Carbon::now()->addDays($tenor)->format('Y-m-d');
+        // Konversi tenor ke integer
+        $tenor = (int) $request->tenor;
+        $tempo = Carbon::now()->addDays($tenor)->format('Y-m-d');
 
+        // Ambil bunga berdasarkan tenor yang dipilih
+        $bungaTenor = BungaTenor::where('tenor', $tenor)->first();
+        $bungaPercent = $bungaTenor ? $bungaTenor->bunga_percent : 0; // default 0 kalau tidak ketemu
 
         BarangGadai::create([
-
-            'id_user' => auth()->id(), // Isi dengan ID admin yang login
-            'no_bon' => $request->no_bon,
+            'id_user'      => auth()->id(),
+            'no_bon'       => $request->no_bon,
             'id_nasabah'   => $request->id_nasabah,
             'nama_barang'  => $request->nama_barang,
             'deskripsi'    => $request->deskripsi,
             'imei'         => $request->imei,
             'tenor'        => $request->tenor,
-            'bunga'        => $bungaTenor->bunga_percent,
-            'tempo'        => $tempo, // Menyimpan tanggal jatuh tempo
-            'telat'        => 0, // Default keterlambatan 0
+            'bunga'        => $bungaPercent,
+            'tempo'        => $tempo,
+            'telat'        => 0,
             'harga_gadai'  => $request->harga_gadai,
             'status'       => $request->status,
             'id_kategori'  => $request->id_kategori,
         ]);
 
-        // return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil ditambahkan.');
         return redirect()->route('barang_gadai.index')->with('success', 'Barang Gadai berhasil ditambahkan!');
     }
+
 
 
     public function show(BarangGadai $barangGadai)

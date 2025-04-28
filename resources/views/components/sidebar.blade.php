@@ -1,6 +1,6 @@
 <aside class="overflow-y-auto max-h-screen pb-5">
     <!-- Tombol ✖ hanya untuk mobile -->
-    <button 
+    <button
         class="absolute top-2 right-2 text-white text-xl md:hidden"
         @click="sidebarOpen = false"
     >
@@ -44,6 +44,13 @@
 
         {{-- Khusus Admin --}}
         @if(auth()->user()->isAdmin())
+            <li><a href="{{ route('barang_gadai.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-box-open mr-2"></i> Barang Gadai</a></li>
+            <li><a href="{{ route('transaksi_gadai.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-hand-holding-usd mr-2"></i> Transaksi Gadai</a></li>
+            <li><a href="{{ route('nasabah.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-user-tie mr-2"></i> Nasabah</a></li>
+            <li><a href="{{ route('lelang_barang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-balance-scale mr-2"></i> Lelang</a></li>
+        @endif
+        {{-- khusus staff --}}
+        @if(auth()->user()->isstaff())
             <li><a href="{{ route('barang_gadai.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-box-open mr-2"></i> Barang Gadai</a></li>
             <li><a href="{{ route('transaksi_gadai.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-hand-holding-usd mr-2"></i> Transaksi Gadai</a></li>
             <li><a href="{{ route('nasabah.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-user-tie mr-2"></i> Nasabah</a></li>
