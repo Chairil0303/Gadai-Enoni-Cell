@@ -6,7 +6,7 @@
         <div class="col-md-12">
             <div class="card shadow-lg">
                 <div class="card-header bg-success text-white">
-                    <h4><i class="fas fa-box"></i> Data Barang Gadai</h4>
+                    <h4><i class="fas fa-box"></i> Update No Bon</h4>
                 </div>
                 <div class="card-body">
                     <!-- @if(session('success'))
@@ -26,13 +26,9 @@
                                 <th>Kategori</th>
                                 <th>Tipe Barang</th>
                                 <th>Atas Nama</th>
-                                <th>IMEI</th>
-                                <th>Deskripsi</th>
-                                <th>Tenor</th>
-                                <th>Tempo</th>
-                                <th>Sisa Hari</th>
-                                <th>Harga Gadai</th>
-                                <th>Status</th>
+                                @if(auth()->user()->isStaf())
+                                <th>Aksi</th>
+                                @endif
                                 @if (auth()->user()->isSuperadmin())
                                 <th>Aksi</th>
                                 @endif
@@ -41,27 +37,27 @@
                         <tbody>
                             @foreach($barangGadai as $barang)
                             <tr>
-                                {{-- <td>{{$barang->cabang->nama_cabang}}</td> --}}
+                                <td>{{$barang->cabang->nama_cabang}}</td>
                                 <td>{{ $barang->no_bon }}</td>
                                 <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
                                 <td>{{ $barang->nama_barang }}</td>
                                 <td>{{ $barang->nasabah->nama ?? '-' }}</td>
-                                <td>{{ $barang->imei ?? '-' }}</td>
-                                <td>{{ $barang->deskripsi }}</td>
-                                <td>{{ $barang->tenor }} hari</td>
-                                <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
-                                <td>
+                                {{-- <td>{{ $barang->imei ?? '-' }}</td> --}}
+                                {{-- <td>{{ $barang->deskripsi }}</td> --}}
+                                {{-- <td>{{ $barang->tenor }} hari</td> --}}
+                                {{-- <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td> --}}
+                                {{-- <td>
                                     @if($barang->telat > 0)
                                         <span style="color: red;">Telat {{ $barang->telat }} hari</span>
                                     @else
                                         <span style="color: black;">Sisa {{ $barang->sisa_hari }} hari</span>
                                     @endif
-                                </td>
+                                </td> --}}
 
 
 
-                                <td>Rp {{ number_format($barang->harga_gadai, 0, ',', '.') }}</td>
-                                <td>
+                                {{-- <td>Rp {{ number_format($barang->harga_gadai, 0, ',', '.') }}</td> --}}
+                                {{-- <td>
                                     @if($barang->status === 'Ditebus')
                                         <span class="badge bg-success">Ditebus</span>
                                     @elseif($barang->status === 'Dilelang')
@@ -71,7 +67,7 @@
                                     @elseif($barang->status === 'Diperpanjang')
                                         <span class="badge bg-info">Diperpanjang</span>
                                     @endif
-                                </td>
+                                </td> --}}
 
                                 <td>
                                     <a href="{{ route('barang_gadai.edit_nobon', $barang->no_bon) }}" class="btn btn-warning btn-sm">
