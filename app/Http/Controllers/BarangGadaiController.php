@@ -8,6 +8,7 @@ use App\Models\KategoriBarang;
 use App\Models\BungaTenor;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 
 class BarangGadaiController extends Controller
 {
@@ -31,6 +32,20 @@ class BarangGadaiController extends Controller
         return view('barang_gadai.index', compact('barangGadai'));
     }
 
+    public function tampilBarangDiperpanjangDenganDm()
+    {
+        $query = BarangGadai::with('nasabah.user', 'kategori')
+            ->where('no_bon', 'LIKE', '%DM%');
+
+        // Superadmin bisa lihat semua, lainnya berdasarkan cabang
+        if (auth()->id() != 1 && Schema::hasColumn('barang_gadai', 'id_cabang')) {
+            $query->where('id_cabang', auth()->user()->id_cabang);
+        }
+
+        $barangGadai = $query->get();
+
+        return view('transaksi_gadai.ubahnobon', compact('barangGadai'));
+    }
 
 
 
@@ -106,6 +121,11 @@ class BarangGadaiController extends Controller
         return view('barang_gadai.edit', compact('barangGadai', 'nasabah', 'kategori'));
     }
 
+    public function editNobon($no_bon)
+{
+    $barangGadai = BarangGadai::where('no_bon', $no_bon)->firstOrFail();
+    return view('transaksi_gadai.edit', compact('barangGadai'));
+}
 
     public function update(Request $request, BarangGadai $barangGadai)
     {
@@ -125,6 +145,34 @@ class BarangGadaiController extends Controller
 
         return redirect()->route('barang_gadai.index')->with('success', 'Barang gadai berhasil diperbarui.');
     }
+
+    public function updateNobon(Request $request, $no_bon)
+{
+    // Ambil data barang gadai berdasarkan no_bon
+    $barangGadai = BarangGadai::where('no_bon', $no_bon)->firstOrFail();
+
+    // Validasi input no_bon agar unik, kecuali untuk barang gadai yang sedang di-update
+    $request->validate([
+        'no_bon' => [
+            'required',
+            'string',
+            Rule::unique('barang_gadai', 'no_bon')->ignore($barangGadai->no_bon, 'no_bon'),
+        ],
+    ]);
+
+    // Update no_bon dengan nilai yang diberikan admin
+    $barangGadai->update([
+        'no_bon' => $request->no_bon,
+    ]);
+
+    // Redirect ke halaman index dengan pesan sukses
+    return redirect()->route('barang_gadai.diperpanjang_dm')->with('success', 'Nomor Bon berhasil diperbarui.');
+
+    // return redirect()->route('tampilBarangDiperpanjangDenganDm')->with('success', 'Nomor Bon berhasil diperbarui.');
+}
+
+
+
 
 
 
