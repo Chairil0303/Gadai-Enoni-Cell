@@ -21,6 +21,7 @@
             'deskripsi',
             'tempo',
             'id_bunga_tenor',
+            'no_bon_lama',
             'telat',
             'imei',
             'harga_gadai',

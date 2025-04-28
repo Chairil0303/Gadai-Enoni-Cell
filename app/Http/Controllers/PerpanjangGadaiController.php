@@ -63,6 +63,7 @@ class PerpanjangGadaiController extends Controller
             'status' => 'Tergadai',
             'id_kategori' => $lama->id_kategori,
             'id_cabang' => $user->id_cabang,
+            'no_bon_lama' => $lama->no_bon,
         ]);
 
         // Simpan histori perpanjangan
