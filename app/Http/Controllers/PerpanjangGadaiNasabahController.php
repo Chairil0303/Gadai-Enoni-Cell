@@ -162,15 +162,19 @@ class perpanjangGadaiNasabahController extends Controller
         switch ($tenor) {
             case 7:
                 $bungaPersen = 5;
+                $id_bunga_tenor = 1;
                 break;
             case 14:
                 $bungaPersen = 10;
+                $id_bunga_tenor = 2;
                 break;
             case 30:
                 $bungaPersen = 15;
+                $id_bunga_tenor = 3;
                 break;
             default:
                 $bungaPersen = 0;
+                $id_bunga_tenor = null; // Atau bisa juga 0 jika perlu default ID
                 break;
         }
 
@@ -219,11 +223,12 @@ class perpanjangGadaiNasabahController extends Controller
         // simpan bon baru dengan status tergadai
         BarangGadai::create([
             'no_bon' => $newBon,
+            'no_bon_lama' => $barangGadai->no_bon,
+            'id_bunga_tenor' => $id_bunga_tenor,
             'id_nasabah' => $barangGadai->id_nasabah,
             'nama_barang' => $barangGadai->nama_barang,
             'deskripsi' => $barangGadai->deskripsi,
             'imei' => $barangGadai->imei,
-            'tenor' => $tenor,
             'tempo' => $tempobaru,
             'telat' => 0,
             'harga_gadai' => $barangGadai->harga_gadai-$cicilan, // total_baru = harga_gadai + bunga

@@ -16,7 +16,7 @@
     <div class="mb-4">
         <p><strong>Nama Barang:</strong> {{ $barangGadai->nama_barang }}</p>
         <p><strong>Harga Gadai:</strong> Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}</p>
-        <p><strong>Jatuh Tempo Lama:</strong> {{ \Carbon\Carbon::parse($barangGadai->jatuh_tempo)->translatedFormat('d F Y') }}</p>
+        <p><strong>Jatuh Tempo Lama:</strong> {{ \Carbon\Carbon::parse($barangGadai->tempo)->translatedFormat('d F Y') }}</p>
     </div>
 
     <!-- Tombol Pilih Metode -->

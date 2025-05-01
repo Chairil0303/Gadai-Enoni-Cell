@@ -9,6 +9,7 @@ use Midtrans\Snap;
 use Carbon\Carbon;
 use Auth;
 use App\Models\Nasabah;
+use App\Models\BungaTenor;
 
 class TebusGadaiNasabahController extends Controller
 {
@@ -66,13 +67,14 @@ public function konfirmasi($no_bon)
 {
     $userId = auth()->id();
 
+
     // Ambil id_nasabah berdasarkan id_user
     $nasabah = Nasabah::where('id_user', $userId)->first();
 
     $barangGadai = BarangGadai::where('no_bon', $no_bon)
         ->where('id_nasabah', $nasabah->id_nasabah)
         ->where('status', 'tergadai')
-        ->with('nasabah')
+        ->with('nasabah','bungaTenor')
         ->first();
 
 
