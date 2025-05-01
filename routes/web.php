@@ -18,6 +18,7 @@ use App\Http\Controllers\NasabahPaymentController;
 use App\Http\Controllers\PerpanjangGadaiController;
 use App\Http\Controllers\PerpanjangGadaiNasabahController;
 use App\Http\Controllers\Superadmin\AdminController;
+use App\Http\Controllers\Admin\StaffController;
 
 
 
@@ -72,11 +73,14 @@ Route::middleware(['auth'])->group(function () {
         })->name('dashboard.staff');
     });
 
-    // staff
-    Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class);
+    Route::prefix('admin')
+    ->middleware('auth')
+    ->name('admin.')
+    ->group(function () {
+        Route::middleware([RoleMiddleware::class . ':Admin'])->group(function () {
+            Route::resource('staff', StaffController::class);
+        });
     });
-
 
 
     // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
