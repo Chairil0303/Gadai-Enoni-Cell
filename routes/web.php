@@ -65,10 +65,16 @@ Route::middleware(['auth'])->group(function () {
         })->name('dashboard.admin');
     });
 
+    //staff
     Route::middleware(RoleMiddleware::class . ':Staf')->group(function () {
         Route::get('/dashboard/Staff', function () {
             return view('components.dashboard.staff');
         })->name('dashboard.staff');
+    });
+
+    // staff
+    Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class);
     });
 
 
@@ -103,9 +109,9 @@ Route::middleware(['auth'])->group(function () {
             Route::post('process-perpanjang-payment', [PerpanjangGadaiNasabahController::class, 'processPayment']);
 
         });
-
     // Perpanjang gadai nasabah End
 
+    
 
     // perpanjang gadai
     Route::get('/perpanjang-gadai/create', [PerpanjangGadaiController::class, 'create'])->name('perpanjang_gadai.create');
