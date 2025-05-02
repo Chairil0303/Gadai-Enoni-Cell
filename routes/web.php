@@ -168,10 +168,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/barang-gadai/diperpanjang-dm', [BarangGadaiController::class, 'tampilBarangDiperpanjangDenganDm'])
     ->name('barang_gadai.diperpanjang_dm');
     // Route untuk menampilkan form edit berdasarkan no_bon
-Route::get('/barang_gadai/{no_bon}/edit-nobon', [BarangGadaiController::class, 'editNobon'])->name('barang_gadai.edit_nobon');
+    Route::get('/barang_gadai/{no_bon}/edit-nobon', [BarangGadaiController::class, 'editNobon'])->name('barang_gadai.edit_nobon');
 
 // Route untuk update (pastikan ini sesuai juga)
-Route::put('/barang_gadai/{no_bon}/update-nobon', [BarangGadaiController::class, 'updateNobon'])->name('barang_gadai.update_nobon');
+    Route::put('/barang_gadai/{no_bon}/update-nobon', [BarangGadaiController::class, 'updateNobon'])->name('barang_gadai.update_nobon');
     // route untuk view
     Route::resource('nasabah', NasabahController::class);
     Route::resource('barang_gadai', BarangGadaiController::class);

@@ -29,10 +29,11 @@
     <div id="form-biasa" class="hidden mb-4">
         <label for="tenorBaruBiasa" class="block mb-1 font-semibold">Tenor Baru (hari):</label>
         <select id="tenorBaruBiasa" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm" required>
-            <option value="7">7 Hari</option>
-            <option value="14">14 Hari</option>
-            <option value="30">30 Hari</option>
+            @foreach ($tenors as $tenor)
+                <option value="{{ $tenor->tenor }}">{{ $tenor->tenor }} Hari</option>
+            @endforeach
         </select>
+
     </div>
 
     <!-- Form Perpanjang + Nyicil -->
@@ -40,10 +41,11 @@
         <label for="tenorBaruCicil" class="block mb-1 font-semibold">Tenor Baru (hari):</label>
         <select name="tenor" id="tenorBaruCicil" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm" required>
             <option value="" disabled selected>Pilih Tenor</option>
-            <option value="7">7 Hari</option>
-            <option value="14">14 Hari</option>
-            <option value="30">30 Hari</option>
+            @foreach ($tenors as $tenor)
+                <option value="{{ $tenor->tenor }}">{{ $tenor->tenor }} Hari</option>
+            @endforeach
         </select>
+
 
         <label for="cicilan" class="block mt-3 mb-1 font-semibold">Bayar Cicilan Dari Harga Gadai:</label>
         <input type="number" id="cicilan" class="border px-3 py-2 rounded w-full" min="0" max="{{ $barangGadai->harga_gadai }}">

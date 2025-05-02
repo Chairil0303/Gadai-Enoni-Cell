@@ -10,7 +10,7 @@ class PerpanjangGadaiController extends Controller
 {
     public function create()
     {
-        $tenors = \App\Models\BungaTenor::all(); // ambil semua tenor dari DB
+        $tenors = BungaTenor::all(); // ambil semua tenor dari DB
         return view('perpanjang_gadai.create', compact('tenors'));
     }
 
@@ -130,7 +130,7 @@ class PerpanjangGadaiController extends Controller
             $bunga_lama = $lama->harga_gadai * $bunga_persen_lama;
 
             $tenorLama = $lama->bungaTenor->tenor;
-            
+
             // Tentukan nominal penambahan atau pengurangan
             $nominal = 0;
             if ($request->jenis_perpanjangan === 'penambahan') {
@@ -236,7 +236,7 @@ class PerpanjangGadaiController extends Controller
 
             session(['konfirmasi_data' => $data]);
 
-            
+
         // Redirect GET
         return redirect()->route('perpanjang_gadai.konfirmasi');
     }
