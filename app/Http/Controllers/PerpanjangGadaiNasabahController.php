@@ -236,6 +236,15 @@ class perpanjangGadaiNasabahController extends Controller
             'id_kategori' => $barangGadai->id_kategori,
             'id_cabang' => $barangGadai->id_cabang,
         ]);
+        // Simpan histori perpanjangan
+        PerpanjanganGadai::create([
+            'no_bon_lama' => $barangGadai->no_bon,
+            'no_bon_baru' => $newBon,
+            'tenor_baru' => $tenor,
+            'harga_gadai_baru' => $barangGadai->harga_gadai - ($type === 'cicil' ? $cicilan : 0),
+            'bunga_baru' => $TenorBaru->bunga_percent,
+            'tempo_baru' => $tempobaru,
+        ]);
 
         return response()->json([
             'snap_token' => $snapToken,
