@@ -1,8 +1,0 @@
-*   [33m5b65b4c[m[33m ([m[1;35mrefs/stash[m[33m)[m WIP on reyon: c3f5966 add user role detection
-[31m|[m[32m\[m  
-[31m|[m * [33m69ce194[m index on reyon: c3f5966 add user role detection
-[31m|[m[31m/[m  
-* [33mc3f5966[m[33m ([m[1;31morigin/reyon[m[33m, [m[1;32mreyon[m[33m)[m add user role detection
-* [33mca09a09[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m membuat file dan skema migrasi
-* [33m44924d5[m Install Breeze
-* [33meb9af32[m Set up a fresh Laravel app

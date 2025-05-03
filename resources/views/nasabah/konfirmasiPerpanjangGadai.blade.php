@@ -1,215 +1,190 @@
-    @extends('layouts.app')
+@extends('layouts.app')
 
-    @section('content')
-    <div class="container mx-auto px-4 py-6">
-        <h2 class="text-2xl font-bold mb-6">Konfirmasi Perpanjang Gadai</h2>
+@section('content')
+<div class="container mx-auto px-4 py-8">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-extrabold text-gray-800">Konfirmasi Perpanjangan Gadai</h2>
+        <p class="text-gray-500 mt-2">Pastikan data berikut sudah benar sebelum melanjutkan.</p>
+    </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Card Data Nasabah -->
-            <div class="bg-white shadow rounded-lg border border-gray-200">
-                <div class="bg-dark text-white px-4 py-2 rounded-t-md">
-                    <h3 class="text-lg font-semibold m-0">Data Nasabah</h3>
+    <!-- Grid Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Card Data Nasabah -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div class="flex items-center mb-4">
+                <div class="bg-blue-500 text-white p-2 rounded-full">
+                    <i class="fas fa-user"></i>
                 </div>
-                <div class="p-4">
-                    <p><strong>Nama Nasabah:</strong> {{ $barangGadai->nasabah->nama }}</p>
-                    <p><strong>NIK:</strong> {{ $barangGadai->nasabah->nik }}</p>
-                    <p><strong>Alamat:</strong> {{ $barangGadai->nasabah->alamat }}</p>
-                    <p><strong>No Telp:</strong> {{ $barangGadai->nasabah->telepon }}</p>
-                </div>
+                <h3 class="text-xl font-semibold ml-3">Data Nasabah</h3>
             </div>
-
-            <!-- Card Data Barang Gadai -->
-            <div class="bg-white shadow rounded-lg border border-gray-200">
-                <div class="bg-dark text-white px-4 py-2 rounded-t-md">
-                    <h3 class="text-lg font-semibold m-0">Data Barang Gadai</h3>
-                </div>
-                <div class="p-4">
-                    <p><strong>Nama Barang:</strong> {{ $barangGadai->nama_barang }}</p>
-                    <p><strong>No Bon:</strong> "Menunggu Admin Untuk Menginput Nomor BON"</p>
-                    <p><strong>Harga Gadai saat ini :</strong> Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}</p>
-                    @if ($cicilan > 0)
-                        <p><strong>Cicilan yang dibayarkan:</strong> Rp {{ number_format($cicilan, 0, ',', '.') }}</p>
-                    @endif
-                    <p><strong>Harga Gadai Baru:</strong> Rp {{ number_format($barangGadai->harga_gadai - $cicilan, 0, ',', '.') }}</p>
-                    <p><strong>Tenor:</strong> {{ $tenors }} hari</p>
-                    <p><strong>Tenor Baru:</strong> {{ $tenor }} hari</p>
-                    <p><strong>Jatuh Tempo:</strong> {{ $tempobaru }}</p>
-                    <p><strong>Bunga:</strong> {{ $bungaTenorBaru->bunga_percent }}% (Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }})</p>
-                    <p><strong>Telat:</strong> {{ $barangGadai->telat }} hari</p>
-                    <p><strong>Denda:</strong> Rp {{ number_format($denda, 0, ',', '.') }}</p>
-                    <p><strong>Total Perpanjang:</strong> <span class="text-success fw-bold">Rp {{ number_format($totalPerpanjang + $cicilan, 0, ',', '.') }}</span></p>
-                    <p><strong>Penerima Tebusan:</strong> {{ auth()->user()->name }}</p>
-                </div>
+            <div class="text-gray-700 space-y-2">
+                <p><span class="font-medium">Nama:</span> {{ $barangGadai->nasabah->nama }}</p>
+                <p><span class="font-medium">NIK:</span> {{ $barangGadai->nasabah->nik }}</p>
+                <p><span class="font-medium">Alamat:</span> {{ $barangGadai->nasabah->alamat }}</p>
+                <p><span class="font-medium">No Telp:</span> {{ $barangGadai->nasabah->telepon }}</p>
             </div>
         </div>
 
-        <!-- Button untuk Tebus -->
-    <div class="mt-4 flex justify-end">
+        <!-- Card Data Barang Gadai -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div class="flex items-center mb-4">
+                <div class="bg-green-500 text-white p-2 rounded-full">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h3 class="text-xl font-semibold ml-3">Detail Barang Gadai</h3>
+            </div>
+            <div class="text-gray-700 space-y-2">
+                <p><span class="font-medium">Nama Barang:</span> {{ $barangGadai->nama_barang }}</p>
+                <p><span class="font-medium">No Bon:</span> <em>Menunggu Admin</em></p>
+                <hr class="my-2">
+                <p><span class="font-medium">Harga Gadai Saat Ini:</span> Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}</p>
+                @if ($cicilan > 0)
+                    <p><span class="font-medium">Cicilan Dibayarkan:</span> Rp {{ number_format($cicilan, 0, ',', '.') }}</p>
+                @endif
+                <p><span class="font-medium">Harga Gadai Baru:</span> Rp {{ number_format($barangGadai->harga_gadai - $cicilan, 0, ',', '.') }}</p>
+                <p><span class="font-medium">Tenor Lama / Baru:</span> {{ $tenors }} hari → {{ $tenor }} hari</p>
+                <p><span class="font-medium">Jatuh Tempo Baru:</span> {{ $tempobaru }}</p>
+                <p><span class="font-medium">Bunga:</span> {{ $bungaTenorBaru->bunga_percent }}% (Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }})</p>
+                <p><span class="font-medium">Telat:</span> {{ $barangGadai->telat }} hari</p>
+                <p><span class="font-medium">Denda:</span> Rp {{ number_format($denda, 0, ',', '.') }}</p>
+                <div class="bg-gray-100 p-3 rounded-lg mt-2">
+                    <p class="text-lg font-bold text-green-600">Total Perpanjangan: Rp {{ number_format($totalPerpanjang + $cicilan, 0, ',', '.') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aksi Tombol -->
+    <div class="mt-8 flex justify-center space-x-4">
         <input type="hidden" id="no-bon-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->no_bon }}">
         <input type="hidden" id="total-perpanjang-{{ $barangGadai->no_bon }}" value="{{ $totalPerpanjang }}">
         <input type="hidden" id="denda-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->denda }}">
 
-        <!-- Tombol Perpanjang -->
-        <button id="confirmPerpanjangBtn" class="bg-yellow-500 text-white px-4 py-2 rounded ml-2">
-            Perpanjang
+        <button id="confirmPerpanjangBtn" class="px-6 py-3 bg-yellow-500 text-white rounded-lg shadow hover:bg-yellow-600 transition">
+            <i class="fas fa-sync-alt mr-2"></i> Perpanjang
         </button>
-
-        <div id="continue-payment-container"></div>
-
-        <button onclick="window.location.href='{{ route('profile') }}'" class="btn btn-danger">Cancel</button>
+        <button onclick="window.location.href='{{ route('profile') }}'" class="px-6 py-3 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition">
+            <i class="fas fa-times mr-2"></i> Batal
+        </button>
     </div>
 
+    <!-- Container Lanjutkan Pembayaran -->
+    <div id="continue-payment-container" class="mt-4 text-center"></div>
 
+</div>
 
+<!-- SweetAlert2 & Midtrans Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/js/all.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
 
-    <!-- SweetAlert2 Script -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
+<script>
+    let latestSnapToken = null;
 
-    <script>
-        let latestSnapToken = null;
+    function payForPerpanjang(noBon) {
+        const totalPerpanjang = document.getElementById("total-perpanjang-" + noBon).value;
 
-        function payForPerpanjang(noBon, paymentType = 'bank_transfer') {
-            const totalPerpanjang = document.getElementById("total-perpanjang-" + noBon).value;
-
-            fetch('/nasabah/process-perpanjang-payment', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    no_bon: noBon,
-                    payment_type: paymentType,
-                    amount: totalPerpanjang,
-                })
+        fetch('/nasabah/process-perpanjang-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                no_bon: noBon,
+                amount: totalPerpanjang,
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.snap_token) {
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.snap_token) {
                 latestSnapToken = data.snap_token;
-
-                localStorage.setItem('pending_payment', JSON.stringify({
-                    snap_token: data.snap_token,
-                    order_id: data.order_id
-                }));
+                localStorage.setItem('pending_payment', JSON.stringify({ snap_token: data.snap_token, order_id: data.order_id }));
 
                 snap.pay(data.snap_token, {
-                    onSuccess: function(result) {
-                        swal.fire({
-                            icon: 'success',
-                            title: 'Pembayaran Berhasil',
-                            text: 'Pembayaran Perpanjang Anda telah berhasil diproses.',
-                        });
+                    onSuccess: () => {
+                        Swal.fire('Berhasil!', 'Perpanjangan berhasil dibayar.', 'success');
                         localStorage.removeItem('pending_payment');
                         window.location.href = '/nasabah/dashboard';
                     },
-                    onPending: function(result) {
-                        swal.fire({
-                            icon: 'info',
-                            title: 'Pembayaran Pending',
-                            text: 'Pembayaran Anda sedang diproses.',
-                        });
+                    onPending: () => {
+                        Swal.fire('Pending', 'Pembayaran sedang diproses.', 'info');
                     },
-                    onError: function(result) {
-                        swal.fire({
-                            icon: 'error',
-                            title: 'Pembayaran Gagal',
-                            text: 'Terjadi kesalahan saat memproses pembayaran.',
-                        });
+                    onError: () => {
+                        Swal.fire('Gagal', 'Terjadi kesalahan pembayaran.', 'error');
                     },
-                    onClose: function() {
-                        swal.fire({
-                            icon: 'warning',
-                            title: 'Apakah Anda yakin ingin membatalkan pembayaran?',
-                            text: 'Jika Anda lanjut, transaksi akan dibatalkan.',
-                            showCancelButton: true,
-                            confirmButtonText: 'Ya, batalkan',
-                            cancelButtonText: 'Tidak, lanjutkan pembayaran'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                const stored = JSON.parse(localStorage.getItem('pending_payment'));
-
-                                fetch('/nasabah/cancel-payment', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                                    },
-                                    body: JSON.stringify({
-                                        order_id: stored ? stored.order_id : data.order_id
-                                    })
-                                })
-                                .then(res => res.json())
-                                .then(cancelResp => {
-                                    localStorage.removeItem('pending_payment');
-                                    swal.fire({
-                                        icon: 'info',
-                                        title: 'Pembayaran Dibatalkan',
-                                        text: 'Pembayaran Anda telah dibatalkan.',
-                                    });
-                                });
-                            } else {
-                                showContinueButton();
-                            }
-                        });
-                    }
+                    onClose: () => handlePaymentCancel(data.order_id)
                 });
             } else {
-                swal.fire({
-                    icon: 'error',
-                    title: 'Pembayaran Gagal',
-                    text: 'Terjadi kesalahan saat memproses pembayaran.',
-                });
+                Swal.fire('Gagal', 'Tidak dapat memproses pembayaran.', 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Terjadi kesalahan saat memproses pembayaran.');
+            Swal.fire('Error', 'Terjadi kesalahan di server.', 'error');
         });
     }
 
-        function showContinueButton() {
-            const container = document.getElementById('continue-payment-container');
-            container.innerHTML = `
-                <button onclick="resumeSnap()" class="bg-blue-500 text-white px-4 py-2 rounded">
-                    Lanjutkan Pembayaran
-                </button>
-            `;
-        }
-
-        function resumeSnap() {
-            const stored = JSON.parse(localStorage.getItem('pending_payment'));
-            if (stored && stored.snap_token) {
-                snap.pay(stored.snap_token, {
-                    onSuccess: function(result) {
-                        localStorage.removeItem('pending_payment');
-                        Swal.fire('Sukses', 'Perpanjangan berhasil dibayar!', 'success');
-                        window.location.href = '/nasabah/dashboard';
-                    }
+    function handlePaymentCancel(orderId) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Batalkan Pembayaran?',
+            text: 'Transaksi akan dibatalkan jika Anda keluar.',
+            showCancelButton: true,
+            confirmButtonText: 'Batalkan',
+            cancelButtonText: 'Lanjutkan Pembayaran'
+        }).then(result => {
+            if (result.isConfirmed) {
+                fetch('/nasabah/cancel-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                    body: JSON.stringify({ order_id: orderId })
+                }).then(() => {
+                    localStorage.removeItem('pending_payment');
+                    Swal.fire('Dibatalkan', 'Pembayaran telah dibatalkan.', 'info');
                 });
+            } else {
+                showContinueButton();
             }
-        }
+        });
+    }
 
-        document.getElementById('confirmPerpanjangBtn').addEventListener('click', function() {
-            Swal.fire({
-                title: 'Konfirmasi Perpanjangan',
-                text: 'Apakah Anda yakin ingin memperpanjang barang ini?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Perpanjang',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const noBon = "{{ $barangGadai->no_bon }}";
-                    payForPerpanjang(noBon);
+    function showContinueButton() {
+        const container = document.getElementById('continue-payment-container');
+        container.innerHTML = `
+            <button onclick="resumeSnap()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                Lanjutkan Pembayaran
+            </button>
+        `;
+    }
+
+    function resumeSnap() {
+        const stored = JSON.parse(localStorage.getItem('pending_payment'));
+        if (stored && stored.snap_token) {
+            snap.pay(stored.snap_token, {
+                onSuccess: () => {
+                    localStorage.removeItem('pending_payment');
+                    Swal.fire('Berhasil!', 'Perpanjangan berhasil dibayar.', 'success');
+                    window.location.href = '/nasabah/dashboard';
                 }
             });
+        }
+    }
+
+    document.getElementById('confirmPerpanjangBtn').addEventListener('click', function() {
+        Swal.fire({
+            title: 'Konfirmasi Perpanjangan',
+            text: 'Apakah Anda yakin ingin memperpanjang barang ini?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Perpanjang',
+            cancelButtonText: 'Batal'
+        }).then(result => {
+            if (result.isConfirmed) {
+                const noBon = "{{ $barangGadai->no_bon }}";
+                payForPerpanjang(noBon);
+            }
         });
-    </script>
-
-
-
-    @endsection
-
-    {{-- pepanjang gadai --}}
+    });
+</script>
+@endsection
