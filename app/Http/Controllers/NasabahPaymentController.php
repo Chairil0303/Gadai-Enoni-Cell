@@ -17,6 +17,7 @@ use App\Helpers\WhatsappHelper;
 use Illuminate\Support\Str;
 use App\Models\PendingPayment;
 use App\Models\PerpanjanganGadai;
+use App\Models\BungaTenor;
 
 
 class NasabahPaymentController extends Controller
@@ -29,6 +30,25 @@ class NasabahPaymentController extends Controller
         Config::$isProduction = false; // Atur ke true jika sudah di produksi
         Config::$isSanitized = true;
         Config::$is3ds = true;
+    }
+
+
+    private function hitungBunga($barangGadai)
+    {
+        $bungaTenor = $barangGadai->bungaTenor;
+
+        if ($bungaTenor) {
+            $bungaPersen = $bungaTenor->bunga_percent;
+            $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+        } else {
+            $bungaPersen = 0;
+            $bunga = 0;
+        }
+
+        return [
+            'bunga' => $bunga,
+            'bungaPersen' => $bungaPersen,
+        ];
     }
 
     public function processPayment(Request $request)
@@ -189,27 +209,13 @@ class NasabahPaymentController extends Controller
             $paymentType = $request->input('payment_type', 'tebus'); // default tebus
             $bungaPersen = 0;
 
-            // Hitung Bunga berdasarkan tenor
-            $tenor = $barangGadai->tenor;
-            switch ($tenor) {
-                case 7:
-                    $bungaPersen = 5;
-                    break;
-                case 14:
-                    $bungaPersen = 10;
-                    break;
-                case 30:
-                    $bungaPersen = 15;
-                    break;
-                default:
-                    $bungaPersen = 0;
-                    break;
-            }
-
-            // Jika jenis pembayaran adalah perpanjang
-            $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
             $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
+
+            $hasilBunga = $this->hitungBunga($barangGadai);
+            $bunga = $hasilBunga['bunga'];
+            $bungaPersen = $hasilBunga['bungaPersen'];
             $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
+
 
 
 
@@ -255,7 +261,7 @@ class NasabahPaymentController extends Controller
                     'bunga' => $bunga,
                     'denda' => $denda,
                     'telat' => $telat,
-                    'tenor' => $tenor,
+                    // 'tenor' => $tenor,
                     'nama_nasabah' => $barangGadai->nasabah->nama,
                     'telepon' => $barangGadai->nasabah->telepon,
                 ]

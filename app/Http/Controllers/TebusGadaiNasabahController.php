@@ -29,7 +29,9 @@ class TebusGadaiNasabahController extends Controller
             });
         }
 
-        $barangGadai = $query->first();
+        // $barangGadai = $query->first();
+        $barangGadai = $query->with('bungaTenor')->first(); // Fetch the first result with the related bungaTenor
+
 
         if (!$barangGadai) {
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
@@ -42,24 +44,33 @@ class TebusGadaiNasabahController extends Controller
         // $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
         $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
 
+        $hasilBunga = $this->hitungBunga($barangGadai);
+        $bunga = $hasilBunga['bunga'];
+        $bungaPersen = $hasilBunga['bungaPersen'];
 
-         // Hitung Bunga Berdasarkan Tenor
-        if ($barangGadai->tenor == 7) {
-            $bungaPersen = 5;
-        } elseif ($barangGadai->tenor == 14) {
-            $bungaPersen = 10;
-        } elseif ($barangGadai->tenor == 30) {
-            $bungaPersen = 15;
-        } else {
-            $bungaPersen = 0; // Kalau tenor tidak sesuai
-        }
-
-        $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
 
         // Hitung Total Tebus
         $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
 
-        return view('nasabah.konfirmasi', compact('barangGadai', 'nasabah', 'denda', 'totalTebus','bungaPersen','bunga'));
+        return view('nasabah.konfirmasi', compact('barangGadai', 'nasabah', 'denda', 'totalTebus','bungaPersen','bunga','hasilbunga'));
+    }
+
+    private function hitungBunga($barangGadai)
+    {
+        $bungaTenor = $barangGadai->bungaTenor;
+
+        if ($bungaTenor) {
+            $bungaPersen = $bungaTenor->bunga_percent;
+            $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
+        } else {
+            $bungaPersen = 0;
+            $bunga = 0;
+        }
+
+        return [
+            'bunga' => $bunga,
+            'bungaPersen' => $bungaPersen,
+        ];
     }
 
 
@@ -81,20 +92,14 @@ public function konfirmasi($no_bon)
     if (!$barangGadai) {
         abort(404, 'Barang gadai tidak ditemukan atau tidak cocok dengan akun nasabah.');
     }
-    // Hitung Bunga Berdasarkan Tenor
-    if ($barangGadai->tenor == 7) {
-        $bungaPersen = 5;
-    } elseif ($barangGadai->tenor == 14) {
-        $bungaPersen = 10;
-    } elseif ($barangGadai->tenor == 30) {
-        $bungaPersen = 15;
-    } else {
-        $bungaPersen = 0; // Kalau tenor tidak sesuai
-    }
-
-    $bunga = $barangGadai->harga_gadai * ($bungaPersen / 100);
-    // Hitung bunga, denda, dll
     $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
+
+    $hasilBunga = $this->hitungBunga($barangGadai);
+    $bunga = $hasilBunga['bunga'];
+    $bungaPersen = $hasilBunga['bungaPersen'];
+
+
+    // Hitung Total Tebus
     $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
 
     return view('nasabah.konfirmasi', compact('barangGadai', 'bunga', 'bungaPersen', 'denda', 'totalTebus'));
