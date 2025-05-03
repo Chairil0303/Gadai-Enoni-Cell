@@ -31,7 +31,8 @@
                         <p><strong>Cicilan yang dibayarkan:</strong> Rp {{ number_format($cicilan, 0, ',', '.') }}</p>
                     @endif
                     <p><strong>Harga Gadai Baru:</strong> Rp {{ number_format($barangGadai->harga_gadai - $cicilan, 0, ',', '.') }}</p>
-                    <p><strong>Tenor:</strong> {{ $tenor }} hari</p>
+                    <p><strong>Tenor:</strong> {{ $tenors }} hari</p>
+                    <p><strong>Tenor Baru:</strong> {{ $tenor }} hari</p>
                     <p><strong>Jatuh Tempo:</strong> {{ $tempobaru }}</p>
                     <p><strong>Bunga:</strong> {{ $bungaTenorBaru->bunga_percent }}% (Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }})</p>
                     <p><strong>Telat:</strong> {{ $barangGadai->telat }} hari</p>
