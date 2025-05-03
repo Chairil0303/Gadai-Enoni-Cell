@@ -54,11 +54,6 @@ class perpanjangGadaiNasabahController extends Controller
 
     public function konfirmasi(Request $request)
     {
-
-
-
-
-
         $query = BarangGadai::where('status', 'tergadai');
 
         $tenor = (int)$request->query('tenor');
@@ -95,6 +90,7 @@ class perpanjangGadaiNasabahController extends Controller
 
         $bunga_persen_baru = $barangGadai->harga_gadai* $bungaTenorBaru->bunga_percent / 100 ;
 
+        $TenorBaru = BungaTenor::where('tenor', $request->tenor)->first();
 
 
         if ($type === 'cicil') {
@@ -125,10 +121,9 @@ class perpanjangGadaiNasabahController extends Controller
             'denda',
             'bunga_persen_baru',
             'totalPerpanjang',
-            'tempobaru','bungaTenorBaru','tenors',
+            'tempobaru','bungaTenorBaru','tenors','TenorBaru',
         ));
     }
-
 
     public function processPayment(Request $request)
     {
@@ -153,7 +148,6 @@ class perpanjangGadaiNasabahController extends Controller
             return response()->json(['message' => 'Barang ini sudah ditebus sebelumnya.'], 403);
         }
 
-        // Cek transaksi tertunda
         $pendingExists = PendingPayment::where('no_bon', $noBon)
             ->where('status', 'pending')
             ->exists();
@@ -172,21 +166,22 @@ class perpanjangGadaiNasabahController extends Controller
             return response()->json(['message' => 'Session perpanjangan tidak ditemukan atau kadaluarsa. Silakan ulangi proses.'], 400);
         }
 
-        // Hitung ulang bunga berdasarkan tabel bunga_tenor
+        // Ambil bunga tenor berdasarkan tenor lama dan tenor baru
         $bungaTenor = BungaTenor::where('tenor', $tenors)->first();
-        if (!$bungaTenor) {
-            return response()->json(['message' => 'Data bunga untuk tenor tersebut tidak ditemukan.'], 404);
+        $TenorBaru = BungaTenor::where('tenor', $tenor)->first();
+
+        if (!$TenorBaru) {
+            return response()->json(['message' => 'Tenor baru tidak ditemukan di tabel bunga_tenor.'], 404);
         }
 
         $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
         $bunga = $barangGadai->harga_gadai * ($bungaTenor->bunga_percent / 100);
 
-        // Hitung total berdasarkan jenis perpanjangan
-        $total = 0;
+        // Hitung total bayar berdasarkan jenis perpanjangan
+        $total = $bunga + $denda;
+
         if ($type === 'cicil') {
-            $total = $bunga + $denda+$cicilan;
-        } else {
-            $total = $bunga + $denda ;
+            $total += $cicilan;
         }
 
         // Midtrans setup
@@ -213,7 +208,6 @@ class perpanjangGadaiNasabahController extends Controller
         $tempobaru = Carbon::parse($barangGadai->tempo)->addDays($tenor);
         $newBon = $barangGadai->no_bon . '-DM';
 
-
         // Simpan transaksi pending
         PendingPayment::create([
             'order_id' => $orderId,
@@ -223,6 +217,24 @@ class perpanjangGadaiNasabahController extends Controller
             'jumlah_pembayaran' => (int) $total,
             'new_bon' => $newBon,
             'status' => 'pending',
+        ]);
+
+        // Simpan bon baru dengan id_bunga_tenor dari tenor baru
+        BarangGadai::create([
+            'no_bon' => $newBon,
+            'no_bon_lama' => $barangGadai->no_bon,
+            'id_bunga_tenor' => $TenorBaru->id,
+            'id_nasabah' => $barangGadai->id_nasabah,
+            'nama_barang' => $barangGadai->nama_barang,
+            'deskripsi' => $barangGadai->deskripsi,
+            'imei' => $barangGadai->imei,
+            'tempo' => $tempobaru,
+            'telat' => 0,
+            'harga_gadai' => $barangGadai->harga_gadai - ($type === 'cicil' ? $cicilan : 0),
+            'bunga' => $TenorBaru->bunga_percent,
+            'status' => 'Tergadai',
+            'id_kategori' => $barangGadai->id_kategori,
+            'id_cabang' => $barangGadai->id_cabang,
         ]);
 
         return response()->json([
@@ -241,6 +253,7 @@ class perpanjangGadaiNasabahController extends Controller
             ]
         ]);
     }
+
 
 
 
