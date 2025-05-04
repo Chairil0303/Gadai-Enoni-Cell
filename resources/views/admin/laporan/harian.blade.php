@@ -1,80 +1,35 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold">Laporan Harian - Transaksi Gadai</h2>
-    </div>
-
-    <div class="table-responsive">
-        <table class="table table-bordered shadow-sm">
-            <thead class="table-light text-center align-middle">
-                <tr class="table-primary">
-                    <th rowspan="2">Jenis Trx</th>
-                    <th rowspan="2">Jlh Trx</th>
-                    <th colspan="2">Keluar</th>
-                    <th colspan="2">Masuk</th>
-                </tr>
-                <tr class="table-secondary">
-                    <th>Rp</th>
-                    <th></th>
-                    <th>Rp</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody class="text-center">
+<div class="p-4">
+    <h1 class="text-2xl font-bold mb-4">Laporan Harian</h1>
+    <table class="w-full table-auto border-collapse border">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="border p-2">Jenis Transaksi</th>
+                <th class="border p-2">Jumlah Transaksi</th>
+                <th class="border p-2">Total Keluar</th>
+                <th class="border p-2">Total Masuk</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($data as $row)
                 <tr>
-                    <td>Terima Gadai</td>
-                    <td>1 Trx</td>
-                    <td>1.000.000,-</td>
-                    <td></td>
-                    <td>0,-</td>
-                    <td></td>
+                    <td class="border p-2">{{ ucwords(str_replace('_', ' ', $row->jenis_transaksi)) }}</td>
+                    <td class="border p-2">{{ $row->jumlah }} trx</td>
+                    <td class="border p-2 text-red-600">
+                        {{ number_format($row->total_keluar, 0, ',', '.') }}
+                    </td>
+                    <td class="border p-2 text-green-600">
+                        {{ number_format($row->total_masuk, 0, ',', '.') }}
+                    </td>
                 </tr>
+            @empty
                 <tr>
-                    <td>Perpanjang Gadai</td>
-                    <td>0 Trx</td>
-                    <td>0,-</td>
-                    <td></td>
-                    <td>140.000,-</td>
-                    <td></td>
+                    <td colspan="4" class="text-center border p-4 text-gray-500">Belum ada data transaksi hari ini</td>
                 </tr>
-                <tr>
-                    <td>Tebus Gadai</td>
-                    <td>6 Trx</td>
-                    <td>0,-</td>
-                    <td></td>
-                    <td>4.280.000,-</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Terima Jual</td>
-                    <td>0 Trx</td>
-                    <td>0,-</td>
-                    <td></td>
-                    <td>0,-</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Lelangan Laku</td>
-                    <td>0 Trx</td>
-                    <td>0,-</td>
-                    <td></td>
-                    <td>0,-</td>
-                    <td></td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr class="table-success fw-bold text-center">
-                    <td>TOTAL</td>
-                    <td>8 Trx</td>
-                    <td>1.000.000,-</td>
-                    <td></td>
-                    <td>4.420.000,-</td>
-                    <td></td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+            @endforelse
+        </tbody>
+    </table>
 </div>
 @endsection
