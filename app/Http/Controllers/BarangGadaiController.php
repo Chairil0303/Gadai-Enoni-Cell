@@ -34,10 +34,9 @@ class BarangGadaiController extends Controller
 
     public function tampilBarangDiperpanjangDenganDm()
     {
-        $query = BarangGadai::with('nasabah.user', 'kategori')
+        $query = BarangGadai::with('nasabah.user', 'kategori', 'cabang', 'bonLama') // tambahkan bonLama
             ->where('no_bon', 'LIKE', '%DM%');
 
-        // Superadmin bisa lihat semua, lainnya berdasarkan cabang
         if (auth()->id() != 1 && Schema::hasColumn('barang_gadai', 'id_cabang')) {
             $query->where('id_cabang', auth()->user()->id_cabang);
         }
@@ -46,6 +45,7 @@ class BarangGadaiController extends Controller
 
         return view('transaksi_gadai.ubahnobon', compact('barangGadai'));
     }
+
 
 
 
