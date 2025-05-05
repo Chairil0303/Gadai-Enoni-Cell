@@ -63,18 +63,13 @@
 
                                 <td>Rp {{ number_format($barang->harga_gadai, 0, ',', '.') }}</td>
                             @if (auth()->user()->isSuperadmin())
-                                <td>
-                                    <a href="{{ route('barang_gadai.edit', $barang->no_bon) }}" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </a>
-                                    <form action="{{ route('barang_gadai.destroy', $barang->no_bon) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus barang ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Hapus
-                                        </button>
-                                    </form>
-                                </td>
+                            <td>
+                                {{-- Tombol Lelang --}}
+                                <a href="{{ route('lelang.index', $barang->no_bon) }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-gavel"></i> Lelang
+                                </a>
+                            </td>
+
                             @endif
                             </tr>
                             @endforeach
