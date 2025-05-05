@@ -11,7 +11,14 @@ class StaffController extends Controller
 {
     public function index()
     {
-        $staffs = User::where('role', 'Staf')->with('cabang')->get();
+        $admin = auth()->user();
+
+        // Ambil staf dengan role 'Staf' dan id_cabang yang sama dengan admin yang login
+        $staffs = User::where('role', 'Staf')
+                    ->where('id_cabang', $admin->id_cabang)
+                    ->with('cabang')
+                    ->get();
+
         return view('admin.staff.index', compact('staffs'));
     }
 
