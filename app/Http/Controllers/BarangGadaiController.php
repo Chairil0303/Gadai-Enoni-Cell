@@ -45,37 +45,43 @@ class BarangGadaiController extends Controller
     }
 
     public function lelangIndex(Request $request)
-    {
-        $user = auth()->user();
-        $status = $request->input('status');
-        $noBon = $request->input('no_bon');
+{
+    $user = auth()->user();
+    $status = $request->input('status');
+    $noBon = $request->input('no_bon');
 
-        // Ambil barang yang tempo-nya sudah lewat
-        $query = BarangGadai::with('nasabah.user', 'kategori')
-            ->whereDate('tempo', '<', now());
+    // Ambil barang yang tempo-nya sudah lewat
+    $query = BarangGadai::with('nasabah.user', 'kategori')
+        ->whereDate('tempo', '<', now());
 
-        // Filter cabang untuk admin
-        if ($user->id !== 1) {
-            if (Schema::hasColumn('barang_gadai', 'id_cabang')) {
+    // Jika bukan superadmin (user id ≠ 1)
+    if ($user->id !== 1) {
+        // Cek apakah kolom id_cabang tersedia
+        if (Schema::hasColumn('barang_gadai', 'id_cabang')) {
+            // Jika user punya id_cabang → filter cabang
+            if (!is_null($user->id_cabang)) {
                 $query->where('id_cabang', $user->id_cabang);
-            } else {
-                return view('lelang.index', ['barangGadai' => collect()]);
             }
+            // Jika user tidak punya id_cabang → biarkan tanpa filter (lihat semua cabang)
+        } else {
+            return view('lelang.index', ['barangGadai' => collect()]);
         }
-
-        // Filter tambahan (opsional)
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        if ($noBon) {
-            $query->where('no_bon', 'like', '%' . $noBon . '%');
-        }
-
-        $barangGadai = $query->get();
-
-        return view('lelang.index', compact('barangGadai'));
     }
+
+    // Filter tambahan (opsional)
+    if ($status) {
+        $query->where('status', $status);
+    }
+
+    if ($noBon) {
+        $query->where('no_bon', 'like', '%' . $noBon . '%');
+    }
+
+    $barangGadai = $query->get();
+
+    return view('lelang.index', compact('barangGadai'));
+}
+
 
 
 
