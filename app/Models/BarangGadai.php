@@ -97,6 +97,12 @@
         }
 
 
+        public function bonLama()
+        {
+            return $this->belongsTo(BarangGadai::class, 'no_bon_lama', 'no_bon');
+        }
+
+
 
         public function nasabah()
         {

@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use App\Http\Livewire\CabangTable;
 use Carbon\Carbon;
+use App\Models\BarangGadai;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -29,6 +32,18 @@ class AppServiceProvider extends ServiceProvider
 
         //
         Livewire::component('cabang-table', CabangTable::class);
+
+        View::composer('*', function ($view) {
+            $query = BarangGadai::where('no_bon', 'LIKE', '%DM%');
+
+            if (auth()->check() && auth()->id() != 1 && Schema::hasColumn('barang_gadai', 'id_cabang')) {
+                $query->where('id_cabang', auth()->user()->id_cabang);
+            }
+
+            $jumlahUbahNoBon = $query->count();
+
+            $view->with('jumlahUbahNoBon', $jumlahUbahNoBon);
+        });
     }
 }
 // app providers

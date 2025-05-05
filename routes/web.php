@@ -8,6 +8,7 @@ use App\Http\Controllers\NasabahController;
 use App\Http\Controllers\BarangGadaiController;
 use App\Http\Controllers\TransaksiGadaiController;
 use App\Http\Controllers\LelangBarangController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\Superadmin\CabangController;
 use App\Http\Controllers\GadaiController;
@@ -17,9 +18,6 @@ use App\Http\Controllers\NasabahPaymentController;
 use App\Http\Controllers\PerpanjangGadaiController;
 use App\Http\Controllers\PerpanjangGadaiNasabahController;
 use App\Http\Controllers\Superadmin\AdminController;
-use App\Http\Controllers\Admin\StaffController;
-use App\Http\Controllers\Admin\LaporanController;
-
 
 
 
@@ -67,22 +65,12 @@ Route::middleware(['auth'])->group(function () {
         })->name('dashboard.admin');
     });
 
-    //staff
     Route::middleware(RoleMiddleware::class . ':Staf')->group(function () {
         Route::get('/dashboard/Staff', function () {
             return view('components.dashboard.staff');
         })->name('dashboard.staff');
     });
 
-    Route::prefix('admin')
-    ->middleware('auth')
-    ->name('admin.')
-    ->group(function () {
-        Route::middleware([RoleMiddleware::class . ':Admin'])->group(function () {
-            Route::resource('staff', StaffController::class);
-            Route::resource('laporan', \App\Http\Controllers\Admin\LaporanController::class);
-        });
-    });
 
 
     // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
@@ -115,9 +103,9 @@ Route::middleware(['auth'])->group(function () {
             Route::post('process-perpanjang-payment', [PerpanjangGadaiNasabahController::class, 'processPayment']);
 
         });
+
     // Perpanjang gadai nasabah End
 
-    
 
     // perpanjang gadai
     Route::get('/perpanjang-gadai/create', [PerpanjangGadaiController::class, 'create'])->name('perpanjang_gadai.create');
