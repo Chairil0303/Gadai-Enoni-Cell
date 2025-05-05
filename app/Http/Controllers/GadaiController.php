@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\TransaksiGadai;
 use Illuminate\Support\Str;
 use App\Models\BungaTenor; 
+use App\Models\Transaksi;
 
 class GadaiController extends Controller
 {
@@ -109,6 +110,14 @@ public function store(Request $request)
         'created_at' => now(),
         'updated_at' => now(),
     ]);
+
+    // Simpan ke tabel transaksi umum
+    Transaksi::create([
+        'jenis_transaksi' => 'terima_gadai',
+        'arah' => 'keluar', // karena uang keluar dari kas
+        'nominal' => $request->harga_gadai,
+    ]);
+
 
     return redirect()->route('barang_gadai.index')->with('success', 'Data berhasil disimpan!');
 }
