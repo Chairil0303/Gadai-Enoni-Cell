@@ -17,6 +17,25 @@
                             {{ session('success') }}
                         </div>
                     @endif
+                    <form method="GET" action="{{ route('barang_gadai.index') }}" class="row mb-3">
+                        <div class="col-md-3">
+                            <select name="status" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Filter Status --</option>
+                                <option value="Tergadai" {{ request('status') == 'Tergadai' ? 'selected' : '' }}>Tergadai</option>
+                                <option value="Diperpanjang" {{ request('status') == 'Diperpanjang' ? 'selected' : '' }}>Diperpanjang</option>
+                                <option value="Ditebus" {{ request('status') == 'Ditebus' ? 'selected' : '' }}>Ditebus</option>
+                                <option value="Dilelang" {{ request('status') == 'Dilelang' ? 'selected' : '' }}>Dilelang</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="no_bon" class="form-control" placeholder="Cari No Bon..." value="{{ request('no_bon') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Cari</button>
+                        </div>
+                    </form>
+
+
 
                     <table class="table table-striped table-hover">
                         <thead class="table-dark">

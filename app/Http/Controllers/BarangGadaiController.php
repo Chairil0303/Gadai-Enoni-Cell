@@ -12,25 +12,39 @@ use Illuminate\Validation\Rule;
 
 class BarangGadaiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $userId = auth()->id();
+        $status = $request->input('status');
+        $noBon = $request->input('no_bon');
 
         if ($userId == 1) {
             // Superadmin: ambil semua data
-            $barangGadai = BarangGadai::with('nasabah.user', 'kategori')->get();
+            $query = BarangGadai::with('nasabah.user', 'kategori');
         } else {
             if (Schema::hasColumn('barang_gadai', 'id_cabang')) {
-                $barangGadai = BarangGadai::with('nasabah.user', 'kategori')
-                    ->where('id_cabang', auth()->user()->id_cabang) // Ambil berdasarkan cabang user login
-                    ->get();
+                $query = BarangGadai::with('nasabah.user', 'kategori')
+                    ->where('id_cabang', auth()->user()->id_cabang);
             } else {
                 $barangGadai = collect(); // Kolom tidak tersedia
+                return view('barang_gadai.index', compact('barangGadai'));
             }
         }
 
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($noBon) {
+            $query->where('no_bon', 'like', '%' . $noBon . '%');
+        }
+
+        $barangGadai = $query->get();
+
         return view('barang_gadai.index', compact('barangGadai'));
     }
+
+
 
     public function tampilBarangDiperpanjangDenganDm()
     {

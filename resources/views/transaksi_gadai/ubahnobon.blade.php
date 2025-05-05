@@ -95,7 +95,7 @@
                         <th>Nama Barang</th>
                         <td>{{ $barang->bonLama->nama_barang ?? '-' }}</td>
                     </tr>
-                </table>
+                </table>   
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
