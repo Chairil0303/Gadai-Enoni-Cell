@@ -180,6 +180,10 @@ Route::middleware(['auth'])->group(function () {
     // Route untuk menampilkan form edit berdasarkan no_bon
     Route::get('/barang_gadai/{no_bon}/edit-nobon', [BarangGadaiController::class, 'editNobon'])->name('barang_gadai.edit_nobon');
 
+
+    // route untuk lelang
+    Route::get('/lelang', [BarangGadaiController::class, 'lelangIndex'])->name('lelang.index');
+
 // Route untuk update (pastikan ini sesuai juga)
     Route::put('/barang_gadai/{no_bon}/update-nobon', [BarangGadaiController::class, 'updateNobon'])->name('barang_gadai.update_nobon');
     // route untuk view

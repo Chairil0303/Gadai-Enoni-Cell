@@ -17,6 +17,7 @@ class NasabahSeeder extends Seeder
         $nasabah1 = DB::table('users')->where('username', 'nasabah1')->value('id_users');
         $nasabah2 = DB::table('users')->where('username', 'nasabah2')->value('id_users');
         $nasabah3 = DB::table('users')->where('username', 'nasabah3')->value('id_users');
+        $nasabah4 = DB::table('users')->where('username', 'nasabah4')->value('id_users');
 
         // Cek apakah user ditemukan, jika tidak hentikan seeder ini
         if (!$nasabah1 || !$nasabah2 || !$nasabah3) {
@@ -50,6 +51,16 @@ class NasabahSeeder extends Seeder
                 'nik' => '3201010101010003',
                 'alamat' => 'Jl. Kenanga No.3, Jakarta',
                 'telepon' => '081234567892',
+                'status_blacklist' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id_user' => $nasabah4,
+                'nama' => 'Nasabah Empat',
+                'nik' => '2201010101010005',
+                'alamat' => 'Jl. Kelapa dua No.3, Tangerang',
+                'telepon' => '081299898890',
                 'status_blacklist' => false,
                 'created_at' => now(),
                 'updated_at' => now(),

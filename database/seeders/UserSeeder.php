@@ -84,7 +84,15 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role' => 'Nasabah',
                 'id_cabang' => 3,
-            ]
+            ],
+            [
+                'nama' => 'Nasabah Empat',
+                'email' => 'nasabah4@example.com',
+                'username' => 'nasabah4',
+                'password' => Hash::make('password'),
+                'role' => 'Nasabah',
+                'id_cabang' => 1,
+                ],
         ]);
     }
 }
