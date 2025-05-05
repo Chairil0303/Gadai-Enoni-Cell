@@ -8,7 +8,6 @@ use App\Http\Controllers\NasabahController;
 use App\Http\Controllers\BarangGadaiController;
 use App\Http\Controllers\TransaksiGadaiController;
 use App\Http\Controllers\LelangBarangController;
-use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\Superadmin\CabangController;
 use App\Http\Controllers\GadaiController;
@@ -19,6 +18,7 @@ use App\Http\Controllers\PerpanjangGadaiController;
 use App\Http\Controllers\PerpanjangGadaiNasabahController;
 use App\Http\Controllers\Superadmin\AdminController;
 use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\LaporanController;
 
 
 
@@ -77,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
     ->group(function () {
         Route::middleware([RoleMiddleware::class . ':Admin'])->group(function () {
             Route::resource('staff', StaffController::class);
+            Route::resource('laporan', \App\Http\Controllers\Admin\LaporanController::class);
         });
     });
 

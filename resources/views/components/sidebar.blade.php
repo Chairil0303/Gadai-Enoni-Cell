@@ -53,6 +53,8 @@
                     <i class="fas fa-user-cog mr-2"></i> Staff
                 </a>
             </li>
+            <li><a href="{{ route('admin.laporan.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-file-alt mr-2"></i> Laporan</a></li>
+        
         @endif
         {{-- khusus staff --}}
         @if(auth()->user()->isStaf())
