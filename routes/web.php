@@ -18,7 +18,7 @@ use App\Http\Controllers\NasabahPaymentController;
 use App\Http\Controllers\PerpanjangGadaiController;
 use App\Http\Controllers\PerpanjangGadaiNasabahController;
 use App\Http\Controllers\Superadmin\AdminController;
-
+use App\Http\Controllers\Admin\StaffController;
 
 
 
@@ -69,6 +69,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/Staff', function () {
             return view('components.dashboard.staff');
         })->name('dashboard.staff');
+    });
+
+    Route::prefix('admin')
+    ->middleware('auth')
+    ->name('admin.')
+    ->group(function () {
+        Route::middleware([RoleMiddleware::class . ':Admin'])->group(function () {
+            Route::resource('staff', StaffController::class);
+        });
     });
 
 

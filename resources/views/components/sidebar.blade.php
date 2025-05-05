@@ -48,7 +48,11 @@
             <li><a href="{{ route('transaksi_gadai.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-hand-holding-usd mr-2"></i> Transaksi Gadai</a></li>
             <li><a href="{{ route('nasabah.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-user-tie mr-2"></i> Nasabah</a></li>
             <li><a href="{{ route('lelang_barang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white"><i class="fas fa-balance-scale mr-2"></i> Lelang</a></li>
-
+            <li>
+                <a href="{{ route('admin.staff.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">
+                    <i class="fas fa-user-cog mr-2"></i> Staff
+                </a>
+            </li>
         @endif
         {{-- khusus staff --}}
         @if(auth()->user()->isStaf())
