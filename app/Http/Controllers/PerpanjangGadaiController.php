@@ -74,10 +74,11 @@ class PerpanjangGadaiController extends Controller
 
         // Transaksi perpanjangan berdasarkan jenis perpanjangan
         if ($request->jenis_perpanjangan === 'tanpa_perubahan') {
+            $bunga_persen_baru = $data['bunga_persen_baru'] ?? 0;
             $bunga_baru = $lama->harga_gadai * $bunga_persen_baru;
             Transaksi::create([
                 'jenis_transaksi' => 'perpanjangan_gadai_bunga',
-                'arah' => 'keluar',
+                'arah' => 'masuk',
                 'nominal' => $bunga_baru,
                 'id_cabang' => auth()->user()->id_cabang,
                 'created_at' => now(),
@@ -250,6 +251,7 @@ class PerpanjangGadaiController extends Controller
                 'pengurangan' => $request->pengurangan,
                 'nominal' => $nominal,
                 'bunga_lama' => $bunga_lama,
+                'bunga_persen_baru' => $bunga_persen_baru,
                 'bunga_baru' => $bunga_baru,
                 'total_lama' => $total_lama,
                 'total_baru' => $total_baru,
