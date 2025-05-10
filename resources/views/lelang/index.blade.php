@@ -65,9 +65,11 @@
                             @if (auth()->user()->isSuperadmin())
                             <td>
                                 {{-- Tombol Lelang --}}
-                                <a href="{{ route('lelang.index', $barang->no_bon) }}" class="btn btn-success btn-sm">
+                                  @if (auth()->user()->isSuperadmin() && $barang->status !== 'Dilelang')
+                               <a href="{{ route('lelang.create', $barang->no_bon) }}" class="btn btn-success btn-sm">
                                     <i class="fas fa-gavel"></i> Lelang
                                 </a>
+                                @endif
                             </td>
 
                             @endif

@@ -19,6 +19,7 @@ use App\Http\Controllers\PerpanjangGadaiNasabahController;
 use App\Http\Controllers\Superadmin\AdminController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\LelangController;
 
 
 
@@ -183,6 +184,11 @@ Route::middleware(['auth'])->group(function () {
 
     // route untuk lelang
     Route::get('/lelang', [BarangGadaiController::class, 'lelangIndex'])->name('lelang.index');
+    Route::post('/barang-gadai/{id}/lelang', [BarangGadaiController::class, 'ubahStatusLelang'])->name('barang-gadai.lelang');
+    Route::get('/lelang/{no_bon}/create', [LelangController::class, 'create'])->name('lelang.create');
+    Route::post('/lelang/store', [LelangController::class, 'store'])->name('lelang.store');
+    Route::get('/nasabah/lelang', [LelangController::class, 'index'])->name('nasabah.lelang');
+
 
 // Route untuk update (pastikan ini sesuai juga)
     Route::put('/barang_gadai/{no_bon}/update-nobon', [BarangGadaiController::class, 'updateNobon'])->name('barang_gadai.update_nobon');

@@ -44,6 +44,18 @@ class BarangGadaiController extends Controller
         return view('barang_gadai.index', compact('barangGadai'));
     }
 
+    public function ubahStatusLelang($no_bon)
+{
+    $barang = BarangGadai::findOrFail($no_bon);
+
+    // Ubah status barang menjadi 'Dilelang'
+    $barang->status = 'Dilelang';
+    $barang->save();
+
+    return redirect()->back()->with('success', 'Status barang berhasil diubah menjadi Dilelang.');
+}
+
+
     public function lelangIndex(Request $request)
 {
     $user = auth()->user();
