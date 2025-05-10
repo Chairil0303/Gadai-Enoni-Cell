@@ -16,7 +16,9 @@ class LaporanController extends Controller
     public function show($id)
     {
         if ($id === 'harian') {
-            $tanggal = Carbon::today();
+            $tanggal = request('tanggal')
+                ? Carbon::parse(request('tanggal'))
+                : Carbon::today();
 
             $data = Transaksi::whereDate('created_at', $tanggal)
                 ->selectRaw('jenis_transaksi, COUNT(*) as jumlah, 
@@ -28,7 +30,8 @@ class LaporanController extends Controller
             return view('admin.laporan.harian', compact('data'));
         }
 
-        // (opsional) bulanan nanti menyusul
+        // untuk bulanan atau jenis lain nanti
     }
+
     // method lainnya bisa diisi sesuai kebutuhan (create, store, etc.)
 }
