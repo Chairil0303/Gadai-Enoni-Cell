@@ -7,8 +7,15 @@
     <div class="row">
         @foreach($barangLelang as $barang)
             <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="{{ asset('storage/' . $barang->foto_barang) }}" class="card-img-top" alt="Foto Barang">
+                <div class="card shadow">
+                    <div style="height: 250px; overflow: hidden;">
+                        <img
+                            src="{{ asset('storage/' . $barang->foto_barang) }}"
+                            class="card-img-top img-fluid"
+                            alt="Foto Barang"
+                            style="width: 100%; height: 100%; object-fit: contain;"
+                        >
+                    </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ $barang->barangGadai->nama_barang }}</h5>
                         <p class="card-text">{{ $barang->kondisi_barang }}</p>

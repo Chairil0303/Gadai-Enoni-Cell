@@ -20,7 +20,8 @@
 
         <div class="mb-3">
             <label for="harga_lelang" class="form-label">Harga Lelang (Opsional)</label>
-            <input type="number" name="harga_lelang" class="form-control" value="{{ old('harga_lelang') }}">
+            <input type="text" id="harga_lelang" class="form-control" value="{{ old('harga_lelang') }}">
+            <input type="hidden" name="harga_lelang" id="harga_lelang_hidden">
         </div>
 
         <div class="mb-3">
@@ -32,4 +33,37 @@
         <a href="{{ route('dashboard') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
+
+{{-- Script untuk format rupiah --}}
+<script>
+    const hargaLelangInput = document.getElementById('harga_lelang');
+    const hargaLelangHidden = document.getElementById('harga_lelang_hidden');
+
+    hargaLelangInput.addEventListener('keyup', function(e) {
+        let value = hargaLelangInput.value.replace(/[^,\d]/g, '').toString();
+
+        if (value) {
+            hargaLelangInput.value = formatRupiah(value, 'Rp ');
+            hargaLelangHidden.value = value.replace(/[^,\d]/g, '');
+        } else {
+            hargaLelangHidden.value = '';
+        }
+    });
+
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix == undefined ? rupiah : (rupiah ? prefix + rupiah : '');
+    }
+</script>
 @endsection

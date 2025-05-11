@@ -10,7 +10,7 @@ class Lelang extends Model
     use HasFactory;
 
     protected $table = 'lelang'; // Nama tabel
-    protected $primaryKey = 'id_lelang'; // Primary key
+    protected $primaryKey = 'id'; // Primary key
 
     public $timestamps = true; // Menggunakan timestamp
 

@@ -27,7 +27,6 @@
                                 <th>Kategori</th>
                                 <th>Tipe Barang</th>
                                 <th>Atas Nama</th>
-                                <th>IMEI</th>
                                 <th>Tenor</th>
                                 <th>Tempo</th>
                                 <th>Telat</th>
@@ -48,7 +47,6 @@
                                 <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
                                 <td>{{ $barang->nama_barang }}</td>
                                 <td>{{ $barang->nasabah->nama ?? '-' }}</td>
-                                <td>{{ $barang->imei ?? '-' }}</td>
                                 <td>{{ $barang->bungaTenor->tenor }} hari</td>
                                 <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
                                 <td>
@@ -69,6 +67,12 @@
                                <a href="{{ route('lelang.create', $barang->no_bon) }}" class="btn btn-success btn-sm">
                                     <i class="fas fa-gavel"></i> Lelang
                                 </a>
+                                @endif
+                                {{-- Tombol Edit --}}
+                                @if (auth()->user()->isSuperadmin() && $barang->status === 'Dilelang')
+                                    <a href="{{ route('lelang.edit', $barang->no_bon) }}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
                                 @endif
                             </td>
 
