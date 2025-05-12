@@ -2,65 +2,70 @@
 
 @section('content')
 <div class="container">
-    <div class="card shadow-lg">
-        <div class="card-header bg-warning text-white">
-            <h4><i class="fas fa-edit"></i> Edit Data Lelang</h4>
+    <h4>Input Data Lelang - Barang: {{ $barang->nama_barang }} (No Bon: {{ $barang->no_bon }})</h4>
+
+    <form action="{{ route('lelang.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <input type="hidden" name="barang_gadai_no_bon" value="{{ $barang->no_bon }}">
+
+        <div class="mb-3">
+            <label for="kondisi_barang" class="form-label">Kondisi Barang</label>
+            <textarea name="kondisi_barang" class="form-control" rows="3" required>{{ old('kondisi_barang') }}</textarea>
         </div>
-        <div class="card-body">
-            <form action="{{ route('lelang.update', $lelang->barang_gadai_no_bon) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
 
-                {{-- Kondisi Barang --}}
-                <div class="mb-3">
-                    <label for="kondisi_barang" class="form-label">Kondisi Barang</label>
-                    <textarea class="form-control" id="kondisi_barang" name="kondisi_barang" required>{{ $lelang->kondisi_barang }}</textarea>
-                </div>
-
-                {{-- Keterangan --}}
-                <div class="mb-3">
-                    <label for="keterangan" class="form-label">Keterangan</label>
-                    <textarea class="form-control" id="keterangan" name="keterangan">{{ $lelang->keterangan }}</textarea>
-                </div>
-
-                {{-- Harga Lelang --}}
-                <div class="mb-3">
-                    <label for="harga_lelang" class="form-label">Harga Lelang</label>
-                    <input type="number" class="form-control" id="harga_lelang" name="harga_lelang" value="{{ $lelang->harga_lelang }}" required>
-                </div>
-
-                {{-- Foto Barang Lama --}}
-                <div class="mb-3">
-                    <label class="form-label">Foto Barang Lama</label>
-                    <div class="row">
-                        @foreach (json_decode($lelang->foto_barang, true) ?? [] as $index => $foto)
-                            <div class="col-md-3 mb-2 text-center">
-                                <img src="{{ asset('storage/' . $foto) }}" class="img-thumbnail mb-1" width="150">
-                                <form action="{{ route('lelang.hapusFoto', ['id' => $lelang->id, 'index' => $index]) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus foto ini?')">Hapus</button>
-                                </form>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Tambah Foto Baru --}}
-                <div class="mb-3">
-                    <label for="foto_baru" class="form-label">Tambah Foto Barang (Opsional)</label>
-                    <input type="file" class="form-control" id="foto_baru" name="foto_baru[]" accept="image/*" multiple>
-                </div>
-
-                {{-- Tombol --}}
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-save"></i> Simpan Perubahan
-                </button>
-                <a href="{{ route('dashboard') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Kembali
-                </a>
-            </form>
+        <div class="mb-3">
+            <label for="keterangan" class="form-label">Keterangan (Opsional)</label>
+            <textarea name="keterangan" class="form-control" rows="2">{{ old('keterangan') }}</textarea>
         </div>
-    </div>
+
+        <div class="mb-3">
+            <label for="harga_lelang" class="form-label">Harga Lelang (Opsional)</label>
+            <input type="text" id="harga_lelang" class="form-control" value="{{ old('harga_lelang') }}">
+            <input type="hidden" name="harga_lelang" id="harga_lelang_hidden">
+        </div>
+
+        <div class="mb-3">
+            <label for="foto_barang" class="form-label">Upload Foto Barang (Opsional, Max: 2MB)</label>
+            <input type="file" name="foto_barang[]" class="form-control" id="foto_barang" multiple>
+            <small class="text-danger" id="file_error" style="display: none;">Ukuran file maksimal 2MB!</small>
+        </div>
+
+
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
+        <a href="{{ route('dashboard') }}" class="btn btn-secondary">Batal</a>
+    </form>
 </div>
+
+{{-- Script untuk format rupiah --}}
+<script>
+    const hargaLelangInput = document.getElementById('harga_lelang');
+    const hargaLelangHidden = document.getElementById('harga_lelang_hidden');
+
+    hargaLelangInput.addEventListener('keyup', function(e) {
+        let value = hargaLelangInput.value.replace(/[^,\d]/g, '').toString();
+
+        if (value) {
+            hargaLelangInput.value = formatRupiah(value, 'Rp ');
+            hargaLelangHidden.value = value.replace(/[^,\d]/g, '');
+        } else {
+            hargaLelangHidden.value = '';
+        }
+    });
+
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix == undefined ? rupiah : (rupiah ? prefix + rupiah : '');
+    }
+</script>
 @endsection

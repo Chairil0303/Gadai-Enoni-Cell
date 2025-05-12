@@ -22,42 +22,43 @@ class LelangController extends Controller
         return view('lelang.create', compact('barang'));
     }
 
-   public function store(Request $request)
+public function store(Request $request)
 {
     $request->validate([
         'barang_gadai_no_bon' => 'required|exists:barang_gadai,no_bon',
         'kondisi_barang' => 'required',
         'keterangan' => 'nullable',
         'harga_lelang' => 'nullable|numeric',
-        'foto_barang' => 'nullable|array',  // Menambahkan validasi untuk array
-        'foto_barang.*' => 'image|max:2048', // Validasi tiap file gambar
+        'foto_barang' => 'nullable|array', // Validasi foto_barang sebagai array
+        'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validasi setiap file gambar
     ]);
 
-    $fotoPaths = []; // Array untuk menyimpan path foto
-
+    // Simpan path foto dalam array
+    $fotoPaths = [];
     if ($request->hasFile('foto_barang')) {
         foreach ($request->file('foto_barang') as $file) {
-            // Simpan setiap file dan simpan path-nya ke array
+            // Simpan setiap foto dan simpan path-nya ke dalam array
             $fotoPaths[] = $file->store('lelang_foto', 'public');
         }
     }
 
-    // Simpan data lelang, dengan foto_barang disimpan dalam format JSON
+    // Simpan data lelang
     Lelang::create([
         'barang_gadai_no_bon' => $request->barang_gadai_no_bon,
         'kondisi_barang' => $request->kondisi_barang,
         'keterangan' => $request->keterangan,
         'harga_lelang' => $request->harga_lelang,
-        'foto_barang' => json_encode($fotoPaths),  // Simpan array sebagai JSON
+        'foto_barang' => json_encode($fotoPaths),  // Simpan array foto dalam format JSON
     ]);
 
-    // Update status barang gadai menjadi 'Dilelang'
+    // Update status barang gadai
     BarangGadai::where('no_bon', $request->barang_gadai_no_bon)->update([
         'status' => 'Dilelang',
     ]);
 
     return redirect()->route('dashboard')->with('success', 'Data lelang berhasil ditambahkan.');
 }
+
 
 
 
