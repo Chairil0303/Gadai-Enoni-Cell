@@ -1,34 +1,57 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-4">
-    <h2 class="mb-4">📊 Laporan Bulanan - {{ $bulan }}</h2>
+<div class="container py-5">
+    <h2 class="text-center mb-4">TRANSAKSI GADAI - {{ $bulan }}</h2>
 
-    @if($transaksi->isEmpty())
-        <div class="alert alert-info">Tidak ada transaksi pada bulan ini.</div>
-    @else
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Tanggal</th>
-                    <th>Cabang</th>
-                    <th>Jenis Transaksi</th>
-                    <th>Arah</th>
-                    <th>Nominal</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($transaksi as $item)
-                    <tr>
-                        <td>{{ $item->created_at->format('d-m-Y') }}</td>
-                        <td>{{ $item->cabang->nama ?? '-' }}</td>
-                        <td>{{ $item->jenis_transaksi }}</td>
-                        <td>{{ ucfirst($item->arah) }}</td>
-                        <td>Rp {{ number_format($item->nominal, 0, ',', '.') }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
+    <table class="table table-bordered text-center" style="background-color: #339933; color: white;">
+        <thead>
+            <tr >
+                <th  class="text-white" style="background-color: #228B22;">Jenis Trx</th>
+                <th  class="text-white" style="background-color: #228B22;">Jlh Trx</th>
+                <th  class="text-white" style="background-color: #228B22;">Keluar</th>
+                <th  class="text-white" style="background-color: #228B22;">Masuk</th>
+            </tr>
+        </thead>
+        <tbody style="background-color: #ccffcc; color: black;">
+        @php
+            $grouped = $transaksi->groupBy('jenis_transaksi');
+            $totalKeluar = 0;
+            $totalMasuk = 0;
+
+            $jenisTransaksiMap = [
+                'terima_gadai' => 'Terima Gadai',
+                'perpanjang_gadai' => 'Perpanjang Gadai',
+                'tebus_gadai' => 'Tebus Gadai',
+                'terima_jual' => 'Terima Jual',
+                'lelangan_laku' => 'Lelangan Laku',
+            ];
+        @endphp
+
+        @foreach($jenisTransaksiMap as $key => $label)
+            @php
+                $items = $grouped->get($key, collect());
+                $jumlah = $items->count();
+                $keluar = $items->where('arah', 'keluar')->sum('nominal');
+                $masuk = $items->where('arah', 'masuk')->sum('nominal');
+                $totalKeluar += $keluar;
+                $totalMasuk += $masuk;
+            @endphp
+            <tr>
+                <td>{{ $label }}</td>
+                <td>{{ $jumlah }} Trx</td>
+                <td>Rp {{ number_format($keluar, 0, ',', '.') }}</td>
+                <td>Rp {{ number_format($masuk, 0, ',', '.') }}</td>
+            </tr>
+        @endforeach
+
+            <tr style="background-color: #339933; color: white; font-weight: bold;">
+                <td>TOTAL</td>
+                <td>{{ $transaksi->count() }} Trx</td>
+                <td>Rp {{ number_format($totalKeluar, 0, ',', '.') }}</td>
+                <td>Rp {{ number_format($totalMasuk, 0, ',', '.') }}</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 @endsection
