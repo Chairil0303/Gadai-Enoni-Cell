@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;use App\Models\BarangGadai;
+namespace App\Http\Controllers;
+use App\Models\BarangGadai;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Nasabah;
 use App\Models\BungaTenor;
+use App\Models\Transaksi;
 
 class PerpanjangGadaiController extends Controller
 {
@@ -22,9 +24,7 @@ class PerpanjangGadaiController extends Controller
             return redirect()->route('perpanjang_gadai.create')->with('error', 'Data tidak ditemukan. Silakan isi ulang formulir.');
         }
 
-        // Optional: kalau mau lihat isi id_bunga_tenor saat development
-        // dump($data['id_bunga_tenor']);
-
+        // Validasi input
         $request->validate([
             'no_bon_lama' => 'required|exists:barang_gadai,no_bon',
             'no_bon_baru' => 'required|unique:barang_gadai,no_bon',
@@ -34,19 +34,15 @@ class PerpanjangGadaiController extends Controller
             ->where('id_cabang', auth()->user()->id_cabang)
             ->firstOrFail();
 
-        // Data baru dari session
         $harga_gadai_baru = $data['baru']['harga_gadai'];
         $bunga_baru = $data['baru']['bunga'];
         $tenor_baru = $data['id_bunga_tenor'];
         $tempo_baru = $data['baru']['tempo'];
-        $total_baru = $data['total_baru'];
 
         // Update status bon lama
         $lama->update([
             'status' => 'diperpanjang',
         ]);
-
-        $user = auth()->user();
 
         // Buat bon baru
         BarangGadai::create([
@@ -55,14 +51,14 @@ class PerpanjangGadaiController extends Controller
             'nama_barang' => $lama->nama_barang,
             'deskripsi' => $lama->deskripsi,
             'imei' => $lama->imei,
-            'id_bunga_tenor' => $tenor_baru, // <-- sekarang ini akan kesimpan
+            'id_bunga_tenor' => $tenor_baru,
             'tempo' => $tempo_baru,
             'telat' => 0,
             'harga_gadai' => $harga_gadai_baru,
             'bunga' => $bunga_baru,
             'status' => 'Tergadai',
             'id_kategori' => $lama->id_kategori,
-            'id_cabang' => $user->id_cabang,
+            'id_cabang' => auth()->user()->id_cabang,
             'no_bon_lama' => $lama->no_bon,
         ]);
 
@@ -76,11 +72,43 @@ class PerpanjangGadaiController extends Controller
             'tempo_baru' => $tempo_baru,
         ]);
 
-        // Bersihkan session supaya ga dobel
+        // Transaksi perpanjangan berdasarkan jenis perpanjangan
+        if ($request->jenis_perpanjangan === 'tanpa_perubahan') {
+            $bunga_persen_baru = $data['bunga_persen_baru'] ?? 0;
+            $bunga_baru = $lama->harga_gadai * $bunga_persen_baru;
+            Transaksi::create([
+                'jenis_transaksi' => 'perpanjangan_gadai_bunga',
+                'arah' => 'masuk',
+                'nominal' => $bunga_baru,
+                'id_cabang' => auth()->user()->id_cabang,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } elseif ($request->jenis_perpanjangan === 'penambahan') {
+            Transaksi::create([
+                'jenis_transaksi' => 'perpanjangan_gadai_penambahan',
+                'arah' => 'keluar',
+                'nominal' => $data['penambahan'] ?? 0,
+                'id_cabang' => auth()->user()->id_cabang,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } elseif ($request->jenis_perpanjangan === 'pengurangan') {
+            Transaksi::create([
+                'jenis_transaksi' => 'perpanjangan_gadai_pengurangan',
+                'arah' => 'masuk',
+                'nominal' => $data['pengurangan'] ?? 0,
+                'id_cabang' => auth()->user()->id_cabang,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         session()->forget('konfirmasi_data');
 
         return redirect()->route('barang_gadai.index')->with('success', 'Perpanjangan berhasil disimpan.');
     }
+
 
 
     public function konfirmasi()
@@ -223,6 +251,7 @@ class PerpanjangGadaiController extends Controller
                 'pengurangan' => $request->pengurangan,
                 'nominal' => $nominal,
                 'bunga_lama' => $bunga_lama,
+                'bunga_persen_baru' => $bunga_persen_baru,
                 'bunga_baru' => $bunga_baru,
                 'total_lama' => $total_lama,
                 'total_baru' => $total_baru,

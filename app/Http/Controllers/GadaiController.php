@@ -116,6 +116,7 @@ public function store(Request $request)
         'jenis_transaksi' => 'terima_gadai',
         'arah' => 'keluar', // karena uang keluar dari kas
         'nominal' => $request->harga_gadai,
+        'id_cabang' => auth()->user()->id_cabang,
     ]);
 
 
