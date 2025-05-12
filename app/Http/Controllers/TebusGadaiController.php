@@ -8,6 +8,7 @@ use App\Models\BungaTenor;
 use Illuminate\Http\Request;
 use App\Models\TransaksiTebus;
 use Carbon\Carbon;
+use App\Models\Transaksi;
 
 class TebusGadaiController extends Controller
 {
@@ -34,43 +35,55 @@ class TebusGadaiController extends Controller
         ];
     }
 
-    public function cari(Request $request)
-    {
-        // Initialize the query variable
-        $query = BarangGadai::query();
+public function cari(Request $request)
+{
+    $user = auth()->user();
 
-        if ($request->has('no_bon')) {
-            $query->where('no_bon', $request->input('no_bon'));
-        }
+    $query = BarangGadai::query();
 
-        if ($request->has('nama_nasabah')) {
-            $query->whereHas('nasabah', function ($q) use ($request) {
-                $q->where('nama', 'like', '%' . $request->input('nama_nasabah') . '%');
-            });
-        }
-
-        $barangGadai = $query->with('bungaTenor')->first(); // Fetch the first result with the related bungaTenor
-
-        if (!$barangGadai) {
-            return redirect()->back()->with('error', 'Data tidak ditemukan.');
-        }
-
-        // Ambil data nasabah terkait
-        $nasabah = Nasabah::find($barangGadai->id_nasabah);
-
-        // Hitung Denda (1% dari harga gadai dikali hari telat)
-        $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
-
-        // Hitung Bunga dan ambil persentasenya
-        $hasilBunga = $this->hitungBunga($barangGadai);
-        $bunga = $hasilBunga['bunga'];
-        $bungaPersen = $hasilBunga['bungaPersen'];
-
-        // Hitung Total Tebus
-        $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
-
-        return view('tebus_gadai.konfirmasi', compact('barangGadai', 'nasabah', 'denda', 'totalTebus', 'bungaPersen', 'bunga'));
+    if ($user->id_users != 1) { // jika bukan superadmin
+        $query->where('id_cabang', $user->id_cabang);
     }
+
+    if ($request->has('no_bon')) {
+        $query->where('no_bon', $request->input('no_bon'));
+    }
+
+    if ($request->has('nama_nasabah')) {
+        $query->whereHas('nasabah', function ($q) use ($request) {
+            $q->where('nama', 'like', '%' . $request->input('nama_nasabah') . '%');
+        });
+    }
+
+    $barangGadai = $query->with('bungaTenor')->first();
+
+    if (!$barangGadai) {
+        return redirect()->back()->with('error', 'Data tidak ditemukan.');
+    }
+
+    // Cek apakah barang gadai sudah ditebus
+    if ($barangGadai->status == 'Ditebus') {
+        return redirect()->back()->with('error', 'Barang gadai dengan no bon ' . $barangGadai->no_bon . ' sudah ditebus.');
+    }
+
+    // Cek apakah cabang sesuai dengan cabang user
+    if ($barangGadai->id_cabang != $user->id_cabang) {
+        return redirect()->back()->with('error', 'Anda mencoba mengakses barang gadai dari cabang yang salah.');
+    }
+
+    $nasabah = Nasabah::find($barangGadai->id_nasabah);
+    $denda = ($barangGadai->harga_gadai * 0.01) * $barangGadai->telat;
+    $hasilBunga = $this->hitungBunga($barangGadai);
+    $bunga = $hasilBunga['bunga'];
+    $bungaPersen = $hasilBunga['bungaPersen'];
+    $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
+
+    return view('tebus_gadai.konfirmasi', compact('barangGadai', 'nasabah', 'denda', 'totalTebus', 'bungaPersen', 'bunga'));
+}
+
+
+
+
 
 
     public function tebus(Request $request, $noBon)
@@ -103,6 +116,14 @@ class TebusGadaiController extends Controller
             'jumlah_pembayaran' => $totalTebus,
             'status' => 'Berhasil',
         ]);
+        Transaksi::create([
+                'jenis_transaksi' => 'tebus_gadai_Admin',
+                'arah' => 'masuk',
+                'nominal' => $totalTebus,
+                'id_cabang' => auth()->user()->id_cabang,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
         // Update status barang menjadi 'Ditebus'
         $barangGadai->status = 'Ditebus';

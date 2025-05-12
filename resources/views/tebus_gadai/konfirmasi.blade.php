@@ -4,7 +4,7 @@
 <div class="container">
     <h2>Konfirmasi Tebus Gadai</h2>
     <br>
-    
+
     <!-- Tabel Data Nasabah -->
     <table class="table table-bordered">
         <thead class="table-dark">
@@ -16,7 +16,7 @@
             <tr><th>Alamat</th><td>{{ $barangGadai->nasabah->alamat }}</td></tr>
             <tr><th>No Telp</th><td>{{ $barangGadai->nasabah->telepon }}</td></tr>
         </tbody>
-    </table>    
+    </table>
 
     <!-- Tabel Data Barang Gadai -->
     <table class="table table-bordered mt-4">
@@ -46,6 +46,12 @@
         </form>
     </div>
 </div>
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
 
 <!-- SweetAlert2 Script -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
