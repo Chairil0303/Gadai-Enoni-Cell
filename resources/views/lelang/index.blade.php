@@ -9,9 +9,6 @@
                     <h4><i class="fas fa-box"></i> Data Barang Telat</h4>
                 </div>
                 <div class="card-body">
-                    <!-- @if(session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
-                    @endif -->
                     @if (session('success'))
                         <div class="mb-4 p-4 bg-green-100 text-green-800 border border-green-400 rounded">
                             {{ session('success') }}
@@ -23,14 +20,11 @@
                                 @if (auth()->user()->isSuperadmin())
                                 <th>Cabang</th>
                                 @endif
-                                <th>No Bon</th>
-                                <th>Kategori</th>
                                 <th>Tipe Barang</th>
-                                <th>Atas Nama</th>
-                                <th>Tenor</th>
                                 <th>Tempo</th>
                                 <th>Telat</th>
-                                <th>Harga Gadai</th>
+                                <th>Detail</th>
+
                                 @if (auth()->user()->isSuperadmin())
                                 <th>Aksi</th>
                                 @endif
@@ -40,14 +34,11 @@
                             @foreach($barangGadai as $barang)
                             <tr>
                                 @if (auth()->user()->isSuperadmin())
-
                                 <td>{{$barang->cabang->nama_cabang}}</td>
                                 @endif
-                                <td>{{ $barang->no_bon }}</td>
-                                <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
                                 <td>{{ $barang->nama_barang }}</td>
-                                <td>{{ $barang->nasabah->nama ?? '-' }}</td>
-                                <td>{{ $barang->bungaTenor->tenor }} hari</td>
+
+
                                 <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
                                 <td>
                                     @if($barang->telat > 0)
@@ -57,63 +48,72 @@
                                     @endif
                                 </td>
 
+                                <td><button class="btn btn-info btn-sm" onclick="showDetail('{{ $barang->no_bon }}')">
+                                        <i class="fas fa-info-circle"></i> Detail
+                                    </button></td>
 
-
-                                <td>Rp {{ number_format($barang->harga_gadai, 0, ',', '.') }}</td>
-                            @if (auth()->user()->isSuperadmin())
-                            <td>
-                                {{-- Tombol Lelang --}}
-                                  @if (auth()->user()->isSuperadmin() && $barang->status !== 'Dilelang')
-                               <a href="{{ route('lelang.create', $barang->no_bon) }}" class="btn btn-success btn-sm">
-                                    <i class="fas fa-gavel"></i> Lelang
-                                </a>
-                                @endif
-                                {{-- Tombol Edit --}}
-                                @if (auth()->user()->isSuperadmin() && $barang->status === 'Dilelang')
+                                @if (auth()->user()->isSuperadmin())
+                                <td>
+                                    @if (auth()->user()->isSuperadmin() && $barang->status !== 'Dilelang')
+                                    <a href="{{ route('lelang.create', $barang->no_bon) }}" class="btn btn-success btn-sm">
+                                        <i class="fas fa-gavel"></i> Lelang
+                                    </a>
+                                    @endif
+                                    @if (auth()->user()->isSuperadmin() && $barang->status === 'Dilelang')
                                     <a href="{{ route('lelang.edit', $barang->no_bon) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
-                                @endif
-                            </td>
+                                    @endif
 
-                            @endif
+                                </td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-                <div class="card-footer text-end">
-                    <a href="{{ route('dashboard') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Kembali
-                    </a>
-                </div>
             </div>
         </div>
     </div>
 </div>
-@if (session('success'))
-<script>
-    Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
-        text: '{{ session('success') }}',
-        timer: 3000,
-        showConfirmButton: false
-    });
-</script>
-@endif
 
-@if (session('error'))
-<script>
-    Swal.fire({
-        icon: 'error',
-        title: 'Oops!',
-        text: '{{ session('error') }}',
-        timer: 3000,
-        showConfirmButton: false
-    });
-</script>
-@endif
+<!-- Modal Detail Barang -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailModalLabel">Detail Barang Gadai</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>No Bon:</strong> <span id="noBon"></span></p>
+                <p><strong>Kategori:</strong> <span id="kategori"></span></p>
+                <p><strong>Atas Nama:</strong> <span id="atasNama"></span></p>
+                <p><strong>Tenor:</strong> <span id="tenor"></span> Hari</p>
+                <p><strong>Harga Gadai:</strong> Rp <span id="hargaGadai"></span></p>
+                <p><strong>Tanggal Gadai:</strong> <span id="createdAt"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<script>
+    function showDetail(noBon) {
+        fetch(`/barang-gadai/detail/${noBon}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('noBon').innerText = data.no_bon;
+                document.getElementById('kategori').innerText = data.kategori;
+                document.getElementById('atasNama').innerText = data.atas_nama;
+                document.getElementById('tenor').innerText = data.tenor;
+                document.getElementById('hargaGadai').innerText = new Intl.NumberFormat().format(data.harga_gadai);
+                document.getElementById('createdAt').innerText = data.created_at;
+                new bootstrap.Modal(document.getElementById('detailModal')).show();
+            });
+    }
+</script>
 @endsection
-{{-- index blade barang gadai --}}
+

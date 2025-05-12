@@ -55,6 +55,27 @@ class BarangGadaiController extends Controller
     return redirect()->back()->with('success', 'Status barang berhasil diubah menjadi Dilelang.');
 }
 
+public function getDetail($no_bon)
+{
+    $barang = BarangGadai::with(['kategori', 'nasabah', 'bungaTenor'])
+        ->where('no_bon', $no_bon)
+        ->first();
+
+    if (!$barang) {
+        return response()->json(['message' => 'Data tidak ditemukan'], 404);
+    }
+
+    return response()->json([
+        'no_bon' => $barang->no_bon,
+        'kategori' => $barang->kategori->nama_kategori ?? '-',
+        'nama_barang' => $barang->nama_barang,
+        'atas_nama' => $barang->nasabah->nama ?? '-',
+        'tenor' => $barang->bungaTenor->tenor ?? '-',
+        'harga_gadai' => $barang->harga_gadai,
+        'created_at' => $barang->created_at->format('d-m-Y')
+    ]);
+}
+
 
     public function lelangIndex(Request $request)
 {

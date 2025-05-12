@@ -34,13 +34,13 @@ public function store(Request $request)
     ]);
 
     // Simpan path foto dalam array
-    $fotoPaths = [];
-    if ($request->hasFile('foto_barang')) {
-        foreach ($request->file('foto_barang') as $file) {
-            // Simpan setiap foto dan simpan path-nya ke dalam array
-            $fotoPaths[] = $file->store('lelang_foto', 'public');
+        $fotoPaths = [];
+        if ($request->hasFile('foto_barang')) {
+            foreach ($request->file('foto_barang') as $file) {
+                // Simpan setiap foto dan simpan path-nya ke dalam array
+                $fotoPaths[] = $file->store('lelang_foto', 'public');
+            }
         }
-    }
 
     // Simpan data lelang
     Lelang::create([
@@ -58,6 +58,8 @@ public function store(Request $request)
 
     return redirect()->route('dashboard')->with('success', 'Data lelang berhasil ditambahkan.');
 }
+
+
 
 
 

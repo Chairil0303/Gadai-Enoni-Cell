@@ -191,6 +191,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lelang/{no_bon}/edit', [LelangController::class, 'edit'])->name('lelang.edit');
     Route::put('/lelang/{no_bon}', [LelangController::class, 'update'])->name('lelang.update');
 Route::delete('/lelang/{id}/hapus-foto/{index}', [LelangController::class, 'hapusFoto'])->name('lelang.hapusFoto');
+Route::get('/barang-gadai/detail/{no_bon}', [BarangGadaiController::class, 'getDetail']);
 
 
 // Route untuk update (pastikan ini sesuai juga)
