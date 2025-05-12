@@ -22,35 +22,43 @@ class LelangController extends Controller
         return view('lelang.create', compact('barang'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'barang_gadai_no_bon' => 'required|exists:barang_gadai,no_bon',
-            'kondisi_barang' => 'required',
-            'keterangan' => 'nullable',
-            'harga_lelang' => 'nullable|numeric',
-            'foto_barang' => 'nullable|image|max:2048',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'barang_gadai_no_bon' => 'required|exists:barang_gadai,no_bon',
+        'kondisi_barang' => 'required',
+        'keterangan' => 'nullable',
+        'harga_lelang' => 'nullable|numeric',
+        'foto_barang' => 'nullable|array',  // Menambahkan validasi untuk array
+        'foto_barang.*' => 'image|max:2048', // Validasi tiap file gambar
+    ]);
 
-        $fotoPath = null;
-        if ($request->hasFile('foto_barang')) {
-            $fotoPath = $request->file('foto_barang')->store('lelang_foto', 'public');
+    $fotoPaths = []; // Array untuk menyimpan path foto
+
+    if ($request->hasFile('foto_barang')) {
+        foreach ($request->file('foto_barang') as $file) {
+            // Simpan setiap file dan simpan path-nya ke array
+            $fotoPaths[] = $file->store('lelang_foto', 'public');
         }
-
-        Lelang::create([
-            'barang_gadai_no_bon' => $request->barang_gadai_no_bon,
-            'kondisi_barang' => $request->kondisi_barang,
-            'keterangan' => $request->keterangan,
-            'harga_lelang' => $request->harga_lelang,
-            'foto_barang' => $fotoPath,
-        ]);
-         BarangGadai::where('no_bon', $request->barang_gadai_no_bon)->update([
-        'status' => 'Dilelang',
-     ]);
-
-
-        return redirect()->route('dashboard')->with('success', 'Data lelang berhasil ditambahkan.');
     }
+
+    // Simpan data lelang, dengan foto_barang disimpan dalam format JSON
+    Lelang::create([
+        'barang_gadai_no_bon' => $request->barang_gadai_no_bon,
+        'kondisi_barang' => $request->kondisi_barang,
+        'keterangan' => $request->keterangan,
+        'harga_lelang' => $request->harga_lelang,
+        'foto_barang' => json_encode($fotoPaths),  // Simpan array sebagai JSON
+    ]);
+
+    // Update status barang gadai menjadi 'Dilelang'
+    BarangGadai::where('no_bon', $request->barang_gadai_no_bon)->update([
+        'status' => 'Dilelang',
+    ]);
+
+    return redirect()->route('dashboard')->with('success', 'Data lelang berhasil ditambahkan.');
+}
+
 
 
     public function edit($no_bon)
@@ -70,7 +78,8 @@ public function update(Request $request, $no_bon)
         'kondisi_barang' => 'required',
         'keterangan' => 'nullable',
         'harga_lelang' => 'required|numeric',
-        'foto_barang' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'foto_barang' => 'nullable|array',  // Validasi foto_barang sebagai array
+        'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validasi tiap file gambar
     ]);
 
     // Cari data lelang berdasarkan no_bon, bukan id_lelang
@@ -80,26 +89,28 @@ public function update(Request $request, $no_bon)
         return redirect()->route('dashboard')->with('error', 'Data lelang tidak ditemukan.');
     }
 
+    $fotoPaths = json_decode($lelang->foto_barang, true) ?? []; // Decode foto yang ada sebelumnya
+
     // Jika ada upload foto baru
     if ($request->hasFile('foto_barang')) {
-        // Hapus foto lama jika ada
-        if ($lelang->foto_barang && \Storage::exists($lelang->foto_barang)) {
-            \Storage::delete($lelang->foto_barang);
+        // Simpan foto baru dan tambahkan ke array fotoPaths
+        foreach ($request->file('foto_barang') as $file) {
+            // Simpan foto baru
+            $filePath = $file->store('lelang_foto', 'public');
+            $fotoPaths[] = $filePath;  // Menambahkan path foto baru ke array
         }
-
-        // Simpan foto baru
-        $filePath = $request->file('foto_barang')->store('foto_barang', 'public');
-        $lelang->foto_barang = $filePath;
     }
 
     // Update data lelang
     $lelang->kondisi_barang = $request->kondisi_barang;
     $lelang->keterangan = $request->keterangan;
     $lelang->harga_lelang = $request->harga_lelang;
-    $lelang->save(); // <-- Perbaikan disini
+    $lelang->foto_barang = json_encode($fotoPaths);  // Simpan array foto dalam format JSON
+    $lelang->save();
 
     return redirect()->route('dashboard')->with('success', 'Data lelang berhasil diperbarui.');
 }
+
 
 
 }
