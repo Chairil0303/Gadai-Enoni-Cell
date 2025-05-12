@@ -199,7 +199,7 @@ Route::delete('/lelang/{id}/hapus-foto/{index}', [LelangController::class, 'hapu
     Route::resource('nasabah', NasabahController::class);
     Route::resource('barang_gadai', BarangGadaiController::class);
     Route::resource('transaksi_gadai', TransaksiGadaiController::class);
-    Route::resource('lelang_barang', LelangBarangController::class);
+    Route::resource('lelang_barang', LelangController::class);
     Route::resource('laporan', LaporanController::class);
     Route::resource('notifikasi', NotifikasiController::class);
 
