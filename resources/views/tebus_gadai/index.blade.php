@@ -1,29 +1,42 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container mt-4">
     @if(session('error'))
-        <div class="alert alert-danger">
+        <div class="alert alert-danger shadow-sm rounded">
             {{ session('error') }}
         </div>
     @endif
-    <h2>Cari Barang Gadai</h2>
-    <form action="{{ route('admin.tebus.cari') }}" method="GET">
-        @csrf
-        <div class="mb-3">
-            <label for="search_no_bon" class="form-label">Cari No. Bon</label>
-            <input type="text"  name="no_bon" class="form-control" placeholder="Masukkan No. Bon">
-        </div>
 
-        <div class="mb-3">
-            <label for="nama_nasabah" class="form-label">Nama Nasabah</label>
-            <input type="text"  name="nama_nasabah" class="form-control" placeholder="Masukkan Nama Nasabah">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-success text-white text-center rounded-top-4">
+            <h4><i class="fas fa-search"></i> Cari Barang Gadai</h4>
         </div>
+        <div class="card-body bg-light">
+            <form action="{{ route('admin.tebus.cari') }}" method="GET" class="px-3">
+                @csrf
 
-        <button type="submit" class="btn btn-primary">Cari</button>
-    </form>
+                <div class="mb-3">
+                    <label for="search_no_bon" class="form-label text-success fw-semibold">
+                        <i class="fas fa-receipt"></i> No. Bon
+                    </label>
+                    <input type="text" name="no_bon" class="form-control rounded-3 shadow-sm" placeholder="Masukkan No. Bon">
+                </div>
+
+                <div class="mb-3">
+                    <label for="nama_nasabah" class="form-label text-success fw-semibold">
+                        <i class="fas fa-user"></i> Nama Nasabah
+                    </label>
+                    <input type="text" name="nama_nasabah" class="form-control rounded-3 shadow-sm" placeholder="Masukkan Nama Nasabah">
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success shadow-sm px-4 rounded-3">
+                        <i class="fas fa-search"></i> Cari
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-
-
-
 @endsection
