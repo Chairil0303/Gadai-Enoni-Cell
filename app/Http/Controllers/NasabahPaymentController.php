@@ -304,7 +304,7 @@ public function handleNotificationJson(Request $request)
             // ================= PERPANJANG =================
             // Perpanjang jatuh tempo (misal 30 hari)
             $barang->status = 'Diperpanjang';
-            $barang->tempo = Carbon::parse($barang->tempo)->addDays(30);
+            // $barang->tempo = Carbon::parse($barang->tempo)->addDays(30);
             $barang->save();
 
             $message = "*🔁 Perpanjangan Berhasil!*\n\n" .

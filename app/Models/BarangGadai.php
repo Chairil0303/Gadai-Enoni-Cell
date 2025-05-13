@@ -102,6 +102,11 @@
             return $this->belongsTo(BarangGadai::class, 'no_bon_lama', 'no_bon');
         }
 
+        public function lelang()
+{
+    return $this->hasOne(Lelang::class, 'barang_gadai_no_bon', 'no_bon');
+}
+
 
 
         public function nasabah()

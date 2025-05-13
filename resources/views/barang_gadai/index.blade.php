@@ -67,7 +67,7 @@
                                 <td>{{ $barang->nasabah->nama ?? '-' }}</td>
                                 <td>{{ $barang->imei ?? '-' }}</td>
                                 <td>{{ $barang->deskripsi }}</td>
-                                <td>{{ $barang->tenor }} hari</td>
+                                <td>{{ $barang->bungaTenor->tenor  }} hari</td>
                                 <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
                                 <td>
                                     @if($barang->telat > 0)

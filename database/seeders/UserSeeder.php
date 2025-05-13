@@ -94,7 +94,7 @@ class UserSeeder extends Seeder
                 'username' => 'superadmin',
                 'password' => Hash::make('password'),
                 'role' => 'Superadmin',
-                'id_cabang' => 1,
+                'id_cabang' => null,
             ],
             [
                 'nama' => 'Admin Kalisuren',
@@ -167,6 +167,15 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role' => 'Nasabah',
                 'id_cabang' => 3,
+            ],
+            [
+                'nama' => 'Nasabah Empat',
+                'email' => 'nasabah4@example.com',
+                'username' => 'nasabah4',
+                'password' => Hash::make('password'),
+                'role' => 'Nasabah',
+                'id_cabang' => 1,
+                ],
             ],
         ]);
 
