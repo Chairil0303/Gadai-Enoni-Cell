@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 use App\Models\Cabang;
 use App\Models\BungaTenor;
+use App\Models\Transaksi;
 
 class perpanjangGadaiNasabahController extends Controller
 {
@@ -245,6 +246,16 @@ class perpanjangGadaiNasabahController extends Controller
             'bunga_baru' => $TenorBaru->bunga_percent,
             'tempo_baru' => $tempobaru,
         ]);
+
+        Transaksi::create([
+            'jenis_transaksi' => $type === 'cicil' ? 'cicilan_perpanjang_gadai_Nasabah' : 'perpanjang_gadai_Nasabah',
+            'arah' => 'masuk',
+            'nominal' => $total,
+            'id_cabang' => auth()->user()->id_cabang,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
 
         return response()->json([
             'snap_token' => $snapToken,

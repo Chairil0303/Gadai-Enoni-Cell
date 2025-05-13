@@ -77,6 +77,8 @@ Route::middleware(['auth'])->group(function () {
     ->name('admin.')
     ->group(function () {
         Route::middleware([RoleMiddleware::class . ':Admin'])->group(function () {
+            // Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.show');
+            Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.filter');
             Route::resource('staff', StaffController::class);
             Route::resource('laporan', \App\Http\Controllers\Admin\LaporanController::class);
         });
