@@ -13,7 +13,6 @@
                         @csrf
 
                         <div class="row">
-                            <div class="col-md-6">
 
                                 <div class="mb-3">
                                     <label for="nama" class="form-label"><i class="fas fa-user"></i> Nama</label>
@@ -44,22 +43,7 @@
                                     <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Ulangi password" required>
                                 </div>
 
-                            </div>
 
-                            <div class="col-md-6 d-flex flex-column justify-content-between">
-
-                                <div class="mb-3">
-                                    <label for="id_cabang" class="form-label"><i class="fas fa-building"></i> Cabang</label>
-                                    <select name="id_cabang" id="id_cabang" class="form-control" required>
-                                        <option value="">-- Pilih Cabang --</option>
-                                        @foreach(\App\Models\Cabang::all() as $cabang)
-                                            <option value="{{ $cabang->id_cabang }}" {{ old('id_cabang') == $cabang->id_cabang ? 'selected' : '' }}>
-                                                {{ $cabang->nama_cabang }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('id_cabang') <div class="text-danger small">{{ $message }}</div> @enderror
-                                </div>
 
                                 <div class="d-flex justify-content-between mt-3">
                                     <a href="{{ route('admin.staff.index') }}" class="btn btn-secondary btn-sm d-none d-sm-inline-block">

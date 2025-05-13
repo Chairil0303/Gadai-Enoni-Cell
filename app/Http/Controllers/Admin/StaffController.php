@@ -29,12 +29,13 @@ class StaffController extends Controller
 
     public function store(Request $request)
     {
+        $user  = auth()->user();
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'nullable|email|unique:users',
             'username' => 'required|string|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'id_cabang' => 'nullable|exists:cabang,id_cabang',
+            
         ]);
 
         User::create([
@@ -43,7 +44,7 @@ class StaffController extends Controller
             'username' => $request->username,
             'password' => Hash::make($request->password),
             'role' => 'Staf',
-            'id_cabang' => $request->id_cabang,
+            'id_cabang' => $user->id_cabang,
         ]);
 
         return redirect()->route('admin.staff.index')->with('success', 'Staff berhasil ditambahkan.');
