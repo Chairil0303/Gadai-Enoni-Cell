@@ -26,15 +26,28 @@
                     <input type="number" class="form-control" id="harga_lelang" name="harga_lelang" value="{{ $lelang->harga_lelang }}" required>
                 </div>
 
-                <div class="mb-3">
-                    <label for="foto_barang" class="form-label">Foto Barang (Opsional)</label>
-                    <input type="file" class="form-control" id="foto_barang" name="foto_barang" accept="image/*">
-                    @if ($lelang->foto_barang)
-                        <div class="mt-2">
-                            <img src="{{ asset('storage/' . $lelang->foto_barang) }}" alt="Foto Barang" class="img-thumbnail" width="150">
+               <div class="mb-3">
+    <label for="foto_barang" class="form-label">Foto Barang (Opsional)</label>
+    <input type="file" class="form-control" id="foto_barang" name="foto_barang[]" accept="image/*" multiple>
+
+    @if (!empty($fotoBarang))
+        <div class="mt-3">
+            <h5>Foto Saat Ini:</h5>
+            <div class="row">
+                @foreach ($fotoBarang as $index => $foto)
+                    <div class="col-md-3 text-center mb-2">
+                        <img src="{{ asset('storage/' . $foto) }}" alt="Foto Barang" class="img-thumbnail mb-1" width="150">
+                        <div>
+                            <input type="checkbox" name="delete_foto[]" value="{{ $foto }}">
+                            <label>Hapus Foto</label>
                         </div>
-                    @endif
-                </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+</div>
+
 
                 <button type="submit" class="btn btn-success">
                     <i class="fas fa-save"></i> Simpan Perubahan
