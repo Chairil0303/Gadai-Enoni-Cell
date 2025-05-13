@@ -19,6 +19,7 @@ use App\Http\Controllers\PerpanjangGadaiNasabahController;
 use App\Http\Controllers\Superadmin\AdminController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\LelangController;
 
 
 
@@ -76,6 +77,8 @@ Route::middleware(['auth'])->group(function () {
     ->name('admin.')
     ->group(function () {
         Route::middleware([RoleMiddleware::class . ':Admin'])->group(function () {
+            // Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.show');
+            Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.filter');
             Route::resource('staff', StaffController::class);
             Route::resource('laporan', \App\Http\Controllers\Admin\LaporanController::class);
         });
@@ -180,13 +183,26 @@ Route::middleware(['auth'])->group(function () {
     // Route untuk menampilkan form edit berdasarkan no_bon
     Route::get('/barang_gadai/{no_bon}/edit-nobon', [BarangGadaiController::class, 'editNobon'])->name('barang_gadai.edit_nobon');
 
+
+    // route untuk lelang
+    Route::get('/lelang', [BarangGadaiController::class, 'lelangIndex'])->name('lelang.index');
+    Route::post('/barang-gadai/{id}/lelang', [BarangGadaiController::class, 'ubahStatusLelang'])->name('barang-gadai.lelang');
+    Route::get('/lelang/{no_bon}/create', [LelangController::class, 'create'])->name('lelang.create');
+    Route::post('/lelang/store', [LelangController::class, 'store'])->name('lelang.store');
+    Route::get('/nasabah/lelang', [LelangController::class, 'index'])->name('nasabah.lelang');
+    Route::get('/lelang/{no_bon}/edit', [LelangController::class, 'edit'])->name('lelang.edit');
+    Route::put('/lelang/{no_bon}', [LelangController::class, 'update'])->name('lelang.update');
+Route::delete('/lelang/{id}/hapus-foto/{index}', [LelangController::class, 'hapusFoto'])->name('lelang.hapusFoto');
+Route::get('/barang-gadai/detail/{no_bon}', [BarangGadaiController::class, 'getDetail']);
+
+
 // Route untuk update (pastikan ini sesuai juga)
     Route::put('/barang_gadai/{no_bon}/update-nobon', [BarangGadaiController::class, 'updateNobon'])->name('barang_gadai.update_nobon');
     // route untuk view
     Route::resource('nasabah', NasabahController::class);
     Route::resource('barang_gadai', BarangGadaiController::class);
     Route::resource('transaksi_gadai', TransaksiGadaiController::class);
-    Route::resource('lelang_barang', LelangBarangController::class);
+    Route::resource('lelang_barang', LelangController::class);
     Route::resource('laporan', LaporanController::class);
     Route::resource('notifikasi', NotifikasiController::class);
 

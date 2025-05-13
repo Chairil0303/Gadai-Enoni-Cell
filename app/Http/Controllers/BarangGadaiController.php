@@ -44,6 +44,80 @@ class BarangGadaiController extends Controller
         return view('barang_gadai.index', compact('barangGadai'));
     }
 
+    public function ubahStatusLelang($no_bon)
+{
+    $barang = BarangGadai::findOrFail($no_bon);
+
+    // Ubah status barang menjadi 'Dilelang'
+    $barang->status = 'Dilelang';
+    $barang->save();
+
+    return redirect()->back()->with('success', 'Status barang berhasil diubah menjadi Dilelang.');
+}
+
+public function getDetail($no_bon)
+{
+    $barang = BarangGadai::with(['kategori', 'nasabah', 'bungaTenor'])
+        ->where('no_bon', $no_bon)
+        ->first();
+
+    if (!$barang) {
+        return response()->json(['message' => 'Data tidak ditemukan'], 404);
+    }
+
+    return response()->json([
+        'no_bon' => $barang->no_bon,
+        'kategori' => $barang->kategori->nama_kategori ?? '-',
+        'nama_barang' => $barang->nama_barang,
+        'atas_nama' => $barang->nasabah->nama ?? '-',
+        'tenor' => $barang->bungaTenor->tenor ?? '-',
+        'harga_gadai' => $barang->harga_gadai,
+        'created_at' => $barang->created_at->format('d-m-Y')
+    ]);
+}
+
+
+    public function lelangIndex(Request $request)
+{
+    $user = auth()->user();
+    $status = $request->input('status');
+    $noBon = $request->input('no_bon');
+
+    // Ambil barang yang tempo-nya sudah lewat
+    $query = BarangGadai::with('nasabah.user', 'kategori')
+        ->whereDate('tempo', '<', now());
+
+    // Jika bukan superadmin (user id ≠ 1)
+    if ($user->id !== 1) {
+        // Cek apakah kolom id_cabang tersedia
+        if (Schema::hasColumn('barang_gadai', 'id_cabang')) {
+            // Jika user punya id_cabang → filter cabang
+            if (!is_null($user->id_cabang)) {
+                $query->where('id_cabang', $user->id_cabang);
+            }
+            // Jika user tidak punya id_cabang → biarkan tanpa filter (lihat semua cabang)
+        } else {
+            return view('lelang.index', ['barangGadai' => collect()]);
+        }
+    }
+
+    // Filter tambahan (opsional)
+    if ($status) {
+        $query->where('status', $status);
+    }
+
+    if ($noBon) {
+        $query->where('no_bon', 'like', '%' . $noBon . '%');
+    }
+
+    $barangGadai = $query->get();
+
+    return view('lelang.index', compact('barangGadai'));
+}
+
+
+
+
 
 
     public function tampilBarangDiperpanjangDenganDm()
