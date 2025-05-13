@@ -52,7 +52,7 @@
                 <button type="submit" class="btn btn-success">
                     <i class="fas fa-save"></i> Simpan Perubahan
                 </button>
-                <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+                <a href="{{ route('lelang.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Kembali
                 </a>
             </form>
