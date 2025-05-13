@@ -55,6 +55,11 @@ class TebusGadaiController extends Controller
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
         }
 
+        // ⛔️ Cek cabang barang dan user
+        if ($barangGadai->id_cabang !== auth()->user()->id_cabang) {
+            return redirect()->back()->with('error', 'No Bon milik cabang lain.');
+        }
+
         // Ambil data nasabah terkait
         $nasabah = Nasabah::find($barangGadai->id_nasabah);
 
@@ -81,6 +86,11 @@ class TebusGadaiController extends Controller
 
         if (!$barangGadai) {
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        }
+
+        // ⛔️ Cek cabang barang dan user
+        if ($barangGadai->id_cabang !== auth()->user()->id_cabang) {
+            return redirect()->back()->with('error', 'Barang ini bukan milik cabang Anda.');
         }
 
         // Hitung Denda
