@@ -10,14 +10,11 @@ use App\Models\TransaksiTebus;
 use Illuminate\Support\Carbon;
 use Auth;
 use App\Models\Nasabah;
-use App\Models\Cabang;
-use App\Models\TransaksiGadai;
-use App\Models\LelangBarang;
 use App\Helpers\WhatsappHelper;
 use Illuminate\Support\Str;
 use App\Models\PendingPayment;
 use App\Models\PerpanjanganGadai;
-use App\Models\BungaTenor;
+use App\Models\Transaksi;
 
 
 class NasabahPaymentController extends Controller
@@ -252,6 +249,14 @@ class NasabahPaymentController extends Controller
                 'status' => 'pending',
             ]);
 
+            Transaksi::create([
+                'jenis_transaksi' => 'tebus_gadai_Nasabah',
+                'arah' => 'masuk',
+                'nominal' => $totalTebus,
+                'id_cabang' => auth()->user()->id_cabang,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
             return response()->json([
                 'snap_token' => $snapToken,
                 'total_bayar' => $totalTebus,
