@@ -176,7 +176,7 @@ class UserSeeder extends Seeder
                 'role' => 'Nasabah',
                 'id_cabang' => 1,
                 ],
-            ],
+            
         ]);
 
         // Tambahkan 2 staf tambahan per cabang
