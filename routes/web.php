@@ -91,6 +91,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('whatsapp_template/create', [WhatsappTemplateController::class, 'create'])->name('admin.whatsapp_template.create');
     Route::post('whatsapp_template', [WhatsappTemplateController::class, 'store'])->name('admin.whatsapp_template.store');
     Route::delete('whatsapp_template/{id}', [WhatsappTemplateController::class, 'destroy'])->name('admin.whatsapp_template.destroy');
+    Route::post('/admin/whatsapp-template/{id}/activate', [WhatsappTemplateController::class, 'activate'])->name('admin.whatsapp_template.activate');
+Route::post('/admin/whatsapp-template/{id}/deactivate', [WhatsappTemplateController::class, 'deactivate'])->name('admin.whatsapp_template.deactivate');
+
         // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
     Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
         Route::get('/dashboard', [NasabahController::class, 'show'])->name('profile');

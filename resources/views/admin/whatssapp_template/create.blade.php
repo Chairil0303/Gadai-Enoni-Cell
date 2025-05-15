@@ -1,37 +1,56 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mx-auto">
-        <h2 class="text-xl font-bold mb-4">Tambah Template WhatsApp</h2>
-        <form action="{{ route('admin.whatsapp_template.store') }}" method="POST">
-            @csrf
+<div class="container mt-4">
+    <h2>Tambah Template WhatsApp</h2>
 
-            <div class="mb-4">
-                <label class="block">Type:</label>
-                <select name="type" class="w-full p-2 border">
-                    <option value="perpanjang">Perpanjang Gadai</option>
-                    <option value="tebus">Tebus Gadai</option>
-                </select>
-            </div>
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-            <div class="mb-4">
-                <label class="block">Message Template:</label>
-                <textarea name="message" class="w-full p-2 border" rows="5" placeholder="Contoh: Terima kasih, barang Anda sudah diperpanjang..."></textarea>
-                @verbatim
-                <p class="text-sm text-gray-500 mt-2">
-                    Gunakan format berikut untuk template:<br>
-                    - {{no_bon}} → Nomor BON<br>
-                    - {{nama_barang}} → Nama Barang<br>
-                    - {{nama}} → Nama Nasabah<br>
-                    - {{nama_cabang}} → Nama Cabang<br>
-                    - {{jumlah}} → Jumlah Pembayaran<br>
-                    - {{tanggal}} → Tanggal Transaksi<br>
-                </p>
-                @endverbatim
+    <form action="{{ route('admin.whatsapp_template.store') }}" method="POST">
+        @csrf
 
-            </div>
+        <div class="form-group mb-3">
+            <label for="type">Tipe Template:</label>
+            <select name="type" id="type" class="form-control @error('type') is-invalid @enderror">
+                <option value="">-- Pilih Tipe Template --</option>
+                <option value="perpanjang" {{ old('type') == 'perpanjang' ? 'selected' : '' }}>Perpanjang Gadai</option>
+                <option value="tebus" {{ old('type') == 'tebus' ? 'selected' : '' }}>Tebus Gadai</option>
+            </select>
+            @error('type')
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
+        </div>
 
-            <button class="bg-green-500 text-white px-4 py-2 rounded-lg">Simpan</button>
-        </form>
-    </div>
+        <div class="form-group mb-3">
+            <label for="message">Template Pesan:</label>
+            <textarea name="message" id="message" class="form-control @error('message') is-invalid @enderror" rows="5" placeholder="Contoh: Terima kasih, barang Anda sudah diperpanjang...">{{ old('message') }}</textarea>
+            @error('message')
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
+
+            <small class="text-muted mt-2 d-block">
+                Gunakan placeholder berikut untuk template:<br>
+                - {no_bon} → Nomor BON<br>
+                - {nama_barang} → Nama Barang<br>
+                - {nama} → Nama Nasabah<br>
+                - {nama_cabang} → Nama Cabang<br>
+                - {jumlah} → Jumlah Pembayaran<br>
+                - {tanggal} → Tanggal Transaksi<br>
+            </small>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Simpan</button>
+            <a href="{{ route('admin.whatsapp_template.index') }}" class="btn btn-secondary ms-2">Kembali</a>
+        </div>
+    </form>
+</div>
 @endsection

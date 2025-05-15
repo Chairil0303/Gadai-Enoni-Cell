@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('whatsapp_templates', function (Blueprint $table) {
         $table->id();
-        $table->enum('type', ['perpanjang', 'tebus'])->unique();
+        $table->enum('type', ['perpanjang', 'tebus']);
         $table->text('message');
+        $table->boolean('is_active')->default(false);
         $table->timestamps();
 });
 

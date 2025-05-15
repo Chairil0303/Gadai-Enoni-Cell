@@ -18,7 +18,9 @@ class WhatsappHelper
     public static function send($to, $type, $data)
     {
         // Ambil template dari database
-        $template = WhatsappTemplate::where('type', $type)->first();
+        $template = WhatsappTemplate::where('type', $type)
+        ->where('is_active', true)
+        ->first();
 
         if (!$template) {
             \Log::error("Template WhatsApp untuk tipe '$type' tidak ditemukan.");
