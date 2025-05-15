@@ -19,7 +19,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('gadai.store') }}" method="POST" id="formGadai">
+                    <form action="{{ route('gadai.preview') }}" method="POST" id="formGadai">
                         @csrf
                         <div class="row">
                             {{-- Kolom Form Nasabah --}}
@@ -96,10 +96,15 @@
                             </div>
                         </div>
 
-                        <!-- <button type="submit" class="btn btn-primary w-100"><i class="fas fa-save"></i> Simpan</button> -->
-                        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modalKonfirmasi">
-                            <i class="fas fa-save"></i> Simpan
-                        </button>
+                        {{-- Tombol Aksi --}}
+                        <div class="d-flex justify-content-between mt-3">
+                            <a href="{{ route('barang_gadai.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Kembali
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-arrow-right"></i> Lanjutkan
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -107,61 +112,25 @@
     </div>
 </div>
 
-<!-- Modal Konfirmasi -->
-<!-- Modal Konfirmasi -->
-<div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <!-- Header Modal (Hijau) -->
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="modalKonfirmasiLabel">Konfirmasi Penyimpanan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <!-- Body Modal -->
-            <div class="modal-body">
-                Apakah Anda yakin ingin menyimpan data ini? Pastikan data yang Anda masukkan sudah benar.
-            </div>
-            <!-- Footer Modal (Tombol Hijau) -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
-                <!-- <button type="button" class="btn btn-success" id="konfirmasiSubmit">Simpan</button> -->
-                <button type="button" class="btn btn-success" id="konfirmasiSubmit">Simpan</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
+{{-- Format angka --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('formGadai');
-        const inputHargaGadai = document.getElementById('harga_gadai');
-        const konfirmasiButton = document.getElementById('konfirmasiSubmit');
+    const inputHargaGadai = document.getElementById('harga_gadai');
+    const form = document.getElementById('formGadai');
 
-        // Fungsi untuk menambahkan titik pemisah ribuan
-        function formatHargaGadai() {
-            let value = inputHargaGadai.value.replace(/[^\d]/g, ''); // Menghapus semua karakter selain angka
-            let formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Menambahkan titik pemisah setiap 3 digit
-            inputHargaGadai.value = formattedValue;
-        }
+    function formatHargaGadai() {
+        let value = inputHargaGadai.value.replace(/[^\d]/g, '');
+        let formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        inputHargaGadai.value = formattedValue;
+    }
 
-        // Tambahkan event listener untuk input harga_gadai
-        inputHargaGadai.addEventListener('input', formatHargaGadai);
+    inputHargaGadai.addEventListener('input', formatHargaGadai);
 
-        // Event listener untuk tombol konfirmasi
-        konfirmasiButton.addEventListener('click', function () {
-            let rawValue = inputHargaGadai.value.replace(/\./g, ''); // Menghapus titik sebelum mengirim ke server
-
-            // Memperbarui nilai input tanpa titik
-            inputHargaGadai.value = rawValue;
-
-            // Submit form setelah pembersihan data
-            form.submit(); // Submit form ketika tombol "Simpan" di modal ditekan
-        });
+    form.addEventListener('submit', function () {
+        // Hilangkan titik saat submit supaya validator numeric bisa jalan
+        inputHargaGadai.value = inputHargaGadai.value.replace(/\./g, '');
     });
+});
+
 </script>
-
-
-
 @endsection

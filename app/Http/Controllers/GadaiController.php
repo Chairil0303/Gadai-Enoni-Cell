@@ -25,116 +25,125 @@ class GadaiController extends Controller
     public function create()
     {
         $nasabah = Nasabah::all();
-        $kategori = KategoriBarang::all();
+        $kategori_barang = KategoriBarang::all();
         $bunga_tenors = BungaTenor::all();
 
-        return view('transaksi_gadai.create', compact('nasabah', 'kategori', 'bunga_tenors'));
+        return view('transaksi_gadai.preview', compact('nasabah', 'kategori_barang', 'bunga_tenors'));
 
     }
 
 
 
 
+    public function preview(Request $request)
+    {
+        $validTenors = BungaTenor::pluck('tenor')->toArray();
 
-public function store(Request $request)
-{
-    $validTenors = BungaTenor::pluck('tenor')->toArray();
-    // Validasi Input SEBELUM penyimpanan data
-    $request->validate([
-        'nama' => 'required|string|max:255',
-        'nik' => 'required|string|max:16|unique:nasabah,nik',
-        'alamat' => 'required|string',
-        'telepon' => 'required|string|max:15',
-        'nama_barang' => 'required|string|max:255',
-        'deskripsi' => 'nullable|string',
-        'imei' => 'nullable|string',
-        'tenor'        => 'required|in:' . implode(',', $validTenors),
-        'harga_gadai' => 'required|numeric',
-        'id_kategori' => 'required|integer|exists:kategori_barang,id_kategori',
-    ]);
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nik' => 'required|string|max:16|unique:nasabah,nik',
+            'alamat' => 'required|string',
+            'telepon' => 'required|string|max:15',
+            'nama_barang' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'imei' => 'nullable|string',
+            'tenor' => 'required|in:' . implode(',', $validTenors),
+            'harga_gadai' => 'required|numeric',
+            'id_kategori' => 'required|integer|exists:kategori_barang,id_kategori',
+            'no_bon' => 'required|string',
+        ]);
 
-    $tenor = (int) $request->tenor;
+        // Simpan data ke session
+        session(['preview_data' => $request->all()]);
 
-    // Cari ID BungaTenor berdasarkan tenor
-    $bungaTenor = BungaTenor::where('tenor', $tenor)->first();
+        return redirect()->route('gadai.showPreview'); // route name, bukan file
 
-    if (!$bungaTenor) {
-        return back()->withErrors(['tenor' => 'Bunga untuk tenor ini belum diatur.']);
     }
 
-    // Format username = nama (tanpa spasi, lowercase) + 2 digit terakhir no HP
-    $baseUsername = Str::of($request->nama)->lower()->replace(' ', '');
-    $last2Digits = substr(preg_replace('/[^0-9]/', '', $request->telepon), -2);
-    $username = $baseUsername . $last2Digits;
+    public function showPreview()
+    {
+        $data = session('preview_data');
 
-    // Cek apakah username sudah dipakai, kalau ya, tambahkan angka sampai unik
-    $originalUsername = $username;
-    $counter = 1;
-    while (User::where('username', $username)->exists()) {
-        $username = $originalUsername . $counter;
-        $counter++;
+        if (!$data) {
+            return redirect()->route('gadai.create')->with('error', 'Tidak ada data untuk dikonfirmasi.');
+        }
+
+        $bunga = BungaTenor::where('tenor', $data['tenor'])->first();
+        $kategori_barang = KategoriBarang::find($data['id_kategori']);
+
+        return view('transaksi_gadai.preview', compact('data', 'bunga', 'kategori_barang'));
     }
 
-    // Buat User Baru
-    $user = User::create([
-        'nama' => $request->nama,
-        'email' => $request->email,
-        'username' => $username,
-        'password' => Hash::make(substr($request->nik, 0, 6)),
-        'role' => 'Nasabah',
-        'id_cabang' => auth()->user()->id_cabang,
-    ]);
 
 
-    // Simpan Data Nasabah dengan ID User
-    $nasabah = Nasabah::create([
-        'nama' => $request->nama,
-        'nik' => $request->nik,
-        'alamat' => $request->alamat,
-        'telepon' => $request->telepon,
-        'id_user' => $user->id_users,
-    ]);
-
-    // Simpan Data Barang Gadai
-    $barangGadai = BarangGadai::create([
-        'no_bon' => $request->no_bon,
-        'id_nasabah' => $nasabah->id_nasabah,
-        'id_cabang' => auth()->user()->id_cabang,
-        'nama_barang' => $request->nama_barang,
-        'deskripsi' => $request->deskripsi,
-        'imei' => $request->imei,
-        'id_bunga_tenor' => $bungaTenor->id,
-        'bunga' => $bungaTenor->bunga_percent,
-        'tempo' => now()->addDays($tenor),
-        'harga_gadai' => $request->harga_gadai,
-        'id_kategori' => $request->id_kategori,
-        // 'id_user' => auth()->user()->id_users,
-    ]);
-
-    // Simpan Data Transaksi Gadai
-    TransaksiGadai::create([
-        'id_user' => auth()->user()->id_users,
-        'id_nasabah' => $nasabah->id_nasabah,
-        'no_bon' => $request->no_bon,
-        'tanggal_gadai' => now(),
-        'jumlah_pinjaman' => $request->harga_gadai,
-        'bunga' => $bungaTenor->bunga_percent,
-        'jatuh_tempo' => now()->addDays($tenor),
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
-
-    // Simpan ke tabel transaksi umum
-    Transaksi::create([
-        'jenis_transaksi' => 'terima_gadai',
-        'arah' => 'keluar', // karena uang keluar dari kas
-        'nominal' => $request->harga_gadai,
-        'id_cabang' => auth()->user()->id_cabang,
-    ]);
-
-
-    return redirect()->route('barang_gadai.index')->with('success', 'Data berhasil disimpan!');
-}
+    public function store(Request $request)
+    {
+        $data = session('preview_data');
+        if (!$data) {
+            return redirect()->route('gadai.create')->with('error', 'Tidak ada data yang bisa disimpan.');
+        }
+    
+        $bungaTenor = BungaTenor::where('tenor', (int)$data['tenor'])->first();
+    
+        $username = Str::of($data['nama'])->lower()->replace(' ', '') .
+                    substr(preg_replace('/[^0-9]/', '', $data['telepon']), -2);
+    
+        $user = User::create([
+            'nama' => $data['nama'],
+            'email' => $data['email'] ?? null,
+            'username' => $username,
+            'password' => Hash::make(substr($data['nik'], 0, 6)),
+            'role' => 'Nasabah',
+            'id_cabang' => auth()->user()->id_cabang,
+        ]);
+    
+        $nasabah = Nasabah::create([
+            'nama' => $data['nama'],
+            'nik' => $data['nik'],
+            'alamat' => $data['alamat'],
+            'telepon' => $data['telepon'],
+            'id_user' => $user->id_users,
+        ]);
+    
+        $barangGadai = BarangGadai::create([
+            'no_bon' => $data['no_bon'],
+            'id_nasabah' => $nasabah->id_nasabah,
+            'id_cabang' => auth()->user()->id_cabang,
+            'nama_barang' => $data['nama_barang'],
+            'deskripsi' => $data['deskripsi'],
+            'imei' => $data['imei'],
+            'id_bunga_tenor' => $bungaTenor->id,
+            'bunga' => $bungaTenor->bunga_percent,
+            'tempo' => now()->addDays((int) $data['tenor']),
+            'harga_gadai' => $data['harga_gadai'],
+            'id_kategori' => $data['id_kategori'],
+        ]);
+    
+        TransaksiGadai::create([
+            'id_user' => auth()->user()->id_users,
+            'id_nasabah' => $nasabah->id_nasabah,
+            'no_bon' => $data['no_bon'],
+            'tanggal_gadai' => now(),
+            'jumlah_pinjaman' => $data['harga_gadai'],
+            'bunga' => $bungaTenor->bunga_percent,
+            'jatuh_tempo' => now()->addDays((int) $data['tenor']),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    
+        Transaksi::create([
+            'jenis_transaksi' => 'terima_gadai',
+            'arah' => 'keluar',
+            'nominal' => $data['harga_gadai'],
+            'id_cabang' => auth()->user()->id_cabang,
+        ]);
+    
+        // Hapus session preview
+        session()->forget('preview_data');
+    
+        return redirect()->route('barang_gadai.index')->with('success', 'Transaksi berhasil disimpan!');
+    }
+    
 
 
 

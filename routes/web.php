@@ -214,6 +214,14 @@ Route::get('/barang-gadai/detail/{no_bon}', [BarangGadaiController::class, 'getD
 
     // untuk terima gadai
     Route::post('/gadai/store', [GadaiController::class, 'store'])->name('gadai.store');
+    Route::post('/gadai/preview', [GadaiController::class, 'preview'])->name('gadai.preview');
+    Route::get('/gadai/preview', [GadaiController::class, 'showPreview'])->name('gadai.showPreview');
+
+    // routes/web.php
+
+Route::post('/gadai/preview', [GadaiController::class, 'preview'])->name('gadai.preview');
+Route::get('/gadai/preview', [GadaiController::class, 'showPreview'])->name('gadai.showPreview');
+
 
     // buat kategori
     Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
