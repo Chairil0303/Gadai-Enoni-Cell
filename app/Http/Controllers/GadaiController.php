@@ -62,11 +62,24 @@ public function store(Request $request)
         return back()->withErrors(['tenor' => 'Bunga untuk tenor ini belum diatur.']);
     }
 
+    // Format username = nama (tanpa spasi, lowercase) + 2 digit terakhir no HP
+    $baseUsername = Str::of($request->nama)->lower()->replace(' ', '');
+    $last2Digits = substr(preg_replace('/[^0-9]/', '', $request->telepon), -2);
+    $username = $baseUsername . $last2Digits;
+
+    // Cek apakah username sudah dipakai, kalau ya, tambahkan angka sampai unik
+    $originalUsername = $username;
+    $counter = 1;
+    while (User::where('username', $username)->exists()) {
+        $username = $originalUsername . $counter;
+        $counter++;
+    }
+
     // Buat User Baru
     $user = User::create([
         'nama' => $request->nama,
         'email' => $request->email,
-        'username' => Str::of($request->nama)->lower()->replace(' ', ''),
+        'username' => $username,
         'password' => Hash::make(substr($request->nik, 0, 6)),
         'role' => 'Nasabah',
         'id_cabang' => auth()->user()->id_cabang,
