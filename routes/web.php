@@ -20,6 +20,7 @@ use App\Http\Controllers\Superadmin\AdminController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\LelangController;
+use App\Http\Controllers\WhatsappTemplateController;
 
 
 
@@ -80,13 +81,17 @@ Route::middleware(['auth'])->group(function () {
             // Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.show');
             Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.filter');
             Route::resource('staff', StaffController::class);
-            Route::resource('laporan', \App\Http\Controllers\Admin\LaporanController::class);
+            Route::resource('laporan', LaporanController::class);
+            Route::resource('admin/whatsapp-templates', WhatsappTemplateController::class);
         });
     });
-
-
-
-    // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
+    Route::get('admin/whatsapp_template', [WhatsappTemplateController::class, 'index'])->name('admin.whatsapp_template.index');
+    Route::get('admin/whatsapp_template/edit/{id}', [WhatsappTemplateController::class, 'edit'])->name('admin.whatsapp_template.edit');
+    Route::put('admin/whatsapp_template/update/{id}', [WhatsappTemplateController::class, 'update'])->name('admin.whatsapp_template.update');
+    Route::get('whatsapp_template/create', [WhatsappTemplateController::class, 'create'])->name('admin.whatsapp_template.create');
+    Route::post('whatsapp_template', [WhatsappTemplateController::class, 'store'])->name('admin.whatsapp_template.store');
+    Route::delete('whatsapp_template/{id}', [WhatsappTemplateController::class, 'destroy'])->name('admin.whatsapp_template.destroy');
+        // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
     Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
         Route::get('/dashboard', [NasabahController::class, 'show'])->name('profile');
     });

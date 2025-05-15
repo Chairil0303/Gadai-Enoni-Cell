@@ -10,7 +10,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        
+
         $this->call([
             BungaTenorSeeder::class,
             CabangSeeder::class,
@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             KategoriBarangSeeder::class,
             NasabahSeeder::class,
             BarangGadaiSeeder::class,
+            WhatsappTemplateSeeder::class,
         ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
