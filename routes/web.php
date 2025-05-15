@@ -127,6 +127,10 @@ Route::post('/admin/whatsapp-template/{id}/deactivate', [WhatsappTemplateControl
 
     // Perpanjang gadai nasabah End
 
+    // syaratdanketentuan
+    Route::get('/syarat-ketentuan', [NasabahController::class, 'syaratKetentuan'])->name('syarat.ketentuan');
+// end syaratdanketentuan
+
 
     // perpanjang gadai
     Route::get('/perpanjang-gadai/create', [PerpanjangGadaiController::class, 'create'])->name('perpanjang_gadai.create');

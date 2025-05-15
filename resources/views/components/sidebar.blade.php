@@ -18,6 +18,15 @@
                 <i class="fas fa-bell mr-2"></i> Notifikasi
             </a>
         </li>
+        @if(auth()->user()->isNasabah())
+
+        <li>
+            <a href="{{ route('syarat.ketentuan') }}" class="block px-4 py-2 hover:bg-gray-100">
+                Syarat & Ketentuan
+            </a>
+        </li>
+        @endif
+
 
         {{-- Khusus Superadmin --}}
         @if(auth()->user()->isSuperadmin())

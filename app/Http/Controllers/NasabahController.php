@@ -17,6 +17,12 @@ class NasabahController extends Controller
         return view('nasabah.index', compact('nasabah'));
     }
 
+    public function syaratKetentuan()
+{
+    return view('nasabah.syarat_ketentuan');
+}
+
+
     public function Profil()
     {
         $nasabah = Nasabah::with('barangGadai')
