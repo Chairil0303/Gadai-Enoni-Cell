@@ -21,8 +21,8 @@
         @if(auth()->user()->isNasabah())
 
         <li>
-            <a href="{{ route('syarat.ketentuan') }}" class="block px-4 py-2 hover:bg-gray-100">
-                Syarat & Ketentuan
+            <a href="{{ route('syarat.ketentuan') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">
+                <i class="fas fa-file-contract"></i> Syarat & Ketentuan
             </a>
         </li>
         @endif
