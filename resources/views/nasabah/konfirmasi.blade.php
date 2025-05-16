@@ -42,13 +42,16 @@
             <tr><th>Telat</th><td>{{ $barangGadai->telat }} hari</td></tr>
             <tr>
                 <th>
-                    Denda
-                    <i class="bi bi-info-circle d-none d-md-inline" data-bs-toggle="tooltip" title="Denda dihitung {{ $barangGadai->telat }} hari x tarif denda harian"></i>
-                    <div class="d-md-none small text-muted">
-                        Denda dihitung {{ $barangGadai->telat }} hari x tarif denda harian
-                    </div>
-                </th>
-                <td>Rp {{ number_format($denda, 0, ',', '.') }}</td>
+                Denda
+                <i class="bi bi-info-circle d-none d-md-inline"
+                data-bs-toggle="tooltip"
+                title="Denda dihitung: {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}">
+                </i>
+                <div class="d-md-none small text-muted">
+                    Denda dihitung: {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}
+                </div>
+            </th>
+            <td>Rp {{ number_format($denda, 0, ',', '.') }}</td>
             </tr>
 
             <tr>
@@ -62,7 +65,7 @@
                 <td>Rp {{ number_format($totalTebus, 0, ',', '.') }}</td>
             </tr>
             {{-- <tr><th>Total Tebus</th><td>Rp {{ number_format($totalTebus, 0, ',', '.') }}</td></tr> --}}
-            <tr><th>Penerima Tebusan</th><td>{{ auth()->user()->name }}</td></tr>
+            
         </tbody>
     </table>
 
