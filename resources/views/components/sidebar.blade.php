@@ -21,10 +21,11 @@
         @if(auth()->user()->isNasabah())
 
         <li>
-            <a href="{{ route('syarat.ketentuan') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white">
-                <i class="fas fa-file-contract"></i> Syarat & Ketentuan
+            <a href="{{ route('nasabah.terms') }}" class="block px-4 py-2 hover:bg-green-100 rounded">
+                📋 Syarat & Ketentuan
             </a>
         </li>
+
         @endif
 
 
@@ -71,7 +72,16 @@
                 </svg>
                 <span class="ml-3">WhatsApp Template</span>
             </a>
-        </li>
+            </li>
+            <li>
+                <a href="{{ route('admin.terms.edit') }}" class="flex items-center px-4 py-2 hover:bg-gray-100 rounded {{ request()->routeIs('admin.terms.edit') ? 'bg-gray-200 font-semibold' : '' }}">
+                    <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16h8M8 12h8m-8-4h8M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                    Syarat & Ketentuan
+                </a>
+            </li>
+
         @endif
         {{-- khusus staff --}}
         @if(auth()->user()->isStaf())

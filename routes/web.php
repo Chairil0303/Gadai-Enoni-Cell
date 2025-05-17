@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\LelangController;
 use App\Http\Controllers\WhatsappTemplateController;
+use App\Http\Controllers\AdminTermsController;
 
 
 
@@ -127,8 +128,15 @@ Route::post('/admin/whatsapp-template/{id}/deactivate', [WhatsappTemplateControl
 
     // Perpanjang gadai nasabah End
 
-    // syaratdanketentuan
-    Route::get('/syarat-ketentuan', [NasabahController::class, 'syaratKetentuan'])->name('syarat.ketentuan');
+    // admin terms
+    Route::get('/admin/terms', [AdminTermsController::class, 'edit'])->name('admin.terms.edit');
+Route::post('/admin/terms', [AdminTermsController::class, 'update'])->name('admin.terms.update');
+// end
+
+    // nasbaah syaratdanketentuan
+    Route::get('/nasabah/syarat-ketentuan', [NasabahController::class, 'showTerms'])->name('nasabah.terms');
+
+    // Route::get('/syarat-ketentuan', [NasabahController::class, 'syaratKetentuan'])->name('syarat.ketentuan');
 // end syaratdanketentuan
 
 
