@@ -218,9 +218,8 @@ Route::get('/barang-gadai/detail/{no_bon}', [BarangGadaiController::class, 'getD
     Route::get('/gadai/preview', [GadaiController::class, 'showPreview'])->name('gadai.showPreview');
 
     // routes/web.php
-
-Route::post('/gadai/preview', [GadaiController::class, 'preview'])->name('gadai.preview');
-Route::get('/gadai/preview', [GadaiController::class, 'showPreview'])->name('gadai.showPreview');
+    Route::post('/gadai/preview', [GadaiController::class, 'preview'])->name('gadai.preview');
+    Route::get('/gadai/preview', [GadaiController::class, 'showPreview'])->name('gadai.showPreview');
 
 
     // buat kategori

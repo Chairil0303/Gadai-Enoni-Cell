@@ -51,6 +51,36 @@
                 </li>
             </ul>
 
+            <h5 class="text-success mb-3">Perhitungan Gadai</h5>
+            @php
+                $pokok = $data['harga_gadai'];
+                $bunga_percent = $bunga->bunga_percent;
+                $tenor = $data['tenor'];
+                $total_bunga = ($pokok * $bunga_percent / 100);
+                $total_tebus = $pokok + $total_bunga;
+                $denda_per_hari = 5000; // contoh tetap
+            @endphp
+
+            <ul class="list-group mb-4">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Pokok Pinjaman:</strong> 
+                    <span>Rp {{ number_format($pokok, 0, ',', '.') }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Bunga ({{ $bunga_percent }}%):</strong> 
+                    <span>Rp {{ number_format($total_bunga, 0, ',', '.') }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Total Tebus (Pokok + Bunga):</strong> 
+                    <span class="fw-bold text-danger">Rp {{ number_format($total_tebus, 0, ',', '.') }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Denda Per Hari (Jika Telat):</strong> 
+                    <span>Rp {{ number_format($denda_per_hari, 0, ',', '.') }}</span>
+                </li>
+                
+            </ul>
+
             <div class="d-flex justify-content-between">
                 <a href="{{ route('gadai.create') }}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left"></i> Kembali
