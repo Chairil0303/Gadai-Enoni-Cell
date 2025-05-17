@@ -9,76 +9,95 @@
         <div class="card-body">
             <h5 class="text-success mb-3">Data Nasabah</h5>
             <ul class="list-group mb-4">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Nama:</strong> <span>{{ $data['nama'] }}</span>
+                <li class="list-group-item">
+                    <strong>Nama:</strong><br>
+                    {{ $data['nama'] }}
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>NIK:</strong> <span>{{ $data['nik'] }}</span>
+                <li class="list-group-item">
+                    <strong>NIK:</strong><br>
+                    {{ $data['nik'] }}
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Alamat:</strong> <span>{{ $data['alamat'] }}</span>
+                <li class="list-group-item">
+                    <strong>Alamat:</strong><br>
+                    {{ $data['alamat'] }}
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Telepon:</strong> <span>{{ $data['telepon'] }}</span>
+                <li class="list-group-item">
+                    <strong>Telepon:</strong><br>
+                    {{ $data['telepon'] }}
                 </li>
             </ul>
 
             <h5 class="text-success mb-3">Data Barang Gadai</h5>
             <ul class="list-group mb-4">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>No Bon:</strong> <span>{{ $data['no_bon'] }}</span>
+                <li class="list-group-item">
+                    <strong>No Bon:</strong><br>
+                    {{ $data['no_bon'] }}
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Nama Barang:</strong> <span>{{ $data['nama_barang'] }}</span>
+                <li class="list-group-item">
+                    <strong>Nama Barang:</strong><br>
+                    {{ $data['nama_barang'] }}
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Deskripsi:</strong> <span>{{ $data['deskripsi'] ?? '-' }}</span>
+                <li class="list-group-item">
+                    <strong>Deskripsi:</strong><br>
+                    {{ $data['deskripsi'] ?? '-' }}
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>IMEI:</strong> <span>{{ $data['imei'] ?? '-' }}</span>
+                <li class="list-group-item">
+                    <strong>IMEI:</strong><br>
+                    {{ $data['imei'] ?? '-' }}
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Kategori:</strong> <span>{{ $kategori_barang->nama_kategori }}</span>
+                <li class="list-group-item">
+                    <strong>Kategori:</strong><br>
+                    {{ $kategori_barang->nama_kategori }}
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Harga Gadai:</strong> <span>Rp {{ number_format($data['harga_gadai'], 0, ',', '.') }}</span>
+                <li class="list-group-item">
+                    <strong>Harga Gadai:</strong><br>
+                    Rp {{ number_format($data['harga_gadai'], 0, ',', '.') }}
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Tenor:</strong> <span>{{ $data['tenor'] }} hari</span>
+                <li class="list-group-item">
+                    <strong>Tenor:</strong><br>
+                    {{ $data['tenor'] }} hari
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Bunga:</strong> <span>{{ $bunga->bunga_percent }}%</span>
+                <li class="list-group-item">
+                    <strong>Bunga:</strong><br>
+                    {{ $bunga->bunga_percent }}%
                 </li>
             </ul>
 
             <h5 class="text-success mb-3">Perhitungan Gadai</h5>
             @php
+                use Carbon\Carbon;
+
                 $pokok = $data['harga_gadai'];
                 $bunga_percent = $bunga->bunga_percent;
                 $tenor = $data['tenor'];
                 $total_bunga = ($pokok * $bunga_percent / 100);
                 $total_tebus = $pokok + $total_bunga;
                 $denda_per_hari = 5000; // contoh tetap
+
+                $tanggal_tebus = Carbon::now()->addDays((int) $tenor)->translatedFormat('d F Y');
             @endphp
 
             <ul class="list-group mb-4">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Pokok Pinjaman:</strong> 
-                    <span>Rp {{ number_format($pokok, 0, ',', '.') }}</span>
+                <li class="list-group-item">
+                    <strong>Pokok Pinjaman:</strong><br>
+                    Rp {{ number_format($pokok, 0, ',', '.') }}
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Bunga ({{ $bunga_percent }}%):</strong> 
-                    <span>Rp {{ number_format($total_bunga, 0, ',', '.') }}</span>
+                <li class="list-group-item">
+                    <strong>Bunga ({{ $bunga_percent }}%):</strong><br>
+                    Rp {{ number_format($total_bunga, 0, ',', '.') }}
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Total Tebus (Pokok + Bunga):</strong> 
+                <li class="list-group-item">
+                    <strong>Total Tebus (Pokok + Bunga):</strong><br>
                     <span class="fw-bold text-danger">Rp {{ number_format($total_tebus, 0, ',', '.') }}</span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Denda Per Hari (Jika Telat):</strong> 
-                    <span>Rp {{ number_format($denda_per_hari, 0, ',', '.') }}</span>
+                <li class="list-group-item">
+                    <strong>Denda Per Hari (Jika Telat):</strong><br>
+                    Rp {{ number_format($denda_per_hari, 0, ',', '.') }}
                 </li>
-                
+                <li class="list-group-item">
+                    <strong>Tanggal Jatuh Tempo:</strong><br>
+                    <span class="text-primary fw-semibold">{{ $tanggal_tebus }}</span>
+                </li>
             </ul>
 
             <div class="d-flex justify-content-between">

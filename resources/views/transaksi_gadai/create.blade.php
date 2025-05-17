@@ -9,9 +9,11 @@
                     <h4><i class="fas fa-hand-holding-usd"></i> Terima Gadai</h4>
                 </div>
                 <div class="card-body">
+
+                    {{-- Validasi Error --}}
                     @if($errors->any())
                         <div class="alert alert-danger">
-                            <ul>
+                            <ul class="mb-0">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -19,84 +21,128 @@
                         </div>
                     @endif
 
+                    {{-- Form --}}
                     <form action="{{ route('gadai.preview') }}" method="POST" id="formGadai">
                         @csrf
                         <div class="row">
-                            {{-- Kolom Form Nasabah --}}
+                            {{-- Form Nasabah --}}
                             <div class="col-md-6">
                                 <h5 class="text-success">Form Tambah Nasabah</h5>
                                 <hr>
+
                                 <div class="mb-3">
                                     <label for="nama" class="form-label">Nama Lengkap</label>
-                                    <input type="text" autocomplete="off" name="nama" class="form-control" required placeholder="Masukkan Nama">
+                                    <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror"
+                                        value="{{ old('nama', $old['nama'] ?? '') }}" required placeholder="Masukkan Nama">
+                                    @error('nama') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="nik" class="form-label">NIK</label>
-                                    <input type="text" autocomplete="off" name="nik" class="form-control" required placeholder="Masukkan NIK" maxlength="16" oninput="this.value = this.value.replace(/\D/g, '')">
+                                    <input type="text" name="nik" maxlength="16"
+                                        class="form-control @error('nik') is-invalid @enderror"
+                                        value="{{ old('nik', $old['nik'] ?? '') }}" required
+                                        oninput="this.value = this.value.replace(/\D/g, '')"
+                                        placeholder="Masukkan NIK">
+                                    @error('nik') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="alamat" class="form-label">Alamat</label>
-                                    <textarea name="alamat" autocomplete="off" class="form-control" rows="3" required placeholder="Masukkan Alamat"></textarea>
+                                    <textarea name="alamat" rows="3"
+                                        class="form-control @error('alamat') is-invalid @enderror"
+                                        required placeholder="Masukkan Alamat">{{ old('alamat', $old['alamat'] ?? '') }}</textarea>
+                                    @error('alamat') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="telepon" class="form-label">Nomor Telepon</label>
-                                    <input type="text" autocomplete="off" name="telepon" class="form-control" required placeholder="Masukkan No Telepon" maxlength="15" oninput="this.value = this.value.replace(/\D/g, '')">
+                                    <input type="text" name="telepon" maxlength="15"
+                                        class="form-control @error('telepon') is-invalid @enderror"
+                                        value="{{ old('telepon', $old['telepon'] ?? '') }}" required
+                                        oninput="this.value = this.value.replace(/\D/g, '')"
+                                        placeholder="Masukkan No Telepon">
+                                    @error('telepon') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                             </div>
 
-                            {{-- Kolom Form Barang Gadai --}}
+                            {{-- Form Barang Gadai --}}
                             <div class="col-md-6">
                                 <h5 class="text-success"><i class="fas fa-box"></i> Data Barang Gadai</h5>
                                 <hr>
+
                                 <div class="mb-3">
                                     <label for="no_bon" class="form-label">No. Bon</label>
-                                    <input type="text" name="no_bon" class="form-control" required placeholder="Masukkan No. Bon">
+                                    <input type="text" name="no_bon"
+                                        class="form-control @error('no_bon') is-invalid @enderror"
+                                        value="{{ old('no_bon', $old['no_bon'] ?? '') }}" required placeholder="Masukkan No. Bon">
+                                    @error('no_bon') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
+
                                 <div class="mb-3">
                                     <label for="nama_barang" class="form-label">Nama Barang</label>
-                                    <input type="text" autocomplete="off" name="nama_barang" class="form-control" required placeholder="Masukkan Nama Barang">
+                                    <input type="text" name="nama_barang"
+                                        class="form-control @error('nama_barang') is-invalid @enderror"
+                                        value="{{ old('nama_barang', $old['nama_barang'] ?? '') }}" required
+                                        placeholder="Masukkan Nama Barang">
+                                    @error('nama_barang') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="deskripsi" class="form-label">Deskripsi</label>
-                                    <textarea name="deskripsi" autocomplete="off" class="form-control" placeholder="Masukkan Deskripsi"></textarea>
+                                    <textarea name="deskripsi" class="form-control"
+                                        placeholder="Masukkan Deskripsi">{{ old('deskripsi', $old['deskripsi'] ?? '') }}</textarea>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="imei" class="form-label">IMEI</label>
-                                    <input type="text" name="imei" autocomplete="off" class="form-control" placeholder="Masukkan IMEI" oninput="this.value = this.value.replace(/\D/g, '')">
+                                    <input type="text" name="imei"
+                                        class="form-control"
+                                        value="{{ old('imei', $old['imei'] ?? '') }}"
+                                        oninput="this.value = this.value.replace(/\D/g, '')"
+                                        placeholder="Masukkan IMEI">
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="tenor" class="form-label">Tenor</label>
-                                    <select name="tenor" class="form-control" required>
+                                    <select name="tenor" class="form-control @error('tenor') is-invalid @enderror" required>
+                                        <option value="">Pilih Tenor</option>
                                         @foreach($bunga_tenors as $bunga)
-                                            <option value="{{ $bunga->tenor }}">{{ $bunga->tenor }} hari (Bunga {{ $bunga->bunga_percent }}%)</option>
+                                            <option value="{{ $bunga->tenor }}"
+                                                {{ old('tenor', $old['tenor'] ?? '') == $bunga->tenor ? 'selected' : '' }}>
+                                                {{ $bunga->tenor }} hari (Bunga {{ $bunga->bunga_percent }}%)
+                                            </option>
                                         @endforeach
                                     </select>
+                                    @error('tenor') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="id_kategori" class="form-label"><i class="fas fa-list"></i> Kategori</label>
-                                    <select name="id_kategori" class="form-control" required>
+                                    <label for="id_kategori" class="form-label">Kategori</label>
+                                    <select name="id_kategori" class="form-control @error('id_kategori') is-invalid @enderror" required>
                                         <option value="">Pilih Kategori</option>
                                         @foreach($kategori_barang as $k)
-                                            <option value="{{ $k->id_kategori }}">{{ $k->nama_kategori }}</option>
+                                            <option value="{{ $k->id_kategori }}"
+                                                {{ old('id_kategori', $old['id_kategori'] ?? '') == $k->id_kategori ? 'selected' : '' }}>
+                                                {{ $k->nama_kategori }}
+                                            </option>
                                         @endforeach
                                     </select>
+                                    @error('id_kategori') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="harga_gadai" class="form-label">Harga Gadai</label>
-                                    <input type="text" autocomplete="off" name="harga_gadai" id="harga_gadai" class="form-control" required placeholder="Masukkan Harga Gadai" oninput="formatHargaGadai()">
+                                    <input type="text" name="harga_gadai" id="harga_gadai"
+                                        class="form-control @error('harga_gadai') is-invalid @enderror"
+                                        value="{{ old('harga_gadai', $old['harga_gadai'] ?? '') }}"
+                                        placeholder="Masukkan Harga Gadai" required oninput="formatHargaGadai()">
+                                    @error('harga_gadai') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Tombol Aksi --}}
+                        {{-- Tombol --}}
                         <div class="d-flex justify-content-between mt-3">
                             <a href="{{ route('barang_gadai.index') }}" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left"></i> Kembali
@@ -112,25 +158,23 @@
     </div>
 </div>
 
-{{-- Format angka --}}
+{{-- Script Format Harga --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const inputHargaGadai = document.getElementById('harga_gadai');
     const form = document.getElementById('formGadai');
 
     function formatHargaGadai() {
         let value = inputHargaGadai.value.replace(/[^\d]/g, '');
-        let formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        inputHargaGadai.value = formattedValue;
+        let formatted = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        inputHargaGadai.value = formatted;
     }
 
     inputHargaGadai.addEventListener('input', formatHargaGadai);
 
     form.addEventListener('submit', function () {
-        // Hilangkan titik saat submit supaya validator numeric bisa jalan
         inputHargaGadai.value = inputHargaGadai.value.replace(/\./g, '');
     });
 });
-
 </script>
 @endsection

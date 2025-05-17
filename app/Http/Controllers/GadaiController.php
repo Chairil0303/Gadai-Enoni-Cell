@@ -28,8 +28,7 @@ class GadaiController extends Controller
         $kategori_barang = KategoriBarang::all();
         $bunga_tenors = BungaTenor::all();
 
-        return view('transaksi_gadai.preview', compact('nasabah', 'kategori_barang', 'bunga_tenors'));
-
+        return view('transaksi_gadai.create', compact('nasabah', 'kategori_barang', 'bunga_tenors'));
     }
 
 
@@ -37,6 +36,11 @@ class GadaiController extends Controller
 
     public function preview(Request $request)
     {
+
+        $request->merge([
+            'harga_gadai' => str_replace('.', '', $request->harga_gadai),
+        ]);
+        
         $validTenors = BungaTenor::pluck('tenor')->toArray();
 
         $request->validate([

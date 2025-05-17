@@ -212,14 +212,14 @@ Route::get('/barang-gadai/detail/{no_bon}', [BarangGadaiController::class, 'getD
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // untuk terima gadai
+    // Halaman form input gadai
+    Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
+    // Submit form → validasi → simpan ke session → redirect ke halaman preview
+    Route::post('/gadai/preview', [GadaiController::class, 'preview'])->name('gadai.preview');
+    // Halaman preview konfirmasi sebelum disimpan ke database
+    Route::get('/gadai/preview', [GadaiController::class, 'showPreview'])->name('gadai.showPreview');
+    // Submit dari halaman preview untuk benar-benar menyimpan transaksi ke database
     Route::post('/gadai/store', [GadaiController::class, 'store'])->name('gadai.store');
-    Route::post('/gadai/preview', [GadaiController::class, 'preview'])->name('gadai.preview');
-    Route::get('/gadai/preview', [GadaiController::class, 'showPreview'])->name('gadai.showPreview');
-
-    // routes/web.php
-    Route::post('/gadai/preview', [GadaiController::class, 'preview'])->name('gadai.preview');
-    Route::get('/gadai/preview', [GadaiController::class, 'showPreview'])->name('gadai.showPreview');
 
 
     // buat kategori
