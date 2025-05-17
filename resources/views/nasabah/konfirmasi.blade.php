@@ -64,8 +64,8 @@
                 </th>
                 <td>Rp {{ number_format($totalTebus, 0, ',', '.') }}</td>
             </tr>
-            {{-- <tr><th>Total Tebus</th><td>Rp {{ number_format($totalTebus, 0, ',', '.') }}</td></tr> --}}
-            
+    
+
         </tbody>
     </table>
 
@@ -80,10 +80,6 @@
                 Tebus Sekarang
             </button>
 
-            <!-- Tombol Perpanjang -->
-            {{-- <button id="confirmPerpanjangBtn" class="bg-yellow-500 text-white px-4 py-2 rounded ml-2">
-                Perpanjang
-            </button> --}}
 
             <div id="continue-payment-container"></div>
 

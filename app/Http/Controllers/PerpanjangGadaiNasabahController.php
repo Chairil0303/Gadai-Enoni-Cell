@@ -58,7 +58,7 @@ class perpanjangGadaiNasabahController extends Controller
         $query = BarangGadai::where('status', 'tergadai');
 
         $tenor = (int)$request->query('tenor');
-        $cicilan = $request->query('cicilan');
+        $cicilan = (int)$request->query('cicilan');
         $type = $request->query('type'); // 'biasa' atau 'cicil'
 
         if ($request->has('no_bon')) {
