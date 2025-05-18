@@ -2,56 +2,41 @@
 
 @section('content')
 <div class="container py-5">
-    <h2 class="text-center mb-4">TRANSAKSI GADAI - {{ $bulan }}</h2>
+    <h2 class="mb-4">📊 Laporan Bulanan - {{ $bulan }}</h2>
 
-    <table class="table table-bordered text-center" style="background-color: #339933; color: white;">
-        <thead>
-            <tr >
-                <th  class="text-white" style="background-color: #228B22;">Jenis Trx</th>
-                <th  class="text-white" style="background-color: #228B22;">Jlh Trx</th>
-                <th  class="text-white" style="background-color: #228B22;">Keluar</th>
-                <th  class="text-white" style="background-color: #228B22;">Masuk</th>
-            </tr>
-        </thead>
-        <tbody style="background-color: #ccffcc; color: black;">
-        @php
-            $grouped = $transaksi->groupBy('jenis_transaksi');
-            $totalKeluar = 0;
-            $totalMasuk = 0;
+    @if ($transaksi->count() > 0)
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-success">
+                    <tr>
+                        <th>#</th>
+                        <th>Tanggal</th>
+                        <th>No Bon</th>
+                        <th>Nasabah</th>
+                        <th>Jenis Transaksi</th>
+                        <th>Barang</th>
+                        <th>Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($transaksi as $i => $trx)
+                        <tr>
+                            <td>{{ $i + 1 }}</td>
+                            <td>{{ \Carbon\Carbon::parse($trx->tanggal_transaksi)->translatedFormat('d F') }}</td>
+                            <td>{{ $trx->no_bon }}</td>
+                            <td>{{ $trx->nasabah->nama }}</td>
+                            <td>{{ ucfirst($trx->jenis_transaksi) }}</td>
+                            <td>{{ $trx->barangGadai->nama_barang ?? '-' }}</td>
+                            <td>Rp {{ number_format($trx->jumlah_transaksi, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @else
+        <div class="alert alert-info">Tidak ada transaksi pada bulan ini.</div>
+    @endif
 
-            $jenisTransaksiMap = [
-                'terima_gadai' => 'Terima Gadai',
-                'perpanjang_gadai' => 'Perpanjang Gadai',
-                'tebus_gadai' => 'Tebus Gadai',
-                'terima_jual' => 'Terima Jual',
-                'lelangan_laku' => 'Lelangan Laku',
-            ];
-        @endphp
-
-        @foreach($jenisTransaksiMap as $key => $label)
-            @php
-                $items = $grouped->get($key, collect());
-                $jumlah = $items->count();
-                $keluar = $items->where('arah', 'keluar')->sum('nominal');
-                $masuk = $items->where('arah', 'masuk')->sum('nominal');
-                $totalKeluar += $keluar;
-                $totalMasuk += $masuk;
-            @endphp
-            <tr>
-                <td>{{ $label }}</td>
-                <td>{{ $jumlah }} Trx</td>
-                <td>Rp {{ number_format($keluar, 0, ',', '.') }}</td>
-                <td>Rp {{ number_format($masuk, 0, ',', '.') }}</td>
-            </tr>
-        @endforeach
-
-            <tr style="background-color: #339933; color: white; font-weight: bold;">
-                <td>TOTAL</td>
-                <td>{{ $transaksi->count() }} Trx</td>
-                <td>Rp {{ number_format($totalKeluar, 0, ',', '.') }}</td>
-                <td>Rp {{ number_format($totalMasuk, 0, ',', '.') }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <a href="{{ route('admin.laporan.index') }}" class="btn btn-secondary mt-3">← Kembali</a>
 </div>
 @endsection

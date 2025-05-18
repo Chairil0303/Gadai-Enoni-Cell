@@ -82,10 +82,17 @@ Route::middleware(['auth'])->group(function () {
             // Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.show');
             Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.filter');
             Route::resource('staff', StaffController::class);
-            Route::resource('laporan', LaporanController::class);
+            // Route::resource('laporan', LaporanController::class) ;
             Route::resource('admin/whatsapp-templates', WhatsappTemplateController::class);
+            Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+            Route::get('/laporan/{jenis}', [LaporanController::class, 'show'])->name('laporan.show');
+            Route::get('/laporan/filter/{jenis}', [LaporanController::class, 'filter'])->name('laporan.filter');
+            Route::get('/laporan-redirect', function () {
+                return redirect()->route('admin.laporan.index');
+            });
         });
     });
+
     Route::get('admin/whatsapp_template', [WhatsappTemplateController::class, 'index'])->name('admin.whatsapp_template.index');
     Route::get('admin/whatsapp_template/edit/{id}', [WhatsappTemplateController::class, 'edit'])->name('admin.whatsapp_template.edit');
     Route::put('admin/whatsapp_template/update/{id}', [WhatsappTemplateController::class, 'update'])->name('admin.whatsapp_template.update');
@@ -103,6 +110,10 @@ Route::post('/admin/whatsapp-template/{id}/deactivate', [WhatsappTemplateControl
     // profil nasabah
     route::get('/nasabah/profil', [NasabahController::class, 'profil'])->name('nasabah.profil');
 
+    // Laporan harian dan bulanan 
+    Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+
+    });
 
         // tebus gadai
     Route::prefix('transaksi_gadai')->group(function () {

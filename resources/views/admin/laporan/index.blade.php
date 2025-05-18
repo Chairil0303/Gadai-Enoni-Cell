@@ -14,7 +14,7 @@
                     <h3 class="card-title mb-3">📅 Laporan Harian</h3>
                     <p class="mb-5 card-text text-muted">Lihat data aktivitas harian secara rinci.</p>
 
-                    <form action="{{ route('admin.laporan.show', ['laporan' => 'harian']) }}" method="GET" class="row g-2 justify-content-center">
+                    <form action="{{ route('admin.laporan.show', ['jenis' => 'harian']) }}" method="GET" class="row g-2 justify-content-center">
                         <div class="col-8">
                             <input type="date" name="tanggal" class="form-control" required>
                         </div>
