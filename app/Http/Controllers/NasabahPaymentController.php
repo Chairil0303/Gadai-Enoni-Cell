@@ -286,17 +286,20 @@ public function handleNotificationJson(Request $request)
     $noBon = explode('-', $orderId)[0];
     $isPerpanjang = str_contains($orderId, 'perpanjang');
 
+    // Ambil data barang gadai beserta relasi ke nasabah, user, dan cabang
     $barang = BarangGadai::with('nasabah.user.cabang')->where('no_bon', $noBon)->first();
 
     if (!$barang) {
         return response()->json(['message' => 'Barang tidak ditemukan'], 404);
     }
 
+    // Cek status pembayaran di pending payments
     $pending = PendingPayment::where('order_id', $orderId)->first();
     if (!$pending) {
         return response()->json(['message' => 'Transaksi tidak valid atau tidak ditemukan di pending payments.']);
     }
 
+    // Jika pembayaran berhasil
     if (in_array($transaction, ['settlement', 'capture'])) {
         $pending->status = 'paid';
         $pending->save();
@@ -307,23 +310,29 @@ public function handleNotificationJson(Request $request)
 
         if ($isPerpanjang) {
             // ================= PERPANJANG =================
-            // Perpanjang jatuh tempo (misal 30 hari)
             $barang->status = 'Diperpanjang';
-            // $barang->tempo = Carbon::parse($barang->tempo)->addDays(30);
             $barang->save();
 
-            $message = "*🔁 Perpanjangan Berhasil!*\n\n" .
-                "🆔 No BON: {$barang->no_bon}\n" .
-                "🏷 Nama Barang: {$barang->nama_barang}\n" .
-                "👤 Nama: {$nasabah->nama}\n" .
-                "💰 Jumlah: Rp " . number_format($grossAmount, 0, ',', '.') . "\n" .
-                "📅 Tanggal: " . now()->format('d-m-Y') . "\n\n" .
-                "Barang Anda telah berhasil diperpanjang di *Pegadaian Kami*. Terima kasih 🙏";
+            // 🔥 Kirim WA dengan template "perpanjang"
+            try {
+                $responseWA = WhatsappHelper::send($noHp, 'perpanjang', [
+                    'no_bon' => $barang->no_bon,
+                    'nama_barang' => $barang->nama_barang,
+                    'nama' => $nasabah->nama,
+                    'jumlah' => number_format($grossAmount, 0, ',', '.'),
+                    'tanggal' => now()->format('d-m-Y'),
+                    'nama_cabang' => optional($barang->nasabah->user->cabang)->nama_cabang
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Gagal kirim WA: ' . $e->getMessage());
+                $responseWA = 'Gagal kirim WA';
+            }
         } else {
             // ================= TEBUS =================
             $barang->status = 'Ditebus';
             $barang->save();
 
+            // Simpan histori transaksi tebus
             TransaksiTebus::create([
                 'no_bon' => $barang->no_bon,
                 'id_cabang' => $id_cabang,
@@ -333,21 +342,20 @@ public function handleNotificationJson(Request $request)
                 'status' => 'Berhasil',
             ]);
 
-            $message = "*📦 Transaksi Tebus Berhasil!*\n\n" .
-                "🆔 No BON: {$barang->no_bon}\n" .
-                "🏷 Nama Barang: {$barang->nama_barang}\n" .
-                "👤 Nama: {$nasabah->nama}\n" .
-                "🏦 Cabang: {$barang->nasabah->user->cabang->nama_cabang}\n" .
-                "💰 Jumlah: Rp " . number_format($grossAmount, 0, ',', '.') . "\n" .
-                "📅 Tanggal: " . now()->format('d-m-Y') . "\n\n" .
-                "Terima kasih telah menebus barang Anda di *Pegadaian Kami* 🙏";
-        }
-
-        try {
-            $responseWA = WhatsappHelper::send($noHp, $message);
-        } catch (\Exception $e) {
-            \Log::error('Gagal kirim WA: ' . $e->getMessage());
-            $responseWA = 'Gagal kirim WA';
+            // 🔥 Kirim WA dengan template "tebus"
+            try {
+                $responseWA = WhatsappHelper::send($noHp, 'tebus', [
+                    'no_bon' => $barang->no_bon,
+                    'nama_barang' => $barang->nama_barang,
+                    'nama' => $nasabah->nama,
+                    'jumlah' => number_format($grossAmount, 0, ',', '.'),
+                    'tanggal' => now()->format('d-m-Y'),
+                    'nama_cabang' => optional($barang->nasabah->user->cabang)->nama_cabang
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Gagal kirim WA: ' . $e->getMessage());
+                $responseWA = 'Gagal kirim WA';
+            }
         }
     }
 
@@ -362,6 +370,7 @@ public function handleNotificationJson(Request $request)
 
     return response()->json(['message' => 'Notifikasi diproses.', 'wa_notif' => $responseWA ?? 'Tidak ada WA']);
 }
+
 
 
 

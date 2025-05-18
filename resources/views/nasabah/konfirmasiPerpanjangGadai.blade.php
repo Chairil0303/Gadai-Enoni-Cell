@@ -41,14 +41,62 @@
                 @if ($cicilan > 0)
                     <p><span class="font-medium">Cicilan Dibayarkan:</span> Rp {{ number_format($cicilan, 0, ',', '.') }}</p>
                 @endif
-                <p><span class="font-medium">Harga Gadai Baru:</span> Rp {{ number_format($barangGadai->harga_gadai - $cicilan, 0, ',', '.') }}</p>
+                <p>
+                    <span class="font-medium">Harga Gadai Baru:</span>
+                    <i class="bi bi-info-circle d-none d-md-inline"
+                    data-bs-toggle="tooltip"
+                    title="Harga Gadai Lama Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} - Cicilan Rp {{ number_format($cicilan, 0, ',', '.') }}">
+                    </i>
+                    Rp {{ number_format($barangGadai->harga_gadai - $cicilan, 0, ',', '.') }}
+                    <div class="d-md-none text-sm text-gray-500">
+                        Harga Gadai Lama Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} - Cicilan Rp {{ number_format($cicilan, 0, ',', '.') }}
+                    </div>
+                </p>
+
+                {{-- <p><span class="font-medium">Harga Gadai Baru:</span> Rp {{ number_format($barangGadai->harga_gadai - $cicilan, 0, ',', '.') }}</p> --}}
                 <p><span class="font-medium">Tenor Lama / Baru:</span> {{ $tenors }} hari → {{ $tenor }} hari</p>
                 <p><span class="font-medium">Jatuh Tempo Baru:</span> {{ $tempobaru }}</p>
-                <p><span class="font-medium">Bunga:</span> {{ $bungaTenorBaru->bunga_percent }}% (Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }})</p>
+                <p>
+                    <span class="font-medium">Bunga:</span>
+                     <i class="bi bi-info-circle d-none d-md-inline"
+                    data-bs-toggle="tooltip"
+                    title="Bunga {{ $bungaTenorBaru->bunga_percent }}% x Harga Gadai Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}"></i>
+                    {{ $bungaTenorBaru->bunga_percent }}% (Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }})
+
+                    <div class="d-md-none small text-muted">
+                        Bunga {{ $bungaTenorBaru->bunga_percent }}% x Harga Gadai Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}
+                    </div>
+
+                </p>
+
+                {{-- <p><span class="font-medium">Bunga:</span> {{ $bungaTenorBaru->bunga_percent }}% (Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }})</p> --}}
                 <p><span class="font-medium">Telat:</span> {{ $barangGadai->telat }} hari</p>
-                <p><span class="font-medium">Denda:</span> Rp {{ number_format($denda, 0, ',', '.') }}</p>
+                <p>
+                    <span class="font-medium">Denda:</span>
+                    <i class="bi bi-info-circle d-none d-md-inline"
+                    data-bs-toggle="tooltip"
+                    title="Denda = {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}"></i>
+                    Rp {{ number_format($denda, 0, ',', '.') }}
+                    <div class="d-md-none text-sm text-gray-500">
+                        Denda = {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}
+                    </div>
+                </p>
+
+
+                {{-- <p><span class="font-medium">Denda:</span> Rp {{ number_format($denda, 0, ',', '.') }}</p> --}}
                 <div class="bg-gray-100 p-3 rounded-lg mt-2">
-                    <p class="text-lg font-bold text-green-600">Total Perpanjangan: Rp {{ number_format($totalPerpanjang + $cicilan, 0, ',', '.') }}</p>
+                <p class="text-lg font-bold text-green-600">
+                    Total Perpanjangan: <i class="bi bi-info-circle d-none d-md-inline"
+                    data-bs-toggle="tooltip"
+                    title="Total = Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }} (bunga) + Rp {{ number_format($denda, 0, ',', '.') }} (denda){{ $cicilan > 0 ? ' + Rp ' . number_format($cicilan, 0, ',', '.') . ' (cicilan)' : '' }}"></i>
+                     Rp {{ number_format($totalPerpanjang + $cicilan, 0, ',', '.') }}
+                    <div class="d-md-none text-sm text-gray-500">
+                        Total = Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }} (bunga) + Rp {{ number_format($denda, 0, ',', '.') }} (denda){{ $cicilan > 0 ? ' + Rp ' . number_format($cicilan, 0, ',', '.') . ' (cicilan)' : '' }}
+                    </div>
+                </p>
+
+
+                {{-- <p class="text-lg font-bold text-green-600">Total Perpanjangan: Rp {{ number_format($totalPerpanjang + $cicilan, 0, ',', '.') }}</p> --}}
                 </div>
             </div>
         </div>
@@ -184,6 +232,13 @@
                 const noBon = "{{ $barangGadai->no_bon }}";
                 payForPerpanjang(noBon);
             }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
         });
     });
 </script>

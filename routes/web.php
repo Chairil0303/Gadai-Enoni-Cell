@@ -20,6 +20,8 @@ use App\Http\Controllers\Superadmin\AdminController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\LelangController;
+use App\Http\Controllers\WhatsappTemplateController;
+use App\Http\Controllers\AdminTermsController;
 
 
 
@@ -80,13 +82,20 @@ Route::middleware(['auth'])->group(function () {
             // Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.show');
             Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.filter');
             Route::resource('staff', StaffController::class);
-            Route::resource('laporan', \App\Http\Controllers\Admin\LaporanController::class);
+            Route::resource('laporan', LaporanController::class);
+            Route::resource('admin/whatsapp-templates', WhatsappTemplateController::class);
         });
     });
+    Route::get('admin/whatsapp_template', [WhatsappTemplateController::class, 'index'])->name('admin.whatsapp_template.index');
+    Route::get('admin/whatsapp_template/edit/{id}', [WhatsappTemplateController::class, 'edit'])->name('admin.whatsapp_template.edit');
+    Route::put('admin/whatsapp_template/update/{id}', [WhatsappTemplateController::class, 'update'])->name('admin.whatsapp_template.update');
+    Route::get('whatsapp_template/create', [WhatsappTemplateController::class, 'create'])->name('admin.whatsapp_template.create');
+    Route::post('whatsapp_template', [WhatsappTemplateController::class, 'store'])->name('admin.whatsapp_template.store');
+    Route::delete('whatsapp_template/{id}', [WhatsappTemplateController::class, 'destroy'])->name('admin.whatsapp_template.destroy');
+    Route::post('/admin/whatsapp-template/{id}/activate', [WhatsappTemplateController::class, 'activate'])->name('admin.whatsapp_template.activate');
+Route::post('/admin/whatsapp-template/{id}/deactivate', [WhatsappTemplateController::class, 'deactivate'])->name('admin.whatsapp_template.deactivate');
 
-
-
-    // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
+        // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
     Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
         Route::get('/dashboard', [NasabahController::class, 'show'])->name('profile');
     });
@@ -118,6 +127,17 @@ Route::middleware(['auth'])->group(function () {
         });
 
     // Perpanjang gadai nasabah End
+
+    // admin terms
+    Route::get('/admin/terms', [AdminTermsController::class, 'edit'])->name('admin.terms.edit');
+Route::post('/admin/terms', [AdminTermsController::class, 'update'])->name('admin.terms.update');
+// end
+
+    // nasbaah syaratdanketentuan
+    Route::get('/nasabah/syarat-ketentuan', [NasabahController::class, 'showTerms'])->name('nasabah.terms');
+
+    // Route::get('/syarat-ketentuan', [NasabahController::class, 'syaratKetentuan'])->name('syarat.ketentuan');
+// end syaratdanketentuan
 
 
     // perpanjang gadai

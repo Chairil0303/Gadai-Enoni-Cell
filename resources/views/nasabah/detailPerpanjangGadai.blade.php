@@ -33,22 +33,21 @@
                 <option value="{{ $tenor->tenor }}">{{ $tenor->tenor }} Hari</option>
             @endforeach
         </select>
-
     </div>
 
     <!-- Form Perpanjang + Nyicil -->
     <div id="form-cicil" class="hidden mb-4">
         <label for="tenorBaruCicil" class="block mb-1 font-semibold">Tenor Baru (hari):</label>
-        <select name="tenor" id="tenorBaruCicil" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm" required>
+        <select id="tenorBaruCicil" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm" required>
             <option value="" disabled selected>Pilih Tenor</option>
             @foreach ($tenors as $tenor)
                 <option value="{{ $tenor->tenor }}">{{ $tenor->tenor }} Hari</option>
             @endforeach
         </select>
 
-
         <label for="cicilan" class="block mt-3 mb-1 font-semibold">Bayar Cicilan Dari Harga Gadai:</label>
-        <input type="number" id="cicilan" class="border px-3 py-2 rounded w-full" min="0" max="{{ $barangGadai->harga_gadai }}">
+        <input type="text" id="cicilan" class="border px-3 py-2 rounded w-full" placeholder="Rp 100.000" />
+        <small class="text-gray-500">Minimal Rp100.000</small>
     </div>
 
     <!-- Tombol Aksi -->
@@ -64,6 +63,27 @@
 
 <!-- Script -->
 <script>
+    // Format input rupiah saat user mengetik
+    const cicilanInput = document.getElementById('cicilan');
+    cicilanInput.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/[^,\d]/g, '').toString();
+        if (value) {
+            let formatted = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(value);
+            e.target.value = formatted;
+        } else {
+            e.target.value = '';
+        }
+    });
+
+    // Helper: convert "Rp 100.000" → 100000
+    function parseRupiah(rp) {
+        return parseInt(rp.replace(/[^0-9]/g, ''), 10);
+    }
+
     function showPerpanjangForm(type) {
         const btnBiasa = document.getElementById('btn-biasa');
         const btnCicil = document.getElementById('btn-cicil');
@@ -103,20 +123,36 @@
     // Konfirmasi Perpanjang + Nyicil
     document.getElementById('btn-konfirmasi-cicil').addEventListener('click', function () {
         const tenor = document.getElementById('tenorBaruCicil').value;
-        const cicilan = document.getElementById('cicilan').value;
+        const rawCicilan = document.getElementById('cicilan').value;
+        const cicilan = parseRupiah(rawCicilan);
 
-        if (!tenor || cicilan === '') {
-            alert('Silakan lengkapi tenor dan cicilan terlebih dahulu.');
-            return;
-        }
+        if (!tenor || !cicilan) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data belum lengkap',
+            text: 'Silakan lengkapi tenor dan cicilan terlebih dahulu.'
+        });
+        return;
+    }
+
+    if (cicilan < 100000) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Nominal terlalu kecil',
+            text: 'Cicilan minimal Rp100.000'
+        });
+        return;
+    }
 
         const url = new URL("{{ route('nasabah.konfirmasi.Perpanjang') }}");
-
         url.searchParams.append('no_bon', "{{ $barangGadai->no_bon }}");
         url.searchParams.append('tenor', tenor);
-        url.searchParams.append('cicilan', cicilan);
+        url.searchParams.append('cicilan', cicilan); // angka murni
         url.searchParams.append('type', 'cicil');
         window.location.href = url.toString();
     });
+
+
+     
 </script>
 @endsection

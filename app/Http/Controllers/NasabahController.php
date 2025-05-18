@@ -7,6 +7,7 @@ use App\Models\Nasabah;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\TermsCondition;
 
 class NasabahController extends Controller
 {
@@ -16,6 +17,13 @@ class NasabahController extends Controller
         $nasabah = Nasabah::with('user')->get();
         return view('nasabah.index', compact('nasabah'));
     }
+
+  public function showTerms()
+{
+    $terms = TermsCondition::first();
+    return view('nasabah.terms', compact('terms'));
+}
+
 
     public function Profil()
     {

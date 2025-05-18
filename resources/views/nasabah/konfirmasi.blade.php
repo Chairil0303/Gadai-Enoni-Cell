@@ -29,11 +29,43 @@
             <tr><th>Harga Gadai</th><td>Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}</td></tr>
             <tr><th>Tenor</th><td>{{ $barangGadai->bungaTenor->tenor }} hari</td></tr>
             <tr><th>Jatuh Tempo</th><td>{{ $barangGadai->tempo }}</td></tr>
-            <tr><th>Bunga</th><td>{{ $bungaPersen }}% (Rp {{ number_format($bunga, 0, ',', '.') }})</td></tr>
+           <tr>
+                <th>
+                    Bunga
+                    <i class="bi bi-info-circle d-none d-md-inline" data-bs-toggle="tooltip" title="Bunga dihitung dari persentase tenor: {{ $bungaPersen }}% x {{ $barangGadai->harga_gadai }}"></i>
+                    <div class="d-md-none small text-muted">
+                        Bunga dihitung dari persentase tenor: {{ $bungaPersen }}% x Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}
+                    </div>
+                </th>
+                <td>{{ $bungaPersen }}% (Rp {{ number_format($bunga, 0, ',', '.') }})</td>
+            </tr>
             <tr><th>Telat</th><td>{{ $barangGadai->telat }} hari</td></tr>
-            <tr><th>Denda</th><td>Rp {{ number_format($denda, 0, ',', '.') }}</td></tr>
-            <tr><th>Total Tebus</th><td>Rp {{ number_format($totalTebus, 0, ',', '.') }}</td></tr>
-            <tr><th>Penerima Tebusan</th><td>{{ auth()->user()->name }}</td></tr>
+            <tr>
+                <th>
+                Denda
+                <i class="bi bi-info-circle d-none d-md-inline"
+                data-bs-toggle="tooltip"
+                title="Denda dihitung: {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}">
+                </i>
+                <div class="d-md-none small text-muted">
+                    Denda dihitung: {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}
+                </div>
+            </th>
+            <td>Rp {{ number_format($denda, 0, ',', '.') }}</td>
+            </tr>
+
+            <tr>
+                <th>
+                    Total Tebus
+                    <i class="bi bi-info-circle d-none d-md-inline" data-bs-toggle="tooltip" title="Total = Harga Gadai + Bunga + Denda (jika telat)"></i>
+                    <div class="d-md-none small text-muted">
+                        Total = Harga Gadai + Bunga + Denda (jika telat)
+                    </div>
+                </th>
+                <td>Rp {{ number_format($totalTebus, 0, ',', '.') }}</td>
+            </tr>
+    
+
         </tbody>
     </table>
 
@@ -48,10 +80,6 @@
                 Tebus Sekarang
             </button>
 
-            <!-- Tombol Perpanjang -->
-            {{-- <button id="confirmPerpanjangBtn" class="bg-yellow-500 text-white px-4 py-2 rounded ml-2">
-                Perpanjang
-            </button> --}}
 
             <div id="continue-payment-container"></div>
 
@@ -289,6 +317,14 @@ function payWithMidtrans(noBon, paymentType = 'bank_transfer') {
             }
         });
     });
+
+     document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+
     </script>
 
 @endsection
