@@ -14,6 +14,7 @@ class Transaksi extends Model
         'id_nasabah',
         'id_cabang',
         'jenis_transaksi',
+        'id_user',
         'jumlah',
     ];
 
@@ -33,5 +34,10 @@ class Transaksi extends Model
     public function cabang()
     {
         return $this->belongsTo(Cabang::class, 'id_cabang', 'id_cabang');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user', 'id_users');
     }
 }

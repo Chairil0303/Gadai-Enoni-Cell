@@ -134,13 +134,16 @@ class GadaiController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-    
+
         Transaksi::create([
-            'jenis_transaksi' => 'terima_gadai',
-            'arah' => 'keluar',
-            'nominal' => $data['harga_gadai'],
+            'no_bon' => $data['no_bon'],
+            'id_nasabah' => $nasabah->id_nasabah,
+            'id_user' => auth()->user()->id_users,
             'id_cabang' => auth()->user()->id_cabang,
+            'jenis_transaksi' => 'terima',
+            'jumlah' => $data['harga_gadai'],
         ]);
+        
     
         // Hapus session preview
         session()->forget('preview_data');

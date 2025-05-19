@@ -29,6 +29,7 @@
                     <thead>
                         <tr class="bg-gray-100">
                             <th class="border px-2 py-1">Waktu</th>
+                            <th class="border px-2 py-1">Penerima</th>
                             <th class="border px-2 py-1">No Bon</th>
                             <th class="border px-2 py-1">Nasabah</th>
                             <th class="border px-2 py-1">Jenis Transaksi</th>
@@ -39,6 +40,7 @@
                         @foreach ($transaksi as $item)
                             <tr>
                                 <td class="border px-2 py-1">{{ $item->created_at->format('H:i') }}</td>
+                                <td class="border px-2 py-1">{{ $item->user->nama ?? '-' }}</td>
                                 <td class="border px-2 py-1">{{ $item->no_bon }}</td>
                                 <td class="border px-2 py-1">{{ $item->nasabah->nama ?? '-' }}</td>
                                 <td class="border px-2 py-1 capitalize">{{ $item->jenis_transaksi }}</td>
