@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use App\Models\Transaksi;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,9 +16,23 @@ class LaporanController extends Controller
 
     public function harian(Request $request)
     {
-        // nanti isi logic laporan harian di sini
-        return view('admin.laporan.harian');
+        $tanggal = $request->input('tanggal');
+        $transaksi = collect();
+
+        if ($tanggal) {
+            $user = Auth::user();
+            $id_cabang = $user->id_cabang;
+
+            $transaksi = Transaksi::with(['nasabah'])
+                ->where('id_cabang', $id_cabang)
+                ->whereDate('created_at', $tanggal)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+
+        return view('admin.laporan.harian', compact('transaksi', 'tanggal'));
     }
+
 
     
     public function bulanan(Request $request)
