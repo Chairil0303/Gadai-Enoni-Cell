@@ -72,37 +72,53 @@ class PerpanjangGadaiController extends Controller
             'tempo_baru' => $tempo_baru,
         ]);
 
-        // Transaksi perpanjangan berdasarkan jenis perpanjangan
-        if ($request->jenis_perpanjangan === 'tanpa_perubahan') {
-            $bunga_persen_baru = $data['bunga_persen_baru'] ?? 0;
-            $bunga_baru = $lama->harga_gadai * $bunga_persen_baru;
-            Transaksi::create([
-                'jenis_transaksi' => 'perpanjangan_gadai_bunga',
-                'arah' => 'masuk',
-                'nominal' => $bunga_baru,
-                'id_cabang' => auth()->user()->id_cabang,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        } elseif ($request->jenis_perpanjangan === 'penambahan') {
-            Transaksi::create([
-                'jenis_transaksi' => 'perpanjangan_gadai_penambahan',
-                'arah' => 'keluar',
-                'nominal' => $data['penambahan'] ?? 0,
-                'id_cabang' => auth()->user()->id_cabang,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+       // 1. Simpan bunga lama + denda (dibayar saat perpanjangan)
+        Transaksi::create([
+            'jenis_transaksi' => 'perpanjang_bunga_denda',
+            'arus_kas' => 'masuk',
+            'jumlah' => $lama->harga_gadai * ($lama->bungaTenor->bunga_percent / 100) + (($lama->telat ?? 0) * 0.01 * $lama->harga_gadai),
+            'id_cabang' => auth()->user()->id_cabang,
+            'id_user' => auth()->id(),
+            'id_nasabah' => $lama->id_nasabah,
+            'no_bon' => $lama->no_bon,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // 2. Transaksi berdasarkan jenis perpanjangan
+        if ($request->jenis_perpanjangan === 'penambahan') {
+            $nominal = $data['penambahan'] ?? 0;
+            if ($nominal > 0) {
+                Transaksi::create([
+                    'jenis_transaksi' => 'perpanjang_tambah',
+                    'arus_kas' => 'keluar',
+                    'jumlah' => $nominal,
+                    'id_cabang' => auth()->user()->id_cabang,
+                    'id_user' => auth()->id(),
+                    'id_nasabah' => $lama->id_nasabah,
+                    'no_bon' => $lama->no_bon,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         } elseif ($request->jenis_perpanjangan === 'pengurangan') {
-            Transaksi::create([
-                'jenis_transaksi' => 'perpanjangan_gadai_pengurangan',
-                'arah' => 'masuk',
-                'nominal' => $data['pengurangan'] ?? 0,
-                'id_cabang' => auth()->user()->id_cabang,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $nominal = $data['pengurangan'] ?? 0;
+            if ($nominal > 0) {
+                Transaksi::create([
+                    'jenis_transaksi' => 'perpanjang_kurang',
+                    'arus_kas' => 'masuk',
+                    'jumlah' => $nominal,
+                    'id_cabang' => auth()->user()->id_cabang,
+                    'id_user' => auth()->id(),
+                    'id_nasabah' => $lama->id_nasabah,
+                    'no_bon' => $lama->no_bon,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         }
+        
+
 
         session()->forget('konfirmasi_data');
 
