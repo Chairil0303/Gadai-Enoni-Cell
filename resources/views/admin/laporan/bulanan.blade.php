@@ -1,42 +1,56 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
-    <h2 class="mb-4">📊 Laporan Bulanan - {{ $bulan }}</h2>
+<div class="p-6">
+    <h2 class="text-2xl font-bold mb-4">Laporan Bulanan</h2>
 
-    @if ($transaksi->count() > 0)
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-                <thead class="table-success">
-                    <tr>
-                        <th>#</th>
-                        <th>Tanggal</th>
-                        <th>No Bon</th>
-                        <th>Nasabah</th>
-                        <th>Jenis Transaksi</th>
-                        <th>Barang</th>
-                        <th>Jumlah</th>
+    {{-- Form Filter Bulan --}}
+    <form method="GET" action="{{ route('admin.laporan.bulanan') }}" class="mb-4">
+        <div class="flex items-center gap-2">
+            <label for="bulan" class="font-semibold">Pilih Bulan:</label>
+            <input type="month" name="bulan" id="bulan"
+                value="{{ request('bulan') }}"
+                class="border rounded px-2 py-1" required>
+            <button type="submit" class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700">
+                Tampilkan
+            </button>
+        </div>
+    </form>
+
+    {{-- Tabel Hasil --}}
+    @isset($transaksi)
+        <div class="mt-6">
+            <p class="mb-2 font-semibold">
+                Total Transaksi: {{ $transaksi->count() }}
+            </p>
+
+            <table class="w-full text-left border-collapse border">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border px-2 py-1">Tanggal</th>
+                        <th class="border px-2 py-1">No Bon</th>
+                        <th class="border px-2 py-1">Nasabah</th>
+                        <th class="border px-2 py-1">Jenis Transaksi</th>
+                        <th class="border px-2 py-1">Jumlah</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($transaksi as $i => $trx)
+                    @forelse ($transaksi as $item)
                         <tr>
-                            <td>{{ $i + 1 }}</td>
-                            <td>{{ \Carbon\Carbon::parse($trx->tanggal_transaksi)->translatedFormat('d F') }}</td>
-                            <td>{{ $trx->no_bon }}</td>
-                            <td>{{ $trx->nasabah->nama }}</td>
-                            <td>{{ ucfirst($trx->jenis_transaksi) }}</td>
-                            <td>{{ $trx->barangGadai->nama_barang ?? '-' }}</td>
-                            <td>Rp {{ number_format($trx->jumlah_transaksi, 0, ',', '.') }}</td>
+                            <td class="border px-2 py-1">{{ $item->created_at->format('d-m-Y') }}</td>
+                            <td class="border px-2 py-1">{{ $item->no_bon }}</td>
+                            <td class="border px-2 py-1">{{ $item->nasabah->nama ?? '-' }}</td>
+                            <td class="border px-2 py-1 capitalize">{{ $item->jenis_transaksi }}</td>
+                            <td class="border px-2 py-1">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-2">Tidak ada transaksi</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
-    @else
-        <div class="alert alert-info">Tidak ada transaksi pada bulan ini.</div>
-    @endif
-
-    <a href="{{ route('admin.laporan.index') }}" class="btn btn-secondary mt-3">← Kembali</a>
+    @endisset
 </div>
 @endsection

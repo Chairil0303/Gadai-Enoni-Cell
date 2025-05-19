@@ -14,21 +14,22 @@ class Transaksi extends Model
         'id_nasabah',
         'id_cabang',
         'jenis_transaksi',
-        'jumlah_transaksi',
-        'keterangan',
-        'tanggal_transaksi',
+        'jumlah',
     ];
 
+    // Relasi ke barang_gadai
     public function barangGadai()
     {
         return $this->belongsTo(BarangGadai::class, 'no_bon', 'no_bon');
     }
 
+    // Relasi ke nasabah
     public function nasabah()
     {
         return $this->belongsTo(Nasabah::class, 'id_nasabah', 'id_nasabah');
     }
 
+    // Relasi ke cabang
     public function cabang()
     {
         return $this->belongsTo(Cabang::class, 'id_cabang', 'id_cabang');

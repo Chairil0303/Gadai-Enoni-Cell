@@ -1,11 +1,12 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
 use App\Models\Transaksi;
-use Carbon\Carbon;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class LaporanController extends Controller
 {
@@ -14,47 +15,30 @@ class LaporanController extends Controller
         return view('admin.laporan.index');
     }
 
-    public function show($jenis, Request $request)
+    public function harian(Request $request)
     {
-        $id_cabang = Auth::user()->id_cabang; // Cabang user yang login
-
-        if ($jenis === 'harian') {
-            $tanggal = $request->input('tanggal');
-
-            $transaksi = Transaksi::with(['nasabah', 'barangGadai'])
-                ->whereDate('tanggal_transaksi', $tanggal)
-                ->where('id_cabang', $id_cabang)
-                ->get();
-
-            return view('admin.laporan.harian', [
-                'transaksi' => $transaksi,
-                'tanggal' => $tanggal,
-            ]);
-        }
-
-        abort(404);
+        // nanti isi logic laporan harian di sini
+        return view('admin.laporan.harian');
     }
 
-    public function filter($jenis, Request $request)
+    
+    public function bulanan(Request $request)
     {
-        $id_cabang = Auth::user()->id_cabang;
+        $bulan = $request->input('bulan'); // format: YYYY-MM
+        $transaksi = collect();
 
-        if ($jenis === 'bulanan') {
-            $bulan = $request->input('bulan');
-            $carbon = Carbon::parse($bulan);
+        if ($bulan) {
+            $user = Auth::user();
+            $id_cabang = $user->id_cabang;
 
-            $transaksi = Transaksi::with(['nasabah', 'barangGadai'])
-                ->whereMonth('tanggal_transaksi', $carbon->month)
-                ->whereYear('tanggal_transaksi', $carbon->year)
+            $transaksi = Transaksi::with(['nasabah'])
                 ->where('id_cabang', $id_cabang)
+                ->whereYear('created_at', substr($bulan, 0, 4))
+                ->whereMonth('created_at', substr($bulan, 5, 2))
+                ->orderBy('created_at', 'desc')
                 ->get();
-
-            return view('admin.laporan.bulanan', [
-                'transaksi' => $transaksi,
-                'bulan' => $carbon->translatedFormat('F Y'),
-            ]);
         }
 
-        abort(404);
+        return view('admin.laporan.bulanan', compact('transaksi'));
     }
 }

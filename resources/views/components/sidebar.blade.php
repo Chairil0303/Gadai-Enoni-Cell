@@ -64,9 +64,9 @@
                 </a>
             </li>
             <li>
-            <a href="{{ url('/admin/laporan-redirect') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ str_contains(request()->route()->getName(), 'admin.laporan') ? 'bg-green-600 font-semibold' : '' }}">
-                <i class="fas fa-file-alt mr-2"></i> Laporan
-            </a>
+                <a href="{{ route('admin.laporan.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ str_contains(request()->route()->getName(), 'admin.laporan') ? 'bg-green-600 font-semibold' : '' }}">
+                    <i class="fas fa-file-alt mr-2"></i> Laporan
+                </a>
             </li>
             <a href="{{ route('admin.whatsapp_template.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('admin.whatsapp_template.index') ? 'bg-green-600 font-semibold' : '' }}">
                 <i class="fas fa-file-alt"></i>

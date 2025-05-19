@@ -79,17 +79,13 @@ Route::middleware(['auth'])->group(function () {
     ->name('admin.')
     ->group(function () {
         Route::middleware([RoleMiddleware::class . ':Admin'])->group(function () {
-            // Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.show');
-            Route::get('laporan/lihat/{jenis}', [LaporanController::class, 'filter'])->name('laporan.filter');
             Route::resource('staff', StaffController::class);
-            // Route::resource('laporan', LaporanController::class) ;
             Route::resource('admin/whatsapp-templates', WhatsappTemplateController::class);
+
+            // ✅ Tambahan route untuk fitur laporan
             Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-            Route::get('/laporan/{jenis}', [LaporanController::class, 'show'])->name('laporan.show');
-            Route::get('/laporan/filter/{jenis}', [LaporanController::class, 'filter'])->name('laporan.filter');
-            Route::get('/laporan-redirect', function () {
-                return redirect()->route('admin.laporan.index');
-            });
+            Route::get('/laporan/harian', [LaporanController::class, 'harian'])->name('laporan.harian');
+            Route::get('/laporan/bulanan', [LaporanController::class, 'bulanan'])->name('laporan.bulanan');
         });
     });
 
