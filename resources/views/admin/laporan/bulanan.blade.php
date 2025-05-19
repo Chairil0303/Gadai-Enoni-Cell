@@ -14,6 +14,11 @@
             <button type="submit" class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700">
                 Tampilkan
             </button>
+            {{-- Tombol Kembali --}}
+            <a href="{{ route('admin.laporan.index') }}"
+            class="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-600">
+                ← Kembali
+            </a>
         </div>
     </form>
 
@@ -24,7 +29,20 @@
                 Total Transaksi: {{ $transaksi->count() }}
             </p>
 
-            <table class="w-full text-left border-collapse border">
+            <p><strong>Total Uang Masuk:</strong> Rp {{ number_format($totalMasuk, 0, ',', '.') }}</p>
+            <p><strong>Total Uang Keluar:</strong> Rp {{ number_format($totalKeluar, 0, ',', '.') }}</p>
+
+            {{-- Ringkasan per Jenis Transaksi --}}
+            <div class="mt-4">
+                <h3 class="font-semibold mb-2">Ringkasan Transaksi per Jenis</h3>
+                <ul class="list-disc ml-6 text-sm">
+                    @foreach ($ringkasanJenis as $jenis => $data)
+                        <li>{{ ucfirst(str_replace('_', ' ', $jenis)) }}: {{ $data['count'] }} transaksi, Total: Rp {{ number_format($data['total'], 0, ',', '.') }}</li>
+                    @endforeach
+                </ul>
+            </div>
+
+            <table class="w-full text-left border-collapse border mt-4">
                 <thead>
                     <tr class="bg-gray-100">
                         <th class="border px-2 py-1">Tanggal</th>

@@ -2,7 +2,13 @@
 
 @section('content')
 <div class="p-6">
-    <h2 class="text-2xl font-bold mb-4">Laporan Harian</h2>
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold">Laporan Harian</h2>
+        <a href="{{ route('admin.laporan.index') }}"
+            class="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-600">
+            ← Kembali
+        </a>
+    </div>
 
     {{-- Form Pilih Tanggal --}}
     <form method="GET" action="{{ route('admin.laporan.harian') }}" class="mb-4">

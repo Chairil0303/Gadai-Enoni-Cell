@@ -58,6 +58,22 @@ class LaporanController extends Controller
                 ->get();
         }
 
-        return view('admin.laporan.bulanan', compact('transaksi'));
+        $totalMasuk = $transaksi->where('arus_kas', 'masuk')->sum('jumlah');
+        $totalKeluar = $transaksi->where('arus_kas', 'keluar')->sum('jumlah');
+
+        $ringkasanJenis = $transaksi->groupBy('jenis_transaksi')->map(function ($group) {
+            return [
+                'count' => $group->count(),
+                'total' => $group->sum('jumlah'),
+            ];
+        });
+
+
+        return view('admin.laporan.bulanan', compact(
+            'transaksi', 
+            'totalMasuk', 
+            'totalKeluar', 
+            'ringkasanJenis'
+        ));
     }
 }
