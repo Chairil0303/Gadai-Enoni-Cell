@@ -86,11 +86,6 @@ public function cari(Request $request)
     return view('tebus_gadai.konfirmasi', compact('barangGadai', 'nasabah', 'denda', 'totalTebus', 'bungaPersen', 'bunga'));
 }
 
-
-
-
-
-
     public function tebus(Request $request, $noBon)
     {
         // Ambil data barang gadai berdasarkan noBon
@@ -126,15 +121,17 @@ public function cari(Request $request)
             'jumlah_pembayaran' => $totalTebus,
             'status' => 'Berhasil',
         ]);
-        Transaksi::create([
-                'jenis_transaksi' => 'tebus_gadai_Admin',
-                'arah' => 'masuk',
-                'nominal' => $totalTebus,
-                'id_cabang' => auth()->user()->id_cabang,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
 
+        Transaksi::create([
+            'no_bon' => $barangGadai->no_bon,
+            'id_nasabah' => $barangGadai->id_nasabah,
+            'id_cabang' => auth()->user()->id_cabang,
+            'jenis_transaksi' => 'tebus',
+            'jumlah' => $totalTebus,
+            'arus_kas' => 'masuk',
+            'id_user' => auth()->id(),
+        ]);
+        
         // Update status barang menjadi 'Ditebus'
         $barangGadai->status = 'Ditebus';
         $barangGadai->save();
