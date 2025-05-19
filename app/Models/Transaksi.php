@@ -15,6 +15,7 @@ class Transaksi extends Model
         'id_cabang',
         'jenis_transaksi',
         'id_user',
+        'arus_kas',
         'jumlah',
     ];
 

@@ -15,6 +15,7 @@ class CreateTransaksiTable extends Migration
             $table->unsignedBigInteger('id_user');
             $table->unsignedBigInteger('id_cabang'); // foreign key ke cabang.id_cabang
             $table->enum('jenis_transaksi', ['terima', 'tebus', 'perpanjang']);
+            $table->enum('arus_kas', ['masuk', 'keluar']);
             $table->decimal('jumlah', 15, 2)->nullable();
             $table->timestamps();
 

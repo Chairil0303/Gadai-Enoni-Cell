@@ -18,20 +18,26 @@ class LaporanController extends Controller
     {
         $tanggal = $request->input('tanggal');
         $transaksi = collect();
+        $totalMasuk = 0;
+        $totalKeluar = 0;
 
         if ($tanggal) {
             $user = Auth::user();
             $id_cabang = $user->id_cabang;
 
-            $transaksi = Transaksi::with(['nasabah'])
+            $transaksi = Transaksi::with(['nasabah', 'user']) // tambahkan 'user' juga
                 ->where('id_cabang', $id_cabang)
                 ->whereDate('created_at', $tanggal)
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            $totalMasuk = $transaksi->where('arus_kas', 'masuk')->sum('jumlah');
+            $totalKeluar = $transaksi->where('arus_kas', 'keluar')->sum('jumlah');
         }
 
-        return view('admin.laporan.harian', compact('transaksi', 'tanggal'));
+        return view('admin.laporan.harian', compact('transaksi', 'tanggal', 'totalMasuk', 'totalKeluar'));
     }
+
 
 
     

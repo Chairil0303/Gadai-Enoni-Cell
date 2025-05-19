@@ -25,6 +25,9 @@
                     Total Transaksi: {{ $transaksi->count() }}
                 </p>
 
+                <p><strong>Total Uang Masuk:</strong> Rp {{ number_format($totalMasuk, 0, ',', '.') }}</p>
+                <p><strong>Total Uang Keluar:</strong> Rp {{ number_format($totalKeluar, 0, ',', '.') }}</p>
+
                 <table class="w-full text-left border-collapse border">
                     <thead>
                         <tr class="bg-gray-100">

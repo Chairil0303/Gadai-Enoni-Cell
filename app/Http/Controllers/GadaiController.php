@@ -141,6 +141,7 @@ class GadaiController extends Controller
             'id_user' => auth()->user()->id_users,
             'id_cabang' => auth()->user()->id_cabang,
             'jenis_transaksi' => 'terima',
+            'arus_kas' => 'keluar',
             'jumlah' => $data['harga_gadai'],
         ]);
         
