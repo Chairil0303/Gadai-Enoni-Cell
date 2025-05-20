@@ -1,92 +1,179 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h2>Konfirmasi Tebus Gadai</h2>
-    <br>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold text-gradient">Konfirmasi Tebus Gadai</h2>
+                <p class="text-muted">Silakan periksa detail transaksi Anda</p>
+            </div>
 
-    <!-- Tabel Data Nasabah -->
-    <table class="table table-bordered">
-        <thead class="table-dark">
-            <tr><th colspan="2">Data Nasabah</th></tr>
-        </thead>
-        <tbody>
-            <tr><th>Nama Nasabah</th><td>{{ $barangGadai->nasabah->nama }}</td></tr>
-            <tr><th>NIK</th><td>{{ $barangGadai->nasabah->nik }}</td></tr>
-            <tr><th>Alamat</th><td>{{ $barangGadai->nasabah->alamat }}</td></tr>
-            <tr><th>No Telp</th><td>{{ $barangGadai->nasabah->telepon }}</td></tr>
-        </tbody>
-    </table>
-
-    <!-- Tabel Data Barang Gadai -->
-    <table class="table table-bordered mt-4">
-        <thead class="table-dark">
-            <tr><th colspan="2">Data Barang Gadai</th></tr>
-        </thead>
-        <tbody>
-            <tr><th>Nama Barang</th><td>{{ $barangGadai->nama_barang }}</td></tr>
-            <tr><th>No Bon</th><td>{{ $barangGadai->no_bon }}</td></tr>
-            <tr><th>Harga Gadai</th><td>Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}</td></tr>
-            <tr><th>Tenor</th><td>{{ $barangGadai->bungaTenor->tenor }} hari</td></tr>
-            <tr><th>Jatuh Tempo</th><td>{{ $barangGadai->tempo }}</td></tr>
-           <tr>
-                <th>
-                    Bunga
-                    <i class="bi bi-info-circle d-none d-md-inline" data-bs-toggle="tooltip" title="Bunga dihitung dari persentase tenor: {{ $bungaPersen }}% x {{ $barangGadai->harga_gadai }}"></i>
-                    <div class="d-md-none small text-muted">
-                        Bunga dihitung dari persentase tenor: {{ $bungaPersen }}% x Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-gradient-primary text-white py-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-person-circle fs-1 me-3"></i>
+                        <div>
+                            <h3 class="mb-0">Data Nasabah</h3>
+                            <small>Informasi peminjam</small>
+                        </div>
                     </div>
-                </th>
-                <td>{{ $bungaPersen }}% (Rp {{ number_format($bunga, 0, ',', '.') }})</td>
-            </tr>
-            <tr><th>Telat</th><td>{{ $barangGadai->telat }} hari</td></tr>
-            <tr>
-                <th>
-                Denda
-                <i class="bi bi-info-circle d-none d-md-inline"
-                data-bs-toggle="tooltip"
-                title="Denda dihitung: {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}">
-                </i>
-                <div class="d-md-none small text-muted">
-                    Denda dihitung: {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}
                 </div>
-            </th>
-            <td>Rp {{ number_format($denda, 0, ',', '.') }}</td>
-            </tr>
-
-            <tr>
-                <th>
-                    Total Tebus
-                    <i class="bi bi-info-circle d-none d-md-inline" data-bs-toggle="tooltip" title="Total = Harga Gadai + Bunga + Denda (jika telat)"></i>
-                    <div class="d-md-none small text-muted">
-                        Total = Harga Gadai + Bunga + Denda (jika telat)
+                <div class="card-body p-4">
+                    <!-- Tabel Data Nasabah -->
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover align-middle">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25 text-muted">Nama Nasabah</th>
+                                    <td class="fw-semibold">{{ $barangGadai->nasabah->nama }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">NIK</th>
+                                    <td class="fw-semibold">{{ $barangGadai->nasabah->nik }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Alamat</th>
+                                    <td class="fw-semibold">{{ $barangGadai->nasabah->alamat }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">No Telp</th>
+                                    <td class="fw-semibold">{{ $barangGadai->nasabah->telepon }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                </th>
-                <td>Rp {{ number_format($totalTebus, 0, ',', '.') }}</td>
-            </tr>
-    
 
-        </tbody>
-    </table>
+                    <!-- Divider -->
+                    <hr class="my-4">
 
-       <!-- Button untuk Tebus -->
-        <div class="mt-4 flex justify-end">
-            <input type="hidden" id="no-bon-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->no_bon }}">
-            <input type="hidden" id="total-tebus-{{ $barangGadai->no_bon }}" value="{{ $totalTebus }}">
-            <input type="hidden" id="denda-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->denda }}">
+                    <!-- Tabel Data Barang Gadai -->
+                    <div class="d-flex align-items-center mb-4">
+                        <i class="bi bi-box-seam fs-1 text-primary me-3"></i>
+                        <div>
+                            <h3 class="mb-0">Data Barang Gadai</h3>
+                            <small class="text-muted">Detail barang yang akan ditebus</small>
+                        </div>
+                    </div>
 
-            <!-- Tombol Tebus -->
-            <button id="confirmTebusBtn" class="bg-green-500 text-white px-4 py-2 rounded">
-                Tebus Sekarang
-            </button>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25 text-muted">Nama Barang</th>
+                                    <td class="fw-semibold">{{ $barangGadai->nama_barang }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">No Bon</th>
+                                    <td class="fw-semibold">{{ $barangGadai->no_bon }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Harga Gadai</th>
+                                    <td class="fw-semibold text-primary">Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Tenor</th>
+                                    <td class="fw-semibold">{{ $barangGadai->bungaTenor->tenor }} hari</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Jatuh Tempo</th>
+                                    <td class="fw-semibold">{{ $barangGadai->tempo }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">
+                                        Bunga
+                                        <i class="bi bi-info-circle-fill text-primary ms-1" data-bs-toggle="tooltip" title="Bunga dihitung dari persentase tenor: {{ $bungaPersen }}% x {{ $barangGadai->harga_gadai }}"></i>
+                                        <div class="d-md-none small text-muted">
+                                            Bunga dihitung dari persentase tenor: {{ $bungaPersen }}% x Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}
+                                        </div>
+                                    </th>
+                                    <td class="fw-semibold">{{ $bungaPersen }}% (Rp {{ number_format($bunga, 0, ',', '.') }})</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Telat</th>
+                                    <td class="fw-semibold">{{ $barangGadai->telat }} hari</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">
+                                        Denda
+                                        <i class="bi bi-info-circle-fill text-primary ms-1" data-bs-toggle="tooltip" title="Denda dihitung: {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}"></i>
+                                        <div class="d-md-none small text-muted">
+                                            Denda dihitung: {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}
+                                        </div>
+                                    </th>
+                                    <td class="fw-semibold text-danger">Rp {{ number_format($denda, 0, ',', '.') }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
+                    <!-- Total Section -->
+                    <div class="bg-light rounded-4 p-4 mt-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="mb-1">Total Tebus</h4>
+                                <small class="text-muted">Harga Gadai + Bunga + Denda (jika telat)</small>
+                            </div>
+                            <h3 class="text-primary mb-0">Rp {{ number_format($totalTebus, 0, ',', '.') }}</h3>
+                        </div>
+                    </div>
 
-            <div id="continue-payment-container"></div>
+                    <!-- Button untuk Tebus -->
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <input type="hidden" id="no-bon-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->no_bon }}">
+                        <input type="hidden" id="total-tebus-{{ $barangGadai->no_bon }}" value="{{ $totalTebus }}">
+                        <input type="hidden" id="denda-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->denda }}">
 
-            <button onclick="window.location.href='{{ route('profile') }}'" class="btn btn-danger">Cancel</button>
+                        <button onclick="window.location.href='{{ route('profile') }}'" class="btn btn-outline-danger rounded-pill px-4">
+                            <i class="bi bi-x-circle me-2"></i>Batal
+                        </button>
+
+                        <div class="d-flex gap-3">
+                            <div id="continue-payment-container"></div>
+                            <button id="confirmTebusBtn" class="btn btn-success rounded-pill px-4">
+                                <i class="bi bi-check-circle me-2"></i>Tebus Sekarang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+</div>
 
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4e73df 0%, #224abe 100%);
+}
 
+.text-gradient {
+    background: linear-gradient(45deg, #4e73df 0%, #224abe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.table th {
+    font-weight: 500;
+}
+
+.btn {
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+</style>
 
 <!-- SweetAlert2 Script -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
