@@ -1,16 +1,35 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="p-6">
-    <h2 class="text-2xl font-bold mb-4">Laporan</h2>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <a href="{{ route('admin.laporan.harian') }}" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded shadow text-center">
-            <i class="fas fa-calendar-day mr-2"></i> Laporan Harian
-        </a>
-        <a href="{{ route('admin.laporan.bulanan') }}" class="bg-green-600 hover:bg-green-700 text-white p-4 rounded shadow text-center">
-            <i class="fas fa-calendar-alt mr-2"></i> Laporan Bulanan
-        </a>
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-success text-white text-center rounded-top-4">
+            <h4><i class="fas fa-file-alt"></i> Menu Laporan</h4>
+        </div>
+        <div class="card-body bg-light">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <a href="{{ route('admin.laporan.harian') }}" class="text-decoration-none">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 bg-success text-white text-center p-4">
+                            <div class="mb-2">
+                                <i class="fas fa-calendar-day fa-2x"></i>
+                            </div>
+                            <h5 class="fw-bold">Laporan Harian</h5>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{{ route('admin.laporan.bulanan') }}" class="text-decoration-none">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 bg-success text-white text-center p-4">
+                            <div class="mb-2">
+                                <i class="fas fa-calendar-alt fa-2x"></i>
+                            </div>
+                            <h5 class="fw-bold">Laporan Bulanan</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
