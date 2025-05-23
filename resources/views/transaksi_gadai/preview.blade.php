@@ -72,7 +72,9 @@
                 $tenor = $data['tenor'];
                 $total_bunga = ($pokok * $bunga_percent / 100);
                 $total_tebus = $pokok + $total_bunga;
-                $denda_per_hari = 5000; // contoh tetap
+
+                // Denda 1% dari pokok per hari
+                $denda_per_hari = $pokok * 0.01;
 
                 $tanggal_tebus = Carbon::now()->addDays((int) $tenor)->translatedFormat('d F Y');
             @endphp
@@ -87,13 +89,14 @@
                     Rp {{ number_format($total_bunga, 0, ',', '.') }}
                 </li>
                 <li class="list-group-item">
+                    <strong>Denda Per Hari (1% dari Pokok):</strong><br>
+                    Rp {{ number_format($denda_per_hari, 0, ',', '.') }}
+                </li>
+                <li class="list-group-item">
                     <strong>Total Tebus (Pokok + Bunga):</strong><br>
                     <span class="fw-bold text-danger">Rp {{ number_format($total_tebus, 0, ',', '.') }}</span>
                 </li>
-                <li class="list-group-item">
-                    <strong>Denda Per Hari (Jika Telat):</strong><br>
-                    Rp {{ number_format($denda_per_hari, 0, ',', '.') }}
-                </li>
+                
                 <li class="list-group-item">
                     <strong>Tanggal Jatuh Tempo:</strong><br>
                     <span class="text-primary fw-semibold">{{ $tanggal_tebus }}</span>
