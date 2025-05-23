@@ -1,49 +1,64 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold">Kategori Barang</h1>
-        <a href="{{ route('superadmin.kategori-barang.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Tambah Kategori
-        </a>
-    </div>
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center rounded-top-4">
+            <h4 class="mb-0"><i class="fas fa-boxes"></i> Kategori Barang</h4>
+            <a href="{{ route('superadmin.kategori-barang.create') }}" class="btn btn-light text-success fw-semibold shadow-sm">
+                <i class="fas fa-plus-circle"></i> Tambah Kategori
+            </a>
+        </div>
 
-    <div class="bg-white shadow rounded overflow-x-auto">
-        <table class="w-full table-auto">
-            <thead class="bg-gray-200">
-                <tr>
-                    <th class="px-4 py-2 text-left">#</th>
-                    <th class="px-4 py-2 text-left">Nama Kategori</th>
-                    <th class="px-4 py-2 text-left">Deskripsi</th>
-                    <th class="px-4 py-2 text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($kategori as $item)
-                    <tr class="border-t">
-                        <td class="px-4 py-2">{{ $loop->iteration }}</td>
-                        <td class="px-4 py-2">{{ $item->nama_kategori }}</td>
-                        <td class="px-4 py-2">{{ $item->deskripsi }}</td>
-                        <td class="px-4 py-2 text-center">
-                            <a href="{{ route('superadmin.kategori-barang.edit', $item->id_kategori) }}"
-                               class="text-blue-600 hover:underline mr-2">Edit</a>
-                            
-                            <button onclick="confirmDelete('{{ route('superadmin.kategori-barang.destroy', $item->id_kategori) }}')"
-                                    class="text-red-600 hover:underline">Hapus</button>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="px-4 py-2 text-center text-gray-500">Belum ada data kategori.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+        <div class="card-body bg-light">
+            @if($kategori->isEmpty())
+                <div class="alert alert-info text-center">
+                    Belum ada data kategori.
+                </div>
+            @else
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm align-middle">
+                        <thead class="table-success text-center">
+                            <tr>
+                                <th>#</th>
+                                <th>Nama Kategori</th>
+                                <th>Deskripsi</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($kategori as $item)
+                                <tr>
+                                    <td class="text-center">{{ $loop->iteration }}</td>
+                                    <td>{{ $item->nama_kategori }}</td>
+                                    <td>{{ $item->deskripsi }}</td>
+                                    <td class="text-center">
+                                        <a href="{{ route('superadmin.kategori-barang.edit', $item->id_kategori) }}"
+                                           class="btn btn-sm btn-outline-success me-2">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <button onclick="confirmDelete('{{ route('superadmin.kategori-barang.destroy', $item->id_kategori) }}')"
+                                                class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash-alt"></i> Hapus
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+
+            <div class="mt-3">
+                <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary shadow-sm rounded-3">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
-{{-- Form delete --}}
+{{-- Hidden Delete Form --}}
 <form id="deleteForm" method="POST" style="display: none;">
     @csrf
     @method('DELETE')
@@ -52,7 +67,7 @@
 {{-- SweetAlert2 CDN --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-{{-- SweetAlert - Flash Success --}}
+{{-- Flash Success --}}
 @if(session('success'))
 <script>
     Swal.fire({
@@ -65,7 +80,7 @@
 </script>
 @endif
 
-{{-- SweetAlert - Konfirmasi Hapus --}}
+{{-- Konfirmasi Hapus --}}
 <script>
     function confirmDelete(url) {
         Swal.fire({

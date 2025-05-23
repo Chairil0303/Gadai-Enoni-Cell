@@ -55,6 +55,9 @@
                 </div>
 
                 <div class="text-end">
+                    <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary shadow-sm rounded-3">
+                        <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+                    </a>
                     <button type="submit" class="btn btn-success shadow-sm px-4 rounded-3">
                         <i class="fas fa-eye"></i> Lihat Laporan
                     </button>

@@ -1,28 +1,46 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <h1 class="text-2xl font-bold mb-4">Edit Kategori Barang</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-success text-white text-center rounded-top-4">
+            <h4 class="mb-0"><i class="fas fa-edit"></i> Edit Kategori Barang</h4>
+        </div>
 
-    <form action="{{ route('superadmin.kategori-barang.update', $kategori_barang->id_kategori) }}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        @csrf
-        @method('PUT')
-        <div class="mb-4">
-            <label class="block text-gray-700">Nama Kategori</label>
-            <input type="text" name="nama_kategori" class="w-full px-3 py-2 border rounded" value="{{ old('nama_kategori', $kategori_barang->nama_kategori) }}" required>
-            @error('nama_kategori') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+        <div class="card-body bg-light">
+            <form action="{{ route('superadmin.kategori-barang.update', $kategori_barang->id_kategori) }}" method="POST" class="px-3">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label class="form-label text-success fw-semibold">Nama Kategori</label>
+                    <input type="text" name="nama_kategori" class="form-control rounded-3 shadow-sm"
+                           value="{{ old('nama_kategori', $kategori_barang->nama_kategori) }}" required>
+                    @error('nama_kategori')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-success fw-semibold">Deskripsi</label>
+                    <textarea name="deskripsi" class="form-control rounded-3 shadow-sm" rows="4">{{ old('deskripsi', $kategori_barang->deskripsi) }}</textarea>
+                    @error('deskripsi')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ route('superadmin.kategori-barang.index') }}" class="btn btn-outline-secondary rounded-3 shadow-sm">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </a>
+                    <button type="submit" class="btn btn-success rounded-3 shadow-sm px-4">
+                        <i class="fas fa-sync-alt"></i> Update
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="mb-4">
-            <label class="block text-gray-700">Deskripsi</label>
-            <textarea name="deskripsi" class="w-full px-3 py-2 border rounded">{{ old('deskripsi', $kategori_barang->deskripsi) }}</textarea>
-            @error('deskripsi') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-        </div>
-        <div class="flex justify-between">
-            <a href="{{ route('superadmin.kategori-barang.index') }}" class="text-gray-600 hover:underline">← Kembali</a>
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update</button>
-        </div>
-    </form>
+    </div>
 </div>
+
 @if(session('success'))
 <script>
     Swal.fire({
@@ -34,5 +52,4 @@
     });
 </script>
 @endif
-
 @endsection

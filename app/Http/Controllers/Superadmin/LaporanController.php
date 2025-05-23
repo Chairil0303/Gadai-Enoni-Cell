@@ -19,7 +19,6 @@ class LaporanController extends Controller
 
     public function detail(Request $request)
     {
-    // dd($request->all());
         $validator = Validator::make($request->all(), [
             'cabang_id' => 'required|exists:cabang,id_cabang',
             'tipe' => 'required|in:harian,bulanan',
@@ -42,9 +41,26 @@ class LaporanController extends Controller
         }
 
         $laporan = $query->with(['nasabah', 'barangGadai'])->orderBy('created_at', 'desc')->get();
+
+        // Tambahan: Hitung total masuk dan keluar
+        $totalMasuk = $laporan->where('arus_kas', 'masuk')->sum('jumlah');
+        $totalKeluar = $laporan->where('arus_kas', 'keluar')->sum('jumlah');
+
+        // Tambahan: Ringkasan per jenis transaksi
+        $ringkasanJenis = $laporan->groupBy('jenis_transaksi')->map(function ($group) {
+            return [
+                'count' => $group->count(),
+                'total' => $group->sum('jumlah'),
+            ];
+        });
+
         $cabang = \App\Models\Cabang::find($request->cabang_id);
 
-        return view('superadmin.laporan.detail', compact('laporan', 'cabang', 'request'));
+        return view('superadmin.laporan.detail', compact(
+            'laporan', 'cabang', 'request',
+            'totalMasuk', 'totalKeluar', 'ringkasanJenis' // pastikan ini dikirim ke view
+        ));
     }
+
 }
 
