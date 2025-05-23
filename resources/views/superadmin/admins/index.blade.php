@@ -12,72 +12,58 @@
     });
 </script>
 @endif
-<div class="container mx-auto mt-6" 
-     x-data="{ show: false, selectedAdmin: null, admins: @js($admins->keyBy('id_users')) }">
 
-    <!-- <div class="row justify-content-around">
-        <div class="col-md-3">
-            <h1 class="text-2xl font-bold">Daftar Admin</h1>
-        </div>
-        <div class="col-md-9">
-            <a href="{{ route('superadmin.admins.create') }}"
-                class="no-underline mb-2 inline-block bg-success text-white px-4 py-2 rounded hover:bg-green-300">
-                + Tambah Admin
-            </a>
-        </div>
-    </div> -->
-
-    <div class="row justify-content-left mb-4">
-        <div class="col-md-6">
-            <h1 class="text-2xl font-bold">Daftar Admin</h1>
-        </div>
-        <div class="col-md-6 text-right">
-            <a href="{{ route('superadmin.admins.create') }}"
-               class="no-underline mb-2 inline-block bg-success text-white px-4 py-2 rounded hover:bg-blue-700">
-                + Tambah Admin
-            </a>
-        </div>
+<div class="container mt-4" x-data="{ show: false, selectedAdmin: null, admins: @js($admins->keyBy('id_users')) }">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="text-success"><i class="fas fa-user-shield"></i> Daftar Admin</h4>
+        <a href="{{ route('superadmin.admins.create') }}" class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> Tambah Admin
+        </a>
     </div>
 
-    <div class="bg-white rounded shadow p-4">
-        <table class="min-w-full table-auto">
-            <thead>
-                <tr class="bg-gray-200 text-left">
-                    <th class="py-2 px-4">No</th>
-                    <th class="py-2 px-4">Nama</th>
-                    <th class="py-2 px-4">Cabang</th>
-                    <th class="py-2 px-4">Detail</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($admins as $admin)
-                    <tr class="border-b hover:bg-gray-100">
-                        <td class="py-2 px-4">{{ $loop->iteration }}</td>
-                        <td class="py-2 px-4">{{ $admin->nama }}</td>
-                        <td class="py-2 px-4">{{ $admin->cabang->nama_cabang ?? '-' }}</td>
-                        <td class="py-2 px-4">
-                            <button 
-                                class="text-blue-600 hover:underline" 
-                                @click="selectedAdmin = admins[{{ $admin->id_users }}]; show = true">
-                                Detail
-                            </button>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="py-4 text-center text-gray-500">Belum ada admin terdaftar.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="card shadow">
+        <div class="card-header bg-success text-white text-center">
+            <h5 class="mb-0"><i class="fas fa-users-cog"></i> Tabel Admin</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0">
+                    <thead class="table-success text-center">
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Cabang</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($admins as $admin)
+                            <tr>
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td>{{ $admin->nama }}</td>
+                                <td>{{ $admin->cabang->nama_cabang ?? '-' }}</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-success" 
+                                            @click="selectedAdmin = admins[{{ $admin->id_users }}]; show = true">
+                                        <i class="fas fa-info-circle"></i> Detail
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-3">Belum ada admin terdaftar.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Detail -->
-    <div x-show="show"
-         x-cloak
-         class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-        <div class="bg-white rounded shadow-lg w-full max-w-md p-6">
-            <h2 class="text-xl font-semibold mb-4">Detail Admin</h2>
+    <div x-show="show" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded shadow-lg w-full max-w-md p-5">
+            <h5 class="text-success mb-3"><i class="fas fa-user-cog"></i> Detail Admin</h5>
 
             <template x-if="selectedAdmin">
                 <div>
@@ -88,25 +74,22 @@
                     <p><strong>Kontak Cabang:</strong> <span x-text="selectedAdmin.cabang?.kontak ?? '-'"></span></p>
                     <p><strong>Dibuat pada:</strong> 
                         <span x-text="new Date(selectedAdmin.created_at).toLocaleString('id-ID', {
-                            dateStyle: 'medium',
-                            timeStyle: 'short'
+                            dateStyle: 'medium', timeStyle: 'short'
                         })"></span>
                     </p>
-                    <div class="mt-6 flex justify-between">
+                    <div class="d-flex justify-content-between mt-4">
                         <a :href="`/superadmin/admins/${selectedAdmin.id_users}/edit`"
-                           class="bg-yellow-500 no-underline text-white px-4 py-2 rounded hover:bg-yellow-600">
-                            Edit
+                           class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit
                         </a>
                         <form :action="`/superadmin/admins/${selectedAdmin.id_users}`" method="POST" @submit.prevent="confirmDelete($event)">
                             @csrf
                             @method('DELETE')
-                            <button type="submit"
-                                    class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-                                Hapus
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt"></i> Hapus
                             </button>
                         </form>
-                        <button @click="show = false"
-                                class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">
+                        <button @click="show = false" class="btn btn-secondary">
                             Tutup
                         </button>
                     </div>
@@ -116,7 +99,6 @@
     </div>
 </div>
 
-<!-- SweetAlert + Alpine -->
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -135,7 +117,6 @@
             }
         });
     }
-
     window.confirmDelete = confirmDelete;
 </script>
 @endsection

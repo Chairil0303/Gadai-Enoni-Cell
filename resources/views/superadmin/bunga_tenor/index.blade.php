@@ -13,60 +13,61 @@
 </script>
 @endif
 
-<div class="container mx-auto mt-6" 
+<div class="container mt-4" 
      x-data="{ show: false, selectedItem: null, items: @js($data->keyBy('id')) }">
 
-    <div class="row justify-content-left">
-        <div class="col-md-6">
-            <h1 class="text-2xl font-bold">Pengaturan Bunga & Tenor</h1>
-        </div>
-        <div class="col-md-6 text-right">
-            <a href="{{ route('superadmin.bunga-tenor.create') }}"
-               class="no-underline mb-2 inline-block bg-success text-white px-4 py-2 rounded hover:bg-blue-700">
-                + Tambah Bunga & Tenor
-            </a>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="text-success"><i class="fas fa-percent"></i> Pengaturan Bunga & Tenor</h4>
+        <a href="{{ route('superadmin.bunga-tenor.create') }}" class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> Tambah Bunga & Tenor
+        </a>
     </div>
 
-    <div class="bg-white rounded shadow p-4 mt-4">
-        <table class="min-w-full table-auto">
-            <thead>
-                <tr class="bg-gray-200 text-left">
-                    <th class="py-2 px-4">No</th>
-                    <th class="py-2 px-4">Tenor (Hari)</th>
-                    <th class="py-2 px-4">Bunga (%)</th>
-                    <th class="py-2 px-4">Detail</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($data as $item)
-                    <tr class="border-b hover:bg-gray-100">
-                        <td class="py-2 px-4">{{ $loop->iteration }}</td>
-                        <td class="py-2 px-4">{{ $item->tenor }} hari</td>
-                        <td class="py-2 px-4">{{ $item->bunga_percent }}%</td>
-                        <td class="py-2 px-4">
-                            <button 
-                                class="text-blue-600 hover:underline" 
-                                @click="selectedItem = items[{{ $item->id }}]; show = true">
-                                Detail
-                            </button>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="py-4 text-center text-gray-500">Belum ada data bunga & tenor.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="card shadow">
+        <div class="card-header bg-success text-white text-center">
+            <h5 class="mb-0"><i class="fas fa-table"></i> Tabel Bunga & Tenor</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0">
+                    <thead class="table-success text-center">
+                        <tr>
+                            <th>No</th>
+                            <th>Tenor (Hari)</th>
+                            <th>Bunga (%)</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($data as $item)
+                            <tr>
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td class="text-center">{{ $item->tenor }} hari</td>
+                                <td class="text-center">{{ $item->bunga_percent }}%</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-success" 
+                                            @click="selectedItem = items[{{ $item->id }}]; show = true">
+                                        <i class="fas fa-info-circle"></i> Detail
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-3">Belum ada data bunga & tenor.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Detail -->
     <div x-show="show"
          x-cloak
-         class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-        <div class="bg-white rounded shadow-lg w-full max-w-md p-6">
-            <h2 class="text-xl font-semibold mb-4">Detail Bunga & Tenor</h2>
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded shadow-lg w-full max-w-md p-5">
+            <h5 class="text-success mb-3"><i class="fas fa-info-circle"></i> Detail Bunga & Tenor</h5>
 
             <template x-if="selectedItem">
                 <div>
@@ -78,21 +79,19 @@
                             timeStyle: 'short'
                         })"></span>
                     </p>
-                    <div class="mt-6 flex justify-between">
+                    <div class="d-flex justify-content-between mt-4">
                         <a :href="`/superadmin/bunga-tenor/${selectedItem.id}/edit`"
-                           class="bg-yellow-500 no-underline text-white px-4 py-2 rounded hover:bg-yellow-600">
-                            Edit
+                           class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit
                         </a>
                         <form :action="`/superadmin/bunga-tenor/${selectedItem.id}`" method="POST" @submit.prevent="confirmDelete($event)">
                             @csrf
                             @method('DELETE')
-                            <button type="submit"
-                                    class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-                                Hapus
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt"></i> Hapus
                             </button>
                         </form>
-                        <button @click="show = false"
-                                class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">
+                        <button @click="show = false" class="btn btn-secondary">
                             Tutup
                         </button>
                     </div>
@@ -121,7 +120,6 @@
             }
         });
     }
-
     window.confirmDelete = confirmDelete;
 </script>
 @endsection
