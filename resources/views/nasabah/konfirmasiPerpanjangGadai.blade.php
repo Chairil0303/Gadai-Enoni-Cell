@@ -1,124 +1,152 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="text-center mb-8">
-        <h2 class="text-3xl font-extrabold text-gray-800">Konfirmasi Perpanjangan Gadai</h2>
-        <p class="text-gray-500 mt-2">Pastikan data berikut sudah benar sebelum melanjutkan.</p>
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="text-center mb-10">
+        <h2 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 mb-3">Konfirmasi Perpanjangan Gadai</h2>
+        <p class="text-gray-600 text-lg">Pastikan data berikut sudah benar sebelum melanjutkan.</p>
     </div>
 
-    <!-- Grid Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Card Data Nasabah -->
-        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <div class="flex items-center mb-4">
-                <div class="bg-blue-500 text-white p-2 rounded-full">
-                    <i class="fas fa-user"></i>
+    <!-- Single Column Layout -->
+    <div class="space-y-8">
+        <!-- Data Nasabah Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 transform hover:scale-[1.01] transition-all duration-300">
+            <div class="flex items-center mb-6">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3 rounded-xl shadow-lg">
+                    <i class="fas fa-user text-xl"></i>
                 </div>
-                <h3 class="text-xl font-semibold ml-3">Data Nasabah</h3>
+                <h3 class="text-2xl font-bold ml-4 bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">Data Nasabah</h3>
             </div>
-            <div class="text-gray-700 space-y-2">
-                <p><span class="font-medium">Nama:</span> {{ $barangGadai->nasabah->nama }}</p>
-                <p><span class="font-medium">NIK:</span> {{ $barangGadai->nasabah->nik }}</p>
-                <p><span class="font-medium">Alamat:</span> {{ $barangGadai->nasabah->alamat }}</p>
-                <p><span class="font-medium">No Telp:</span> {{ $barangGadai->nasabah->telepon }}</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex items-center p-4 bg-gradient-to-r from-blue-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                    <i class="fas fa-user-circle text-blue-500 text-xl mr-3"></i>
+                    <p><span class="font-semibold text-gray-700">Nama:</span> <span class="text-gray-800">{{ $barangGadai->nasabah->nama }}</span></p>
+                </div>
+                <div class="flex items-center p-4 bg-gradient-to-r from-blue-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                    <i class="fas fa-id-card text-blue-500 text-xl mr-3"></i>
+                    <p><span class="font-semibold text-gray-700">NIK:</span> <span class="text-gray-800">{{ $barangGadai->nasabah->nik }}</span></p>
+                </div>
+                <div class="flex items-center p-4 bg-gradient-to-r from-blue-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                    <i class="fas fa-map-marker-alt text-blue-500 text-xl mr-3"></i>
+                    <p><span class="font-semibold text-gray-700">Alamat:</span> <span class="text-gray-800">{{ $barangGadai->nasabah->alamat }}</span></p>
+                </div>
+                <div class="flex items-center p-4 bg-gradient-to-r from-blue-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                    <i class="fas fa-phone text-blue-500 text-xl mr-3"></i>
+                    <p><span class="font-semibold text-gray-700">No Telp:</span> <span class="text-gray-800">{{ $barangGadai->nasabah->telepon }}</span></p>
+                </div>
             </div>
         </div>
 
-        <!-- Card Data Barang Gadai -->
-        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <div class="flex items-center mb-4">
-                <div class="bg-green-500 text-white p-2 rounded-full">
-                    <i class="fas fa-box-open"></i>
+        <!-- Detail Barang Gadai Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 transform hover:scale-[1.01] transition-all duration-300">
+            <div class="flex items-center mb-6">
+                <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-3 rounded-xl shadow-lg">
+                    <i class="fas fa-box-open text-xl"></i>
                 </div>
-                <h3 class="text-xl font-semibold ml-3">Detail Barang Gadai</h3>
+                <h3 class="text-2xl font-bold ml-4 bg-gradient-to-r from-green-600 to-green-800 text-transparent bg-clip-text">Detail Barang Gadai</h3>
             </div>
-            <div class="text-gray-700 space-y-2">
-                <p><span class="font-medium">Nama Barang:</span> {{ $barangGadai->nama_barang }}</p>
-                <p><span class="font-medium">No Bon:</span> <em>Menunggu Admin</em></p>
-                <hr class="my-2">
-                <p><span class="font-medium">Harga Gadai Saat Ini:</span> Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}</p>
-                @if ($cicilan > 0)
-                    <p><span class="font-medium">Cicilan Dibayarkan:</span> Rp {{ number_format($cicilan, 0, ',', '.') }}</p>
-                @endif
-                <p>
-                    <span class="font-medium">Harga Gadai Baru:</span>
-                    <i class="bi bi-info-circle d-none d-md-inline"
-                    data-bs-toggle="tooltip"
-                    title="Harga Gadai Lama Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} - Cicilan Rp {{ number_format($cicilan, 0, ',', '.') }}">
-                    </i>
-                    Rp {{ number_format($barangGadai->harga_gadai - $cicilan, 0, ',', '.') }}
-                    <div class="d-md-none text-sm text-gray-500">
-                        Harga Gadai Lama Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} - Cicilan Rp {{ number_format($cicilan, 0, ',', '.') }}
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-box text-green-500 text-xl mr-3"></i>
+                        <p><span class="font-semibold text-gray-700">Nama Barang:</span> <span class="text-gray-800">{{ $barangGadai->nama_barang }}</span></p>
                     </div>
-                </p>
-
-                {{-- <p><span class="font-medium">Harga Gadai Baru:</span> Rp {{ number_format($barangGadai->harga_gadai - $cicilan, 0, ',', '.') }}</p> --}}
-                <p><span class="font-medium">Tenor Lama / Baru:</span> {{ $tenors }} hari → {{ $tenor }} hari</p>
-                <p><span class="font-medium">Jatuh Tempo Baru:</span> {{ $tempobaru }}</p>
-                <p>
-                    <span class="font-medium">Bunga:</span>
-                     <i class="bi bi-info-circle d-none d-md-inline"
-                    data-bs-toggle="tooltip"
-                    title="Bunga {{ $bungaTenorBaru->bunga_percent }}% x Harga Gadai Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}"></i>
-                    {{ $bungaTenorBaru->bunga_percent }}% (Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }})
-
-                    <div class="d-md-none small text-muted">
-                        Bunga {{ $bungaTenorBaru->bunga_percent }}% x Harga Gadai Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}
+                    <div class="flex items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-receipt text-green-500 text-xl mr-3"></i>
+                        <p><span class="font-semibold text-gray-700">No Bon:</span> <span class="text-gray-800"><em>Menunggu Admin</em></span></p>
                     </div>
+                </div>
 
-                </p>
+                <div class="border-t border-gray-200 my-6"></div>
 
-                {{-- <p><span class="font-medium">Bunga:</span> {{ $bungaTenorBaru->bunga_percent }}% (Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }})</p> --}}
-                <p><span class="font-medium">Telat:</span> {{ $barangGadai->telat }} hari</p>
-                <p>
-                    <span class="font-medium">Denda:</span>
-                    <i class="bi bi-info-circle d-none d-md-inline"
-                    data-bs-toggle="tooltip"
-                    title="Denda = {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}"></i>
-                    Rp {{ number_format($denda, 0, ',', '.') }}
-                    <div class="d-md-none text-sm text-gray-500">
-                        Denda = {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-tag text-green-500 text-xl mr-3"></i>
+                        <p><span class="font-semibold text-gray-700">Harga Gadai Saat Ini:</span> <span class="text-gray-800">Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}</span></p>
                     </div>
-                </p>
-
-
-                {{-- <p><span class="font-medium">Denda:</span> Rp {{ number_format($denda, 0, ',', '.') }}</p> --}}
-                <div class="bg-gray-100 p-3 rounded-lg mt-2">
-                <p class="text-lg font-bold text-green-600">
-                    Total Perpanjangan: <i class="bi bi-info-circle d-none d-md-inline"
-                    data-bs-toggle="tooltip"
-                    title="Total = Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }} (bunga) + Rp {{ number_format($denda, 0, ',', '.') }} (denda){{ $cicilan > 0 ? ' + Rp ' . number_format($cicilan, 0, ',', '.') . ' (cicilan)' : '' }}"></i>
-                     Rp {{ number_format($totalPerpanjang + $cicilan, 0, ',', '.') }}
-                    <div class="d-md-none text-sm text-gray-500">
-                        Total = Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }} (bunga) + Rp {{ number_format($denda, 0, ',', '.') }} (denda){{ $cicilan > 0 ? ' + Rp ' . number_format($cicilan, 0, ',', '.') . ' (cicilan)' : '' }}
+                    @if ($cicilan > 0)
+                    <div class="flex items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-money-bill-wave text-green-500 text-xl mr-3"></i>
+                        <p><span class="font-semibold text-gray-700">Cicilan Dibayarkan:</span> <span class="text-gray-800">Rp {{ number_format($cicilan, 0, ',', '.') }}</span></p>
                     </div>
-                </p>
+                    @endif
+                    <div class="flex items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-calculator text-green-500 text-xl mr-3"></i>
+                        <p>
+                            <span class="font-semibold text-gray-700">Harga Gadai Baru:</span>
+                            <i class="bi bi-info-circle d-none d-md-inline ml-1 text-green-500"
+                            data-bs-toggle="tooltip"
+                            title="Harga Gadai Lama Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} - Cicilan Rp {{ number_format($cicilan, 0, ',', '.') }}">
+                            </i>
+                            <span class="text-gray-800">Rp {{ number_format($barangGadai->harga_gadai - $cicilan, 0, ',', '.') }}</span>
+                        </p>
+                    </div>
+                    <div class="flex items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-calendar-alt text-green-500 text-xl mr-3"></i>
+                        <p><span class="font-semibold text-gray-700">Tenor:</span> <span class="text-gray-800">{{ $tenors }} hari → {{ $tenor }} hari</span></p>
+                    </div>
+                    <div class="flex items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-clock text-green-500 text-xl mr-3"></i>
+                        <p><span class="font-semibold text-gray-700">Jatuh Tempo Baru:</span> <span class="text-gray-800">{{ $tempobaru }}</span></p>
+                    </div>
+                    <div class="flex items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-percentage text-green-500 text-xl mr-3"></i>
+                        <p>
+                            <span class="font-semibold text-gray-700">Bunga:</span>
+                            <i class="bi bi-info-circle d-none d-md-inline ml-1 text-green-500"
+                            data-bs-toggle="tooltip"
+                            title="Bunga {{ $bungaTenorBaru->bunga_percent }}% x Harga Gadai Rp {{ number_format($barangGadai->harga_gadai, 0, ',', '.') }}">
+                            </i>
+                            <span class="text-gray-800">{{ $bungaTenorBaru->bunga_percent }}% (Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }})</span>
+                        </p>
+                    </div>
+                    <div class="flex items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-exclamation-circle text-green-500 text-xl mr-3"></i>
+                        <p><span class="font-semibold text-gray-700">Telat:</span> <span class="text-gray-800">{{ $barangGadai->telat }} hari</span></p>
+                    </div>
+                    <div class="flex items-center p-4 bg-gradient-to-r from-green-50 to-white rounded-xl hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-money-bill text-green-500 text-xl mr-3"></i>
+                        <p>
+                            <span class="font-semibold text-gray-700">Denda:</span>
+                            <i class="bi bi-info-circle d-none d-md-inline ml-1 text-green-500"
+                            data-bs-toggle="tooltip"
+                            title="Denda = {{ $barangGadai->telat }} hari × 1% × Rp{{ number_format($barangGadai->harga_gadai, 0, ',', '.') }} = Rp{{ number_format($denda, 0, ',', '.') }}">
+                            </i>
+                            <span class="text-gray-800">Rp {{ number_format($denda, 0, ',', '.') }}</span>
+                        </p>
+                    </div>
+                </div>
 
-
-                {{-- <p class="text-lg font-bold text-green-600">Total Perpanjangan: Rp {{ number_format($totalPerpanjang + $cicilan, 0, ',', '.') }}</p> --}}
+                <div class="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl mt-6 shadow-inner">
+                    <p class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-800">
+                        Total Perpanjangan:
+                        <i class="bi bi-info-circle d-none d-md-inline ml-1"
+                        data-bs-toggle="tooltip"
+                        title="Total = Rp {{ number_format($bunga_persen_baru, 0, ',', '.') }} (bunga) + Rp {{ number_format($denda, 0, ',', '.') }} (denda){{ $cicilan > 0 ? ' + Rp ' . number_format($cicilan, 0, ',', '.') . ' (cicilan)' : '' }}">
+                        </i>
+                        Rp {{ number_format($totalPerpanjang + $cicilan, 0, ',', '.') }}
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Aksi Tombol -->
-    <div class="mt-8 flex justify-center space-x-4">
+    <div class="mt-10 flex justify-center space-x-4">
         <input type="hidden" id="no-bon-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->no_bon }}">
         <input type="hidden" id="total-perpanjang-{{ $barangGadai->no_bon }}" value="{{ $totalPerpanjang }}">
         <input type="hidden" id="denda-{{ $barangGadai->no_bon }}" value="{{ $barangGadai->denda }}">
 
-        <button id="confirmPerpanjangBtn" class="px-6 py-3 bg-yellow-500 text-white rounded-lg shadow hover:bg-yellow-600 transition">
+        <button id="confirmPerpanjangBtn" class="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg shadow-md hover:shadow-lg transform hover:scale-102 transition-all duration-300 font-medium text-base">
             <i class="fas fa-sync-alt mr-2"></i> Perpanjang
         </button>
-        <button onclick="window.location.href='{{ route('profile') }}'" class="px-6 py-3 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition">
+        <button onclick="window.location.href='{{ route('profile') }}'" class="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg shadow-md hover:shadow-lg transform hover:scale-102 transition-all duration-300 font-medium text-base">
             <i class="fas fa-times mr-2"></i> Batal
         </button>
     </div>
 
     <!-- Container Lanjutkan Pembayaran -->
-    <div id="continue-payment-container" class="mt-4 text-center"></div>
-
+    <div id="continue-payment-container" class="mt-6 text-center"></div>
 </div>
 
 <!-- SweetAlert2 & Midtrans Scripts -->
