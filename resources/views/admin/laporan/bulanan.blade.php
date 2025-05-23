@@ -1,74 +1,94 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="p-6">
-    <h2 class="text-2xl font-bold mb-4">Laporan Bulanan</h2>
-
-    {{-- Form Filter Bulan --}}
-    <form method="GET" action="{{ route('admin.laporan.bulanan') }}" class="mb-4">
-        <div class="flex items-center gap-2">
-            <label for="bulan" class="font-semibold">Pilih Bulan:</label>
-            <input type="month" name="bulan" id="bulan"
-                value="{{ request('bulan') }}"
-                class="border rounded px-2 py-1" required>
-            <button type="submit" class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700">
-                Tampilkan
-            </button>
-            {{-- Tombol Kembali --}}
-            <a href="{{ route('admin.laporan.index') }}"
-            class="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-600">
-                ← Kembali
-            </a>
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-success text-white text-center rounded-top-4">
+            <h4><i class="fas fa-calendar-alt"></i> Laporan Bulanan</h4>
         </div>
-    </form>
+        <div class="card-body bg-light">
 
-    {{-- Tabel Hasil --}}
-    @isset($transaksi)
-        <div class="mt-6">
-            <p class="mb-2 font-semibold">
-                Total Transaksi: {{ $transaksi->count() }}
-            </p>
+            {{-- Form Filter Bulan --}}
+            <form method="GET" action="{{ route('admin.laporan.bulanan') }}" class="mb-4">
+                <div class="row g-2 align-items-center">
+                    <div class="col-auto">
+                        <label for="bulan" class="col-form-label fw-semibold">Pilih Bulan:</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="month" name="bulan" id="bulan" value="{{ request('bulan') }}"
+                               class="form-control form-control-sm" required>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-success btn-sm shadow-sm">
+                            <i class="fas fa-search"></i> Tampilkan
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <a href="{{ route('admin.laporan.index') }}" class="btn btn-secondary btn-sm shadow-sm">
+                            <i class="fas fa-arrow-left"></i> Kembali
+                        </a>
+                    </div>
+                </div>
+            </form>
 
-            <p><strong>Total Uang Masuk:</strong> Rp {{ number_format($totalMasuk, 0, ',', '.') }}</p>
-            <p><strong>Total Uang Keluar:</strong> Rp {{ number_format($totalKeluar, 0, ',', '.') }}</p>
+            {{-- Ringkasan dan Tabel --}}
+            @isset($transaksi)
+                @if ($transaksi->count() > 0)
+                    {{-- Ringkasan --}}
+                    <div class="mb-3">
+                        <p class="fw-semibold text-success">
+                            <i class="fas fa-receipt"></i> Total Transaksi: {{ $transaksi->count() }}
+                        </p>
+                        <p><strong>Total Uang Masuk:</strong> Rp {{ number_format($totalMasuk, 0, ',', '.') }}</p>
+                        <p><strong>Total Uang Keluar:</strong> Rp {{ number_format($totalKeluar, 0, ',', '.') }}</p>
+                    </div>
 
-            {{-- Ringkasan per Jenis Transaksi --}}
-            <div class="mt-4">
-                <h3 class="font-semibold mb-2">Ringkasan Transaksi per Jenis</h3>
-                <ul class="list-disc ml-6 text-sm">
-                    @foreach ($ringkasanJenis as $jenis => $data)
-                        <li>{{ ucfirst(str_replace('_', ' ', $jenis)) }}: {{ $data['count'] }} transaksi, Total: Rp {{ number_format($data['total'], 0, ',', '.') }}</li>
-                    @endforeach
-                </ul>
-            </div>
+                    {{-- Ringkasan per Jenis --}}
+                    <div class="mb-4">
+                        <h5 class="fw-semibold mb-2 text-success"><i class="fas fa-tags"></i> Ringkasan Transaksi per Jenis</h5>
+                        <ul class="list-group list-group-flush">
+                            @foreach ($ringkasanJenis as $jenis => $data)
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ ucfirst(str_replace('_', ' ', $jenis)) }}
+                                    <span>{{ $data['count'] }} transaksi &bull; Rp {{ number_format($data['total'], 0, ',', '.') }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
 
-            <table class="w-full text-left border-collapse border mt-4">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="border px-2 py-1">Tanggal</th>
-                        <th class="border px-2 py-1">No Bon</th>
-                        <th class="border px-2 py-1">Nasabah</th>
-                        <th class="border px-2 py-1">Jenis Transaksi</th>
-                        <th class="border px-2 py-1">Jumlah</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($transaksi as $item)
-                        <tr>
-                            <td class="border px-2 py-1">{{ $item->created_at->format('d-m-Y') }}</td>
-                            <td class="border px-2 py-1">{{ $item->no_bon }}</td>
-                            <td class="border px-2 py-1">{{ $item->nasabah->nama ?? '-' }}</td>
-                            <td class="border px-2 py-1 capitalize">{{ $item->jenis_transaksi }}</td>
-                            <td class="border px-2 py-1">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center py-2">Tidak ada transaksi</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    {{-- Tabel Transaksi --}}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-sm align-middle">
+                            <thead class="table-success text-center">
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>No Bon</th>
+                                    <th>Nasabah</th>
+                                    <th>Jenis Transaksi</th>
+                                    <th class="text-end">Jumlah</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($transaksi as $item)
+                                    <tr>
+                                        <td>{{ $item->created_at->format('d-m-Y') }}</td>
+                                        <td>{{ $item->no_bon }}</td>
+                                        <td>{{ $item->nasabah->nama ?? '-' }}</td>
+                                        <td>{{ ucfirst(str_replace('_', ' ', $item->jenis_transaksi)) }}</td>
+                                        <td class="text-end">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle"></i> Tidak ada transaksi pada bulan ini.
+                    </div>
+                @endif
+            @endisset
+
         </div>
-    @endisset
+    </div>
 </div>
 @endsection
