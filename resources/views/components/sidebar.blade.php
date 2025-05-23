@@ -49,8 +49,14 @@
                 </a>
             </li>
             <li><a href="{{ route('lelang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('lelang.index') ? 'bg-green-600 font-semibold' : '' }}"><i class="fas fa-balance-scale mr-2"></i> Lelang</a></li>
-            <li><a href="{{ route('laporan.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('laporan.index') ? 'bg-green-600 font-semibold' : '' }}"><i class="fas fa-file-alt mr-2"></i> Laporan</a></li>
-        @endif
+            <li>
+                <a href="{{ route('superadmin.laporan.index') }}" 
+                class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white 
+                {{ request()->routeIs('superadmin.laporan.index') ? 'bg-green-600 font-semibold' : '' }}">
+                    <i class="fas fa-chart-line mr-2"></i> Laporan Gadai
+                </a>
+            </li>
+            @endif
 
         {{-- Khusus Admin --}}
         @if(auth()->user()->isAdmin())

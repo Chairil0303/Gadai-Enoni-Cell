@@ -177,12 +177,12 @@ Route::post('/admin/terms', [AdminTermsController::class, 'update'])->name('admi
 
 
     Route::prefix('superadmin')->group(function () {
-    Route::get('/nasabah', [NasabahController::class, 'index'])->name('superadmin.nasabah.index');
-    Route::get('/nasabah/create', [NasabahController::class, 'create'])->name('superadmin.nasabah.create');
-    Route::post('/nasabah', [NasabahController::class, 'store'])->name('superadmin.nasabah.store');
-    Route::get('/nasabah/{id}/edit', [NasabahController::class, 'edit'])->name('superadmin.nasabah.edit');
-    Route::put('/nasabah/{id}', [NasabahController::class, 'update'])->name('superadmin.nasabah.update');
-    Route::delete('/nasabah/{id}', [NasabahController::class, 'destroy'])->name('superadmin.nasabah.destroy');
+        Route::get('/nasabah', [NasabahController::class, 'index'])->name('superadmin.nasabah.index');
+        Route::get('/nasabah/create', [NasabahController::class, 'create'])->name('superadmin.nasabah.create');
+        Route::post('/nasabah', [NasabahController::class, 'store'])->name('superadmin.nasabah.store');
+        Route::get('/nasabah/{id}/edit', [NasabahController::class, 'edit'])->name('superadmin.nasabah.edit');
+        Route::put('/nasabah/{id}', [NasabahController::class, 'update'])->name('superadmin.nasabah.update');
+        Route::delete('/nasabah/{id}', [NasabahController::class, 'destroy'])->name('superadmin.nasabah.destroy');
 });
 
 
@@ -196,7 +196,12 @@ Route::post('/admin/terms', [AdminTermsController::class, 'update'])->name('admi
             Route::resource('kategori-barang', \App\Http\Controllers\Superadmin\KategoriBarangController::class);
             Route::resource('cabang', CabangController::class);
             Route::resource('bunga-tenor', \App\Http\Controllers\Superadmin\BungaTenorController::class);
-    });
+
+             // Tambahkan route laporan
+            Route::get('laporan', [\App\Http\Controllers\Superadmin\LaporanController::class, 'index'])->name('laporan.index');
+            Route::get('laporan/detail', [\App\Http\Controllers\Superadmin\LaporanController::class, 'detail'])->name('laporan.detail');
+
+        });
 
 
 
