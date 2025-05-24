@@ -39,8 +39,10 @@
                         <p class="fw-semibold text-success">
                             <i class="fas fa-receipt"></i> Total Transaksi: {{ $transaksi->count() }}
                         </p>
+                        <p><strong>Saldo Awal Cabang Bulan {{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y') }}:</strong> Rp {{ number_format($saldoAwalBulan, 0, ',', '.') }}</p>
                         <p><strong>Total Uang Masuk:</strong> Rp {{ number_format($totalMasuk, 0, ',', '.') }}</p>
                         <p><strong>Total Uang Keluar:</strong> Rp {{ number_format($totalKeluar, 0, ',', '.') }}</p>
+                        <p><strong>Saldo Akhir Cabang Bulan {{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y') }}:</strong> <span class="fw-bold text-primary">Rp {{ number_format($saldoAkhirBulan, 0, ',', '.') }}</span></p>
                     </div>
 
                     {{-- Ringkasan per Jenis --}}

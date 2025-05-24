@@ -65,26 +65,49 @@ class LaporanController extends Controller
     }
 
 
-    
     public function bulanan(Request $request)
     {
         $bulan = $request->input('bulan'); // format: YYYY-MM
         $transaksi = collect();
+        $totalMasuk = 0;
+        $totalKeluar = 0;
+        $saldoAwalBulan = 0;
+        $saldoAkhirBulan = 0;
 
         if ($bulan) {
             $user = Auth::user();
             $id_cabang = $user->id_cabang;
 
+            $tahun = substr($bulan, 0, 4);
+            $bulanAngka = substr($bulan, 5, 2);
+
+            // Ambil data transaksi dalam bulan
             $transaksi = Transaksi::with(['nasabah'])
                 ->where('id_cabang', $id_cabang)
-                ->whereYear('created_at', substr($bulan, 0, 4))
-                ->whereMonth('created_at', substr($bulan, 5, 2))
+                ->whereYear('created_at', $tahun)
+                ->whereMonth('created_at', $bulanAngka)
                 ->orderBy('created_at', 'desc')
                 ->get();
-        }
 
-        $totalMasuk = $transaksi->where('arus_kas', 'masuk')->sum('jumlah');
-        $totalKeluar = $transaksi->where('arus_kas', 'keluar')->sum('jumlah');
+            // Total masuk dan keluar selama bulan ini
+            $totalMasuk = $transaksi->where('arus_kas', 'masuk')->sum('jumlah');
+            $totalKeluar = $transaksi->where('arus_kas', 'keluar')->sum('jumlah');
+
+            // Saldo awal sistem dari tabel saldo_cabang
+            $saldoCabang = SaldoCabang::where('id_cabang', $id_cabang)->first();
+            $saldo_awal_sistem = $saldoCabang?->saldo_awal ?? 0;
+
+            // Saldo tambahan dari transaksi sebelum bulan ini
+            $saldoTambahanSebelumBulan = Transaksi::where('id_cabang', $id_cabang)
+                ->whereDate('created_at', '<', $tahun . '-' . $bulanAngka . '-01')
+                ->selectRaw("
+                    SUM(CASE WHEN arus_kas = 'masuk' THEN jumlah ELSE 0 END) -
+                    SUM(CASE WHEN arus_kas = 'keluar' THEN jumlah ELSE 0 END) AS saldo
+                ")->value('saldo') ?? 0;
+
+            $saldoAwalBulan = $saldo_awal_sistem + $saldoTambahanSebelumBulan;
+            $saldoAkhirBulan = $saldoAwalBulan + $totalMasuk - $totalKeluar;
+        }
 
         $ringkasanJenis = $transaksi->groupBy('jenis_transaksi')->map(function ($group) {
             return [
@@ -93,12 +116,10 @@ class LaporanController extends Controller
             ];
         });
 
-
         return view('admin.laporan.bulanan', compact(
-            'transaksi', 
-            'totalMasuk', 
-            'totalKeluar', 
-            'ringkasanJenis'
+            'transaksi', 'totalMasuk', 'totalKeluar',
+            'ringkasanJenis', 'bulan',
+            'saldoAwalBulan', 'saldoAkhirBulan'
         ));
     }
 }
