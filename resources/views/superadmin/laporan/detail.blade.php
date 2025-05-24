@@ -14,6 +14,9 @@
                 </p>
                 <p><strong>Total Uang Masuk:</strong> Rp {{ number_format($totalMasuk, 0, ',', '.') }}</p>
                 <p><strong>Total Uang Keluar:</strong> Rp {{ number_format($totalKeluar, 0, ',', '.') }}</p>
+                <hr>
+                <p><strong>Saldo Awal Cabang:</strong> Rp {{ number_format($saldoAwal, 0, ',', '.') }}</p>
+                <p><strong>Saldo Akhir Cabang:</strong> <span class="fw-bold text-primary">Rp {{ number_format($saldoAkhir, 0, ',', '.') }}</span></p>
             </div>
 
             {{-- Ringkasan per Jenis --}}
