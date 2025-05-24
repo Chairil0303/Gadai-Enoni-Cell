@@ -24,6 +24,7 @@ use App\Http\Controllers\WhatsappTemplateController;
 use App\Http\Controllers\AdminTermsController;
 use App\Http\Controllers\Admin\LaporanKeuanganController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\SuperAdminDashboardController;
 
 
 
@@ -63,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
         return redirect('/login');
     })->name('dashboard');
 
+    Route::get('/dashboard/superadmin', [SuperAdminDashboardController::class, 'index'])->name('dashboard.superadmin');
 
     Route::middleware(RoleMiddleware::class . ':Admin')->group(function () {
         Route::get('/dashboard/admin', [AdminDashboardController::class, 'index'])->name('dashboard.admin');
@@ -162,12 +164,6 @@ Route::post('/admin/terms', [AdminTermsController::class, 'update'])->name('admi
         })->name('dashboard.Nasabah');
     });
 
-    // Route untuk superadmin
-    Route::middleware(RoleMiddleware::class . ':Superadmin')->group(function () {
-        Route::get('/dashboard/superadmin', function () {
-            return view('components.dashboard.superadmin');
-        })->name('dashboard.superadmin');
-    });
 
     // cabang controller
     // Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->group(function () {
