@@ -3,59 +3,58 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use App\Models\BarangGadai;
+use App\Models\Transaksi;
+use App\Models\User;
 
 class AdminDashboardController extends Controller
 {
-    
     public function index()
     {
         $idCabang = auth()->user()->id_cabang;
         $today = Carbon::today();
 
-        // Data yang sudah ada
-        $totalGadaiAktif = DB::table('barang_gadai')
-            ->where('status', 'Tergadai')
+        // Gadai aktif
+        $totalGadaiAktif = BarangGadai::where('status', 'Tergadai')
             ->where('id_cabang', $idCabang)
             ->count();
 
-        $totalNilaiGadai = DB::table('barang_gadai')
-            ->where('status', 'Tergadai')
+        $totalNilaiGadai = BarangGadai::where('status', 'Tergadai')
             ->where('id_cabang', $idCabang)
             ->sum('harga_gadai');
 
-        $jumlahBarangGadai = DB::table('barang_gadai')
+        $jumlahBarangGadai = BarangGadai::where('id_cabang', $idCabang)->count();
+
+        // Transaksi hari ini (eager load user)
+        $transaksiHariIni = Transaksi::with('user')
             ->where('id_cabang', $idCabang)
+            ->whereDate('created_at', $today)
             ->count();
 
-        $transaksiHariIni = DB::table('transaksi')
-            ->whereDate('created_at', $today)
-            ->where('id_cabang', $idCabang)
-            ->count();
-
-        $pendapatanHariIni = DB::table('transaksi')
-            ->whereDate('created_at', $today)
-            ->where('id_cabang', $idCabang)
+        $pendapatanHariIni = Transaksi::where('id_cabang', $idCabang)
             ->where('arus_kas', 'masuk')
+            ->whereDate('created_at', $today)
             ->sum('jumlah');
 
-        $barangPopuler = DB::table('barang_gadai')
-            ->select('nama_barang', DB::raw('count(*) as total'))
+        // Barang populer
+        $barangPopuler = BarangGadai::select('nama_barang')
             ->where('id_cabang', $idCabang)
             ->groupBy('nama_barang')
+            ->selectRaw('count(*) as total')
             ->orderByDesc('total')
             ->limit(5)
             ->get();
 
-        $staffCabang = DB::table('users')
+        // Staff cabang (eager load cabang)
+        $staffCabang = User::with('cabang')
             ->where('id_cabang', $idCabang)
             ->where('role', 'Staf')
-            ->select('id_users', 'nama', 'role')
+            ->select('id_users', 'nama', 'role', 'id_cabang')
             ->get();
 
-        // Grafik data 7 hari terakhir
+        // Grafik 7 hari terakhir
         $period = CarbonPeriod::create($today->copy()->subDays(6), $today);
 
         $chartLabels = [];
@@ -63,24 +62,17 @@ class AdminDashboardController extends Controller
         $chartPendapatan = [];
 
         foreach ($period as $date) {
-            $chartLabels[] = $date->format('Y-m-d');
+            $label = $date->format('Y-m-d');
+            $chartLabels[] = $label;
 
-            // Transaksi per hari
-            $transaksiCount = DB::table('transaksi')
+            $chartTransaksi[] = Transaksi::where('id_cabang', $idCabang)
                 ->whereDate('created_at', $date)
-                ->where('id_cabang', $idCabang)
                 ->count();
 
-            $chartTransaksi[] = $transaksiCount;
-
-            // Pendapatan per hari (arus kas masuk)
-            $pendapatanSum = DB::table('transaksi')
-                ->whereDate('created_at', $date)
-                ->where('id_cabang', $idCabang)
+            $chartPendapatan[] = Transaksi::where('id_cabang', $idCabang)
                 ->where('arus_kas', 'masuk')
+                ->whereDate('created_at', $date)
                 ->sum('jumlah');
-
-            $chartPendapatan[] = $pendapatanSum;
         }
 
         return view('components.dashboard.admin', compact(
@@ -97,4 +89,3 @@ class AdminDashboardController extends Controller
         ));
     }
 }
-
