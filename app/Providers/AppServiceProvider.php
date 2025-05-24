@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use App\Models\BarangGadai;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
+use App\Models\Transaksi;
+use App\Observers\TransaksiObserver;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -44,6 +46,8 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('jumlahUbahNoBon', $jumlahUbahNoBon);
         });
+
+        Transaksi::observe(TransaksiObserver::class);
     }
 }
 // app providers

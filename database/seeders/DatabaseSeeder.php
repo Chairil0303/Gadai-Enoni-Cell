@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             NasabahSeeder::class,
             BarangGadaiSeeder::class,
             WhatsappTemplateSeeder::class,
+            SaldoCabangSeeder::class
         ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');

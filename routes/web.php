@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\LelangController;
 use App\Http\Controllers\WhatsappTemplateController;
 use App\Http\Controllers\AdminTermsController;
+use App\Http\Controllers\Admin\LaporanKeuanganController;
+
 
 
 
@@ -86,6 +88,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
             Route::get('/laporan/harian', [LaporanController::class, 'harian'])->name('laporan.harian');
             Route::get('/laporan/bulanan', [LaporanController::class, 'bulanan'])->name('laporan.bulanan');
+            Route::get('/laporan/keuangan', [LaporanKeuanganController::class, 'index'])->name('laporan.keuangan');
         });
     });
 
