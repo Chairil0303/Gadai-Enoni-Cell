@@ -7,7 +7,6 @@
             <h4><i class="fas fa-calendar-day"></i> Laporan Harian</h4>
         </div>
         <div class="card-body bg-light">
-            
             {{-- Form Pilih Tanggal --}}
             <form method="GET" action="{{ route('admin.laporan.harian') }}" class="mb-4">
                 <div class="row g-2 align-items-center">
@@ -36,7 +35,10 @@
                         </p>
                         <p><strong>Total Uang Masuk:</strong> Rp {{ number_format($totalMasuk, 0, ',', '.') }}</p>
                         <p><strong>Total Uang Keluar:</strong> Rp {{ number_format($totalKeluar, 0, ',', '.') }}</p>
-                    </div>
+                        <hr>
+                            <p><strong>Saldo Awal  :</strong> Rp {{ number_format($saldoAwalTanggal, 0, ',', '.') }}</p>
+                            <p><strong>Saldo Akhir  :</strong> <span class="fw-bold text-primary">Rp {{ number_format($saldoAkhirTanggal, 0, ',', '.') }}</span></p>
+                        </div>
 
                     {{-- Tabel --}}
                     <div class="table-responsive">

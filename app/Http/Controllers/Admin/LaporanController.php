@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Transaksi;
 use Illuminate\Support\Facades\Auth;
+use App\Models\SaldoCabang;
 
 class LaporanController extends Controller
 {
@@ -20,24 +21,48 @@ class LaporanController extends Controller
         $transaksi = collect();
         $totalMasuk = 0;
         $totalKeluar = 0;
+        $saldoAwalTanggal = 0;
+        $saldoAkhirTanggal = 0;
 
         if ($tanggal) {
             $user = Auth::user();
             $id_cabang = $user->id_cabang;
 
-            $transaksi = Transaksi::with(['nasabah', 'user']) // tambahkan 'user' juga
+            // Ambil data saldo cabang
+            $saldoCabang = SaldoCabang::where('id_cabang', $id_cabang)->first();
+            $saldo_awal_sistem = $saldoCabang?->saldo_awal ?? 0;
+
+            // Saldo sebelum tanggal dipilih (dari semua transaksi sebelum tanggal)
+            $saldoTambahanSebelumTanggal = Transaksi::where('id_cabang', $id_cabang)
+                ->whereDate('created_at', '<', $tanggal)
+                ->selectRaw("
+                    SUM(CASE WHEN arus_kas = 'masuk' THEN jumlah ELSE 0 END) -
+                    SUM(CASE WHEN arus_kas = 'keluar' THEN jumlah ELSE 0 END) AS saldo
+                ")->value('saldo') ?? 0;
+
+            $saldoAwalTanggal = $saldo_awal_sistem + $saldoTambahanSebelumTanggal;
+
+            // Transaksi hari ini
+            $transaksi = Transaksi::with(['nasabah', 'user'])
                 ->where('id_cabang', $id_cabang)
                 ->whereDate('created_at', $tanggal)
                 ->orderBy('created_at', 'desc')
                 ->get();
 
+            // Total masuk dan keluar hari ini
             $totalMasuk = $transaksi->where('arus_kas', 'masuk')->sum('jumlah');
             $totalKeluar = $transaksi->where('arus_kas', 'keluar')->sum('jumlah');
+
+            // Saldo akhir hari itu
+            $saldoAkhirTanggal = $saldoAwalTanggal + $totalMasuk - $totalKeluar;
         }
 
-        return view('admin.laporan.harian', compact('transaksi', 'tanggal', 'totalMasuk', 'totalKeluar'));
+        return view('admin.laporan.harian', compact(
+            'transaksi', 'tanggal',
+            'totalMasuk', 'totalKeluar',
+            'saldoAwalTanggal', 'saldoAkhirTanggal'
+        ));
     }
-
 
 
     
