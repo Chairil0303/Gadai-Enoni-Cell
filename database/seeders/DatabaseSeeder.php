@@ -14,12 +14,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             BungaTenorSeeder::class,
             CabangSeeder::class,
+            SaldoCabangSeeder::class,
             UserSeeder::class,
             KategoriBarangSeeder::class,
             NasabahSeeder::class,
             BarangGadaiSeeder::class,
             WhatsappTemplateSeeder::class,
-            SaldoCabangSeeder::class
         ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');

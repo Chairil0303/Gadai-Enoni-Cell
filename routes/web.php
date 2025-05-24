@@ -23,6 +23,7 @@ use App\Http\Controllers\LelangController;
 use App\Http\Controllers\WhatsappTemplateController;
 use App\Http\Controllers\AdminTermsController;
 use App\Http\Controllers\Admin\LaporanKeuanganController;
+use App\Http\Controllers\AdminDashboardController;
 
 
 
@@ -63,13 +64,11 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
 
-    // Route untuk admin
     Route::middleware(RoleMiddleware::class . ':Admin')->group(function () {
-        Route::get('/dashboard/admin', function () {
-            return view('components.dashboard.admin');
-        })->name('dashboard.admin');
+        Route::get('/dashboard/admin', [AdminDashboardController::class, 'index'])->name('dashboard.admin');
     });
 
+    
     Route::middleware(RoleMiddleware::class . ':Staf')->group(function () {
         Route::get('/dashboard/Staff', function () {
             return view('components.dashboard.staff');
