@@ -94,7 +94,7 @@ class UserSeeder extends Seeder
                 'username' => 'superadmin',
                 'password' => Hash::make('password'),
                 'role' => 'Superadmin',
-                'id_cabang' => null,
+                'id_cabang' => 1,
             ],
             [
                 'nama' => 'Admin Kalisuren',
