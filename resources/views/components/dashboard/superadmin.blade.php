@@ -78,51 +78,53 @@
                 </div>
             </div>
         </div>
+        {{-- Barang Tergadai per Kategori --}}
         <div class="col-md-6 mb-3">
             <div class="card border-success shadow h-100 card-hover">
                 <div class="card-body">
-                    <h6 class="text-success text-center mb-3">Barang Populer</h6>
+                    <h6 class="text-success text-center mb-3">Barang Tergadai per Kategori</h6>
                     <ul class="list-group list-group-flush">
-                        @forelse($barangPopuler as $item)
+                        @forelse($barangPerKategori as $item)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ $item->nama_barang }}
+                            {{ $item->nama_kategori }}
                             <span class="badge bg-success rounded-pill">{{ $item->total }}</span>
                         </li>
                         @empty
-                        <li class="list-group-item text-center text-muted">Tidak ada data barang populer.</li>
+                        <li class="list-group-item text-center text-muted">Tidak ada data kategori.</li>
                         @endforelse
                     </ul>
                 </div>
             </div>
         </div>
+
     </div>
 
     {{-- Top 5 Cabang --}}
     <div class="card shadow mb-4">
         <div class="card-header bg-success text-white">
-            <h5 class="mb-0"><i class="fas fa-building"></i> Top 5 Cabang Berdasarkan Pendapatan</h5>
+            <h5 class="mb-0"><i class="fas fa-building"></i> Top Cabang Berdasarkan Pendapatan</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-bordered mb-0">
-                    <thead class="table-success text-center">
-                        <tr>
-                            <th>ID Cabang</th>
-                            <th>Total Pendapatan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($topCabang as $cabang)
-                        <tr>
-                            <td>{{ $cabang->id_cabang }}</td>
-                            <td>Rp {{ number_format($cabang->total_pendapatan, 0, ',', '.') }}</td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="2" class="text-center text-muted py-4">Tidak ada data cabang.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
+                <thead class="table-success text-center">
+                    <tr>
+                        <th>Nama Cabang</th> <!-- dari sebelumnya 'ID Cabang' -->
+                        <th>Total Pendapatan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($topCabang as $cabang)
+                    <tr>
+                        <td>{{ $cabang->nama_cabang }}</td> <!-- ganti dari $cabang->id_cabang -->
+                        <td>Rp {{ number_format($cabang->total_pendapatan, 0, ',', '.') }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="2" class="text-center text-muted py-4">Tidak ada data cabang.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
                 </table>
             </div>
         </div>

@@ -32,17 +32,20 @@ class SuperAdminDashboardController extends Controller
             ->where('arus_kas', 'masuk')
             ->sum('jumlah');
 
-        $barangPopuler = DB::table('barang_gadai')
-            ->select('nama_barang', DB::raw('count(*) as total'))
-            ->groupBy('nama_barang')
+        $barangPerKategori = DB::table('barang_gadai')
+            ->join('kategori_barang', 'barang_gadai.id_kategori', '=', 'kategori_barang.id_kategori')
+            ->select('kategori_barang.nama_kategori', DB::raw('count(*) as total'))
+            ->where('barang_gadai.status', 'Tergadai')
+            ->whereIn('kategori_barang.nama_kategori', ['Laptop', 'HP', 'TV']) // filter sesuai kebutuhan
+            ->groupBy('kategori_barang.nama_kategori')
             ->orderByDesc('total')
-            ->limit(5)
             ->get();
 
         $topCabang = DB::table('transaksi')
-            ->select('id_cabang', DB::raw('SUM(jumlah) as total_pendapatan'))
-            ->where('arus_kas', 'masuk')
-            ->groupBy('id_cabang')
+            ->join('cabang', 'transaksi.id_cabang', '=', 'cabang.id_cabang')
+            ->select('cabang.nama_cabang', DB::raw('SUM(transaksi.jumlah) as total_pendapatan'))
+            ->where('transaksi.arus_kas', 'masuk')
+            ->groupBy('cabang.nama_cabang')
             ->orderByDesc('total_pendapatan')
             ->limit(5)
             ->get();
@@ -75,7 +78,7 @@ class SuperAdminDashboardController extends Controller
             'totalNilaiGadai',
             'transaksiHariIni',
             'pendapatanHariIni',
-            'barangPopuler',
+            'barangPerKategori',
             'topCabang',
             'chartLabels',
             'chartTransaksi',
