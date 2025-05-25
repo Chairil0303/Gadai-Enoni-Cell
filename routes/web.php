@@ -25,7 +25,7 @@ use App\Http\Controllers\AdminTermsController;
 use App\Http\Controllers\Admin\LaporanKeuanganController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\SuperAdminDashboardController;
-
+use App\Http\Controllers\StaffDashboardController;
 
 
 
@@ -72,9 +72,7 @@ Route::middleware(['auth'])->group(function () {
 
     
     Route::middleware(RoleMiddleware::class . ':Staf')->group(function () {
-        Route::get('/dashboard/Staff', function () {
-            return view('components.dashboard.staff');
-        })->name('dashboard.staff');
+        Route::get('/dashboard/staff', [StaffDashboardController::class, 'index'])->name('dashboard.staff');
     });
 
     Route::prefix('admin')
