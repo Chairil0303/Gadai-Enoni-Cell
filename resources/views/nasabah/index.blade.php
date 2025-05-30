@@ -24,7 +24,7 @@
                             <th>Alamat</th>
                             <th>Telepon</th>
                             <th>Status</th>
-                            @if (auth()->user()->isSuperadmin())
+                            @if (auth()->user()->isSuperadmin() || auth()->user()->isAdmin() || auth()->user()->isStaf())
                             <th>Aksi</th>
                             @endif
                         </tr>
@@ -44,11 +44,15 @@
                                     <span class="badge bg-success">Aktif</span>
                                 @endif
                             </td>
-                            @if (auth()->user()->isSuperadmin())
+                            @if (auth()->user()->isSuperadmin() || auth()->user()->isAdmin() || auth()->user()->isStaf())
                             <td>
+                                <!-- Edit - semua role boleh -->
                                 <a href="{{ route('superadmin.nasabah.edit', $item->id_nasabah) }}" class="btn btn-warning btn-sm rounded-3 me-1">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
+
+                                <!-- Hapus - hanya superadmin dan admin -->
+                                @if (auth()->user()->isSuperadmin() || auth()->user()->isAdmin())
                                 <form action="{{ route('superadmin.nasabah.destroy', $item->id_nasabah) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
                                     @csrf
                                     @method('DELETE')
@@ -56,6 +60,7 @@
                                         <i class="fas fa-trash"></i> Hapus
                                     </button>
                                 </form>
+                                @endif
                             </td>
                             @endif
                         </tr>
@@ -70,7 +75,7 @@
         </div>
 
         <div class="card-footer text-end bg-white">
-            <a href="{{ auth()->user()->isSuperadmin() ? route('dashboard.superadmin') : route('dashboard.admin') }}" class="btn btn-outline-secondary rounded-3">
+            <a href="{{ auth()->user()->isSuperadmin() ? route('dashboard.superadmin') : (auth()->user()->isAdmin() ? route('dashboard.admin') : route('dashboard.staff')) }}" class="btn btn-outline-secondary rounded-3">
                 <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
             </a>
         </div>
