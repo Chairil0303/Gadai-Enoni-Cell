@@ -20,7 +20,7 @@
                     <label for="search_no_bon" class="form-label text-success fw-semibold">
                         <i class="fas fa-receipt"></i> No. Bon
                     </label>
-                    <input type="text" name="no_bon" class="form-control rounded-3 shadow-sm" placeholder="Masukkan No. Bon">
+                    <input autocomplete="off" type="text" name="no_bon" class="form-control rounded-3 shadow-sm" placeholder="Masukkan No. Bon">
                 </div>
 
                 <div class="mb-3">

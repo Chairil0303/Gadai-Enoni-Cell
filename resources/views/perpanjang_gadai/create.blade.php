@@ -19,7 +19,7 @@
             </div>
             @endif
 
-            <form action="{{ route('perpanjang_gadai.submit') }}" method="POST">
+            <form action="{{ route('perpanjang_gadai.submit') }}" method="POST" id="formPerpanjangan" autocomplete="off">
                 @csrf
                 <div class="row">
                     <div class="col-md-6">
@@ -68,15 +68,18 @@
                         <!-- Penambahan -->
                         <div class="mb-4 d-none" id="field_penambahan">
                             <label for="penambahan" class="form-label text-success fw-semibold">Penambahan Harga Gadai (Rp)</label>
-                            <input type="number" name="penambahan" id="penambahan"
-                                class="form-control rounded-3 shadow-sm" min="0">
+                            <input type="text" name="penambahan" id="penambahan"
+                                class="form-control rounded-3 shadow-sm" inputmode="numeric">
                         </div>
 
                         <!-- Pengurangan -->
                         <div class="mb-4 d-none" id="field_pengurangan">
-                            <label for="pengurangan" class="form-label text-success fw-semibold">Pengurangan Harga Gadai (Rp)</label>
-                            <input type="number" name="pengurangan" id="pengurangan"
-                                class="form-control rounded-3 shadow-sm" min="0">
+                            <label for="pengurangan" class="form-label text-success fw-semibold">
+                                Pengurangan Harga Gadai (Rp)
+                            </label>
+                            <small class="text-muted ms-1 d-block mb-1">Minimal pengurangan adalah Rp100.000</small>
+                            <input type="text" name="pengurangan" id="pengurangan"
+                                class="form-control rounded-3 shadow-sm" inputmode="numeric">
                         </div>
 
                         <div class="mt-4">
@@ -93,23 +96,59 @@
     </div>
 </div>
 
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const jenisPerpanjanganSelect = document.getElementById("jenis_perpanjangan");
-        const fieldPenambahan = document.getElementById("field_penambahan");
-        const fieldPengurangan = document.getElementById("field_pengurangan");
+document.addEventListener("DOMContentLoaded", function () {
+    const jenisPerpanjanganSelect = document.getElementById("jenis_perpanjangan");
+    const fieldPenambahan = document.getElementById("field_penambahan");
+    const fieldPengurangan = document.getElementById("field_pengurangan");
 
-        jenisPerpanjanganSelect.addEventListener("change", function () {
-            const value = this.value;
-            fieldPenambahan.classList.add("d-none");
-            fieldPengurangan.classList.add("d-none");
+    const inputPenambahan = document.getElementById("penambahan");
+    const inputPengurangan = document.getElementById("pengurangan");
+    const form = document.getElementById("formPerpanjangan");
 
-            if (value === "penambahan") {
-                fieldPenambahan.classList.remove("d-none");
-            } else if (value === "pengurangan") {
-                fieldPengurangan.classList.remove("d-none");
-            }
-        });
+    function formatRupiah(input) {
+        let angka = input.value.replace(/\D/g, '');
+        if (!angka) return input.value = '';
+        input.value = angka.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    inputPenambahan.addEventListener("input", () => formatRupiah(inputPenambahan));
+    inputPengurangan.addEventListener("input", () => formatRupiah(inputPengurangan));
+
+    jenisPerpanjanganSelect.addEventListener("change", function () {
+        const value = this.value;
+        fieldPenambahan.classList.add("d-none");
+        fieldPengurangan.classList.add("d-none");
+
+        if (value === "penambahan") {
+            fieldPenambahan.classList.remove("d-none");
+        } else if (value === "pengurangan") {
+            fieldPengurangan.classList.remove("d-none");
+        }
     });
+
+    form.addEventListener("submit", function (e) {
+        // Bersihkan titik agar server menerima angka mentah
+        inputPenambahan.value = inputPenambahan.value.replace(/\./g, '');
+        inputPengurangan.value = inputPengurangan.value.replace(/\./g, '');
+
+        const pengurangan = parseInt(inputPengurangan.value || '0');
+        const isPenguranganVisible = !fieldPengurangan.classList.contains("d-none");
+
+        if (isPenguranganVisible && pengurangan > 0 && pengurangan < 100000) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Pengurangan terlalu kecil',
+                text: 'Minimal pengurangan adalah Rp100.000',
+                confirmButtonColor: '#198754'
+            });
+            inputPengurangan.focus();
+        }
+    });
+});
 </script>
 @endsection
