@@ -39,14 +39,15 @@ class AdminDashboardController extends Controller
             ->whereDate('created_at', $today)
             ->sum('jumlah');
 
-        // Barang populer
-        $barangPopuler = BarangGadai::select('nama_barang')
-            ->where('id_cabang', $idCabang)
-            ->groupBy('nama_barang')
-            ->selectRaw('count(*) as total')
-            ->orderByDesc('total')
-            ->limit(5)
-            ->get();
+        // Ganti bagian barangPopuler dengan kategori dan jumlah barang per kategori
+        $kategoriBarang = DB::table('barang_gadai')
+        ->join('kategori_barang', 'barang_gadai.id_kategori', '=', 'kategori_barang.id_kategori')
+        ->where('barang_gadai.id_cabang', $idCabang)
+        ->groupBy('kategori_barang.id_kategori', 'kategori_barang.nama_kategori')
+        ->select('kategori_barang.nama_kategori', DB::raw('count(*) as total'))
+        ->orderByDesc('total')
+        ->limit(5)
+        ->get();
 
         // Staff cabang (eager load cabang)
         $staffCabang = User::with('cabang')
@@ -91,7 +92,7 @@ class AdminDashboardController extends Controller
         'jumlahBarangGadai',
         'transaksiHariIni',
         'pendapatanHariIni',
-        'barangPopuler',
+        'kategoriBarang',
         'staffCabang',
         'chartLabels',
         'chartTransaksi',

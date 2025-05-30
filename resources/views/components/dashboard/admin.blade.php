@@ -116,29 +116,29 @@
         </div>
     </div>
 
-    {{-- Barang Gadai Populer --}}
+    {{-- Kategori Barang Gadai Terbanyak --}}
     <div class="card shadow mb-4">
         <div class="card-header bg-success text-white">
-            <h5 class="mb-0"><i class="fas fa-box"></i> Barang Gadai Populer</h5>
+            <h5 class="mb-0"><i class="fas fa-th-list"></i> Kategori Barang Gadai Terbanyak</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-bordered mb-0">
                     <thead class="table-success text-center">
                         <tr>
-                            <th>Nama Barang</th>
+                            <th>Kategori</th>
                             <th>Jumlah</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($barangPopuler as $barang)
+                        @forelse ($kategoriBarang as $kategori)
                         <tr>
-                            <td>{{ $barang->nama_barang }}</td>
-                            <td class="text-center">{{ $barang->total }}</td>
+                            <td>{{ $kategori->nama_kategori }}</td>
+                            <td class="text-center">{{ $kategori->total }}</td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="2" class="text-center text-muted py-4">Tidak ada data barang populer.</td>
+                            <td colspan="2" class="text-center text-muted py-4">Tidak ada data kategori barang.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -146,6 +146,8 @@
             </div>
         </div>
     </div>
+
+
 
     {{-- Daftar Staff Cabang --}}
     <div class="card shadow mb-4">
