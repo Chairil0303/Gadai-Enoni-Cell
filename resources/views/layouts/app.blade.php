@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('icons8-pawnshop-78.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('icons8-pawnshop-78.png') }}">
+
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
