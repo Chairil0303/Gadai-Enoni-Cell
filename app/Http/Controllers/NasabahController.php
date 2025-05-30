@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\TermsCondition;
+use App\Helpers\ActivityLogger;
 
 class NasabahController extends Controller
 {
@@ -107,15 +108,22 @@ class NasabahController extends Controller
 
     public function update(Request $request, $id)
     {
-        $nasabah = Nasabah::findOrFail($id);
+        // Ambil data nasabah beserta user
+        $nasabah = Nasabah::with('user')->findOrFail($id);
 
         $request->validate([
             'nama' => 'required',
             'nik' => 'required|unique:nasabah,nik,' . $id . ',id_nasabah',
             'alamat' => 'required',
             'telepon' => 'required',
-            'username' => 'required|unique:users,username,' . $nasabah->id_users . ',id_users',
+            'username' => 'required|unique:users,username,' . $nasabah->user->id_users . ',id_users',
         ]);
+
+        // Simpan data lama untuk logging sebelum update
+        $dataLama = [
+            'nasabah' => $nasabah->only(['nama', 'nik', 'alamat', 'telepon', 'status_blacklist']),
+            'user' => $nasabah->user->only(['username']),
+        ];
 
         // Update data nasabah
         $nasabah->update([
@@ -126,14 +134,33 @@ class NasabahController extends Controller
             'status_blacklist' => $request->input('status_blacklist', 0),
         ]);
 
-        // Update data user
+        // Update data user (password hanya diubah jika diisi)
         $nasabah->user->update([
             'username' => $request->username,
             'password' => $request->password ? Hash::make($request->password) : $nasabah->user->password,
         ]);
 
+        // Data baru setelah update
+        $dataBaru = [
+            'nasabah' => $nasabah->only(['nama', 'nik', 'alamat', 'telepon', 'status_blacklist']),
+            'user' => $nasabah->user->only(['username']),
+        ];
+
+        // Deskripsi perubahan
+        $deskripsi = "Update data Nasabah ID {$nasabah->id_nasabah} - Nama: {$nasabah->nama}";
+
+        // Panggil helper ActivityLogger untuk log aktivitas
+        ActivityLogger::log(
+            kategori: 'nasabah',
+            aksi: 'update',
+            deskripsi: $deskripsi,
+            dataLama: $dataLama,
+            dataBaru: $dataBaru
+        );
+
         return redirect()->route('nasabah.index')->with('success', 'Nasabah berhasil diperbarui');
     }
+
 
     public function destroy($id)
     {

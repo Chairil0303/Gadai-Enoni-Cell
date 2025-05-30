@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Models\Nasabah;
 use App\Models\BungaTenor;
 use App\Models\Transaksi;
+use App\Helpers\ActivityLogger;
 
 class PerpanjangGadaiController extends Controller
 {
@@ -30,6 +31,7 @@ class PerpanjangGadaiController extends Controller
             'no_bon_baru' => 'required|unique:barang_gadai,no_bon',
         ]);
 
+        // Ambil data barang gadai lama berdasarkan no_bon_lama dan id_cabang
         $lama = BarangGadai::where('no_bon', $request->no_bon_lama)
             ->where('id_cabang', auth()->user()->id_cabang)
             ->firstOrFail();
@@ -39,13 +41,22 @@ class PerpanjangGadaiController extends Controller
         $tenor_baru = $data['id_bunga_tenor'];
         $tempo_baru = $data['baru']['tempo'];
 
-        // Update status bon lama
+        // Ambil data lama untuk log sebelum update
+        $dataLama = [
+            'status' => $lama->status,
+            'harga_gadai' => $lama->harga_gadai,
+            'bunga' => $lama->bunga,
+            'tempo' => $lama->tempo,
+            'tenor' => $lama->bungaTenor->tenor ?? null,
+        ];
+
+        // Update status bon lama menjadi diperpanjang
         $lama->update([
             'status' => 'diperpanjang',
         ]);
 
-        // Buat bon baru
-        BarangGadai::create([
+        // Buat bon baru dengan data perpanjangan
+        $baru = BarangGadai::create([
             'no_bon' => $request->no_bon_baru,
             'id_nasabah' => $lama->id_nasabah,
             'nama_barang' => $lama->nama_barang,
@@ -72,7 +83,7 @@ class PerpanjangGadaiController extends Controller
             'tempo_baru' => $tempo_baru,
         ]);
 
-       // 1. Simpan bunga lama + denda (dibayar saat perpanjangan)
+        // Simpan transaksi bunga lama + denda (dibayar saat perpanjangan)
         Transaksi::create([
             'jenis_transaksi' => 'perpanjang_bunga_denda',
             'arus_kas' => 'masuk',
@@ -85,7 +96,7 @@ class PerpanjangGadaiController extends Controller
             'updated_at' => now(),
         ]);
 
-        // 2. Transaksi berdasarkan jenis perpanjangan
+        // Transaksi tambahan atau pengurangan jika ada
         if ($request->jenis_perpanjangan === 'penambahan') {
             $nominal = $data['penambahan'] ?? 0;
             if ($nominal > 0) {
@@ -117,13 +128,38 @@ class PerpanjangGadaiController extends Controller
                 ]);
             }
         }
-        
 
+        // Data baru untuk log (gunakan data bon baru)
+        $dataBaru = [
+            'no_bon' => $baru->no_bon,
+            'status' => $baru->status,
+            'harga_gadai' => $baru->harga_gadai,
+            'bunga' => $baru->bunga,
+            'tempo' => $baru->tempo,
+            'tenor' => BungaTenor::find($tenor_baru)->tenor ?? null,
+        ];
 
+        // Deskripsi aktivitas
+        $deskripsi = 'Perpanjangan gadai no bon lama ' . $lama->no_bon . ' atas nama ' . $lama->nasabah->nama .
+                ' menjadi no bon baru ' . $baru->no_bon . ', tenor baru ' . ($dataBaru['tenor'] ?? '-') .
+                ', harga gadai Rp ' . number_format($harga_gadai_baru);
+
+        // Logging aktivitas
+        ActivityLogger::log(
+            kategori: 'transaksi',
+            aksi: 'perpanjang gadai',
+            deskripsi: $deskripsi,
+            dataLama: $dataLama,
+            dataBaru: $dataBaru
+        );
+
+        // Hapus session konfirmasi_data
         session()->forget('konfirmasi_data');
 
+        // Redirect ke index dengan pesan sukses
         return redirect()->route('barang_gadai.index')->with('success', 'Perpanjangan berhasil disimpan.');
     }
+
 
 
 

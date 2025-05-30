@@ -10,6 +10,7 @@ use App\Models\TransaksiTebus;
 use Carbon\Carbon;
 use App\Models\Transaksi;
 use App\Models\Lelang;
+use App\Helpers\ActivityLogger;
 
 class TebusGadaiController extends Controller
 {
@@ -140,6 +141,22 @@ public function cari(Request $request)
         // 🔥 Update status lelang jadi 'Tebus'
         Lelang::where('barang_gadai_no_bon', $barangGadai->no_bon)
         ->update(['status' => 'Tebus']);
+
+        ActivityLogger::log(
+            kategori: 'transaksi',
+            aksi: 'tebus gadai',
+            deskripsi: 'Penebusan barang dengan no bon ' . $barangGadai->no_bon . ' atas nama ' . $barangGadai->nasabah->nama . ' sejumlah Rp ' . number_format($totalTebus),
+            dataLama: [
+                'status_barang' => 'Belum ditebus',
+            ],
+            dataBaru: [
+                'status_barang' => 'Ditebus',
+                'jumlah_tebus' => $totalTebus,
+                'bunga' => $bunga,
+                'denda' => $denda,
+            ]
+        );
+        
 
         return redirect()->route('barang_gadai.index')->with('success', 'Barang berhasil ditebus dan transaksi dicatat.');
     }

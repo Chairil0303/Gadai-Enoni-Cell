@@ -12,6 +12,7 @@ use App\Models\TransaksiGadai;
 use Illuminate\Support\Str;
 use App\Models\BungaTenor; 
 use App\Models\Transaksi;
+use App\Helpers\ActivityLogger;
 
 class GadaiController extends Controller
 {
@@ -146,6 +147,18 @@ class GadaiController extends Controller
         ]);
         
     
+        ActivityLogger::log(
+            kategori: 'transaksi',
+            aksi: 'terima gadai',
+            deskripsi: 'Menerima gadai atas nama ' . $data['nama'] . ' dengan barang ' . $data['nama_barang'] . ' sejumlah Rp ' . number_format($data['harga_gadai']),
+            dataLama: null,
+            dataBaru: [
+                'user' => $user,
+                'nasabah' => $nasabah,
+                'barang_gadai' => $barangGadai,
+            ]
+        );
+        
         // Hapus session preview
         session()->forget('preview_data');
     
