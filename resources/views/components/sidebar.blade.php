@@ -8,7 +8,23 @@
     </button>
 
     <div class="p-4 pt-12 text-lg font-bold border-b border-gray-600 text-white">
-        <i class="fas fa-tachometer-alt"></i> Dashboard
+        @if(auth()->user()->role === 'Superadmin')
+            <a href="{{ route('dashboard.superadmin') }}" class="text-white no-underline hover:text-gray-300">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        @elseif(auth()->user()->role === 'Admin')
+            <a href="{{ route('dashboard.admin') }}" class="text-white no-underline hover:text-gray-300">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        @elseif(auth()->user()->role === 'Nasabah')
+            <a href="{{ route('profile') }}" class="text-white no-underline hover:text-gray-300">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        @elseif(auth()->user()->role === 'Staf')
+            <a href="{{ route('dashboard.staff') }}" class="text-white no-underline hover:text-gray-300">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        @endif
     </div>
 
     <ul class="mt-4 space-y-1 px-2">
@@ -21,11 +37,15 @@
         @if(auth()->user()->isNasabah())
 
         <li>
+            <a href="{{ route('nasabah.my-profile') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('nasabah.my-profile') ? 'bg-green-600 font-semibold text-white' : '' }}">
+                <i class="fa fa-user-circle"></i> <span class="ml-2">Profil Saya</span>
+            </a>
+        </li>
+        <li>
             <a href="{{ route('nasabah.terms') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('nasabah.terms') ? 'bg-green-600 font-semibold text-white' : '' }}">
                <i class="fa fa-file-contract"></i> <span class="ml-2"> Syarat & Ketentuan </span>
             </a>
         </li>
-
         @endif
 
 
@@ -50,8 +70,8 @@
             </li>
             <li><a href="{{ route('lelang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('lelang.index') ? 'bg-green-600 font-semibold' : '' }}"><i class="fas fa-balance-scale mr-2"></i> Lelang</a></li>
             <li>
-                <a href="{{ route('superadmin.laporan.index') }}" 
-                class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white 
+                <a href="{{ route('superadmin.laporan.index') }}"
+                class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white
                 {{ request()->routeIs('superadmin.laporan.index') ? 'bg-green-600 font-semibold' : '' }}">
                     <i class="fas fa-chart-line mr-2"></i> Laporan Gadai
                 </a>

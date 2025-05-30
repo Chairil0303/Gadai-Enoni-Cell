@@ -130,4 +130,13 @@ class NasabahController extends Controller
 
         return redirect()->route('superadmin.nasabah.index')->with('success', 'Nasabah berhasil dihapus');
     }
+
+    public function profile()
+    {
+        $nasabah = Nasabah::with('user')
+            ->where('id_user', auth()->user()->id_users)
+            ->firstOrFail();
+
+        return view('nasabah.profile', compact('nasabah'));
+    }
 }

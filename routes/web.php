@@ -70,7 +70,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/admin', [AdminDashboardController::class, 'index'])->name('dashboard.admin');
     });
 
-    
+    Route::get('/my-profile', [NasabahController::class, 'profile'])->name('nasabah.my-profile');
+
+
+
     Route::middleware(RoleMiddleware::class . ':Staf')->group(function () {
         Route::get('/dashboard/staff', [StaffDashboardController::class, 'index'])->name('dashboard.staff');
     });
@@ -108,7 +111,7 @@ Route::post('/admin/whatsapp-template/{id}/deactivate', [WhatsappTemplateControl
     // profil nasabah
     route::get('/nasabah/profil', [NasabahController::class, 'profil'])->name('nasabah.profil');
 
-    // Laporan harian dan bulanan 
+    // Laporan harian dan bulanan
     Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
 
     });
