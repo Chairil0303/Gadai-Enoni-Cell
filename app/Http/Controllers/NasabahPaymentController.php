@@ -170,10 +170,10 @@ class NasabahPaymentController extends Controller
         // pemisah
         public function processPaymentJson(Request $request)
         {
-
             $noBon = $request->no_bon;
             $userId = auth()->user()->id_users;
             $nasabah = Nasabah::where('id_user', $userId)->first();
+
             if (!$nasabah) {
                 return response()->json(['message' => 'Nasabah tidak ditemukan'], 404);
             }
@@ -192,18 +192,36 @@ class NasabahPaymentController extends Controller
                 return response()->json(['message' => 'Barang ini sudah ditebus sebelumnya.'], 403);
             }
 
-            // Cek apakah sudah ada transaksi pending untuk no_bon ini
-            $pendingExists = PendingPayment::where('no_bon', $noBon)
+            // Cek transaksi pending untuk no_bon ini
+            $pendingPayment = PendingPayment::where('no_bon', $noBon)
                 ->where('status', 'pending')
-                ->exists();
+                ->first();
 
-            if ($pendingExists) {
-                return response()->json(['message' => 'Masih ada transaksi pembayaran yang belum selesai untuk barang ini.'], 403);
+            if ($pendingPayment) {
+                // Jika ada transaksi pending dari nasabah yang sama
+                if ($pendingPayment->id_nasabah === $nasabah->id_nasabah) {
+                    return response()->json([
+                        'message' => 'Anda masih memiliki transaksi pembayaran yang belum selesai untuk barang ini.',
+                        'order_id' => $pendingPayment->order_id
+                    ], 403);
+                }
+
+                // Jika ada transaksi pending dari nasabah lain
+                return response()->json([
+                    'message' => 'Barang ini sedang dalam proses pembayaran oleh nasabah lain.',
+                    'status' => 'pending_other_user'
+                ], 403);
             }
+
+            // Bersihkan transaksi pending yang expired (lebih dari 24 jam)
+            PendingPayment::where('no_bon', $noBon)
+                ->where('status', 'pending')
+                ->where('created_at', '<', now()->subHours(24))
+                ->update(['status' => 'expired']);
 
             // Hitung Denda dan Bunga
             $telat = $barangGadai->telat;
-            $paymentType = $request->input('payment_type', 'tebus'); // default tebus
+            $paymentType = $request->input('payment_type', 'tebus');
             $bungaPersen = 0;
 
             $denda = $barangGadai->telat * ($barangGadai->harga_gadai * 0.01);
@@ -212,9 +230,6 @@ class NasabahPaymentController extends Controller
             $bunga = $hasilBunga['bunga'];
             $bungaPersen = $hasilBunga['bungaPersen'];
             $totalTebus = $barangGadai->harga_gadai + $bunga + $denda;
-
-
-
 
             // Midtrans config
             Config::$serverKey = config('midtrans.server_key');
@@ -257,6 +272,7 @@ class NasabahPaymentController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
             return response()->json([
                 'snap_token' => $snapToken,
                 'total_bayar' => $totalTebus,
@@ -266,7 +282,6 @@ class NasabahPaymentController extends Controller
                     'bunga' => $bunga,
                     'denda' => $denda,
                     'telat' => $telat,
-                    // 'tenor' => $tenor,
                     'nama_nasabah' => $barangGadai->nasabah->nama,
                     'telepon' => $barangGadai->nasabah->telepon,
                 ]
