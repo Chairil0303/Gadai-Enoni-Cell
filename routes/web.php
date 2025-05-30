@@ -183,7 +183,7 @@ Route::post('/admin/terms', [AdminTermsController::class, 'update'])->name('admi
         Route::get('/nasabah/{id}/edit', [NasabahController::class, 'edit'])->name('superadmin.nasabah.edit');
         Route::put('/nasabah/{id}', [NasabahController::class, 'update'])->name('superadmin.nasabah.update');
         Route::delete('/nasabah/{id}', [NasabahController::class, 'destroy'])->name('superadmin.nasabah.destroy');
-});
+    });
 
 
     //Route::resource() secara otomatis membuat semua route RESTful (index, create, store, show, edit, update, destroy).

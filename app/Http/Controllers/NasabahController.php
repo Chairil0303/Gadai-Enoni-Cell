@@ -11,12 +11,22 @@ use App\Models\TermsCondition;
 
 class NasabahController extends Controller
 {
-    public function index()
+    
+    public function index(Request $request)
     {
-        $user = user::with('nasabah')->get();
-        $nasabah = Nasabah::with('user')->get();
+        $query = Nasabah::with('user');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('nama', 'like', "%{$search}%")
+                ->orWhere('nik', 'like', "%{$search}%")
+                ->orWhere('telepon', 'like', "%{$search}%");
+        }
+
+        $nasabah = $query->get();
         return view('nasabah.index', compact('nasabah'));
     }
+
 
   public function showTerms()
 {
