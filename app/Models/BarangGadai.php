@@ -102,10 +102,10 @@
             return $this->belongsTo(BarangGadai::class, 'no_bon_lama', 'no_bon');
         }
 
-        public function lelang()
-{
-    return $this->hasOne(Lelang::class, 'barang_gadai_no_bon', 'no_bon');
-}
+//         public function lelang()
+// {
+//     return $this->hasOne(Lelang::class, 'barang_gadai_no_bon', 'no_bon');
+// }
 
 
 
@@ -137,8 +137,14 @@
         {
             return $this->belongsTo(Cabang::class, 'id_cabang', 'id_cabang');
         }
+        public function lelang()
+        {
+            return $this->hasOne(BarangLelang::class, 'no_bon', 'no_bon');
+        }
         public function bungaTenor()
         {
             return $this->belongsTo(BungaTenor::class, 'id_bunga_tenor', 'id');
         }
+        
+        
     }

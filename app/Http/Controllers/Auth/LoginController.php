@@ -25,29 +25,29 @@ class LoginController extends Controller
 
     // Redirect berdasarkan role setelah login sukses
    // Redirect berdasarkan role setelah login sukses
-protected function authenticated(Request $request, $user)
-{
-    if ($user->role === 'Superadmin') {
-        session()->flash('success', 'Selamat datang, Superadmin!');
-        return redirect('/dashboard/superadmin');
-    } elseif ($user->role === 'Admin') {
-        session()->flash('success', 'Selamat datang, Admin!');
-        return redirect('/dashboard/admin'. $user->cabang_id);
-    } elseif ($user->role === 'Nasabah') {
-        session()->flash('success', 'Selamat datang, Nasabah!');
-        return redirect('/dashboard_nasabah');
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->role === 'Superadmin') {
+            session()->flash('success', 'Selamat datang, Superadmin!');
+            return redirect('/dashboard/superadmin');
+        } elseif ($user->role === 'Admin') {
+            session()->flash('success', 'Selamat datang, Admin!');
+            return redirect('/dashboard/admin'. $user->cabang_id);
+        } elseif ($user->role === 'Nasabah') {
+            session()->flash('success', 'Selamat datang, Nasabah!');
+            return redirect('/dashboard_nasabah');
+        }
+
+        session()->flash('success', 'Selamat datang di Dashboard!');
+        return redirect('/dashboard');
     }
 
-    session()->flash('success', 'Selamat datang di Dashboard!');
-    return redirect('/dashboard');
-}
+    public function index()
+    {
+        $user = auth()->user();
+        $cabang = $user->cabang ? $user->cabang->nama_cabang : 'Default Cabang';
 
-public function index()
-{
-    $user = auth()->user();
-    $cabang = $user->cabang ? $user->cabang->nama_cabang : 'Default Cabang';
-
-    return view('dashboard.admin', compact('cabang'));
-}
+        return view('dashboard.admin', compact('cabang'));
+    }
 
 }

@@ -26,6 +26,8 @@ use App\Http\Controllers\Admin\LaporanKeuanganController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\SuperAdminDashboardController;
 use App\Http\Controllers\StaffDashboardController;
+use App\Http\Controllers\Admin\BarangLelangController;
+
 
 
 
@@ -88,6 +90,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/laporan/harian', [LaporanController::class, 'harian'])->name('laporan.harian');
             Route::get('/laporan/bulanan', [LaporanController::class, 'bulanan'])->name('laporan.bulanan');
             Route::get('/laporan/keuangan', [LaporanKeuanganController::class, 'index'])->name('laporan.keuangan');
+            // ✅ Route barang lelang
+            Route::resource('barang-lelang', BarangLelangController::class)->only(['index', 'edit', 'update']);
         });
     });
 
@@ -107,11 +111,6 @@ Route::post('/admin/whatsapp-template/{id}/deactivate', [WhatsappTemplateControl
 
     // profil nasabah
     route::get('/nasabah/profil', [NasabahController::class, 'profil'])->name('nasabah.profil');
-
-    // Laporan harian dan bulanan 
-    Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
-
-    });
 
         // tebus gadai
     Route::prefix('transaksi_gadai')->group(function () {

@@ -65,6 +65,11 @@
             <li><a href="{{ route('nasabah.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('nasabah.index') ? 'bg-green-600 font-semibold' : '' }}"><i class="fas fa-user-tie mr-2"></i> Nasabah</a></li>
             <li><a href="{{ route('lelang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('lelang.index') ? 'bg-green-600 font-semibold' : '' }}"><i class="fas fa-balance-scale mr-2"></i> Lelang</a></li>
             <li>
+                <a href="{{ route('admin.barang-lelang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('admin.barang-lelang.*') ? 'bg-green-600 font-semibold' : '' }}">
+                    <i class="fas fa-gavel mr-2"></i> Barang Lelang
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('admin.staff.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('admin.staff.index') ? 'bg-green-600 font-semibold' : '' }}">
                     <i class="fas fa-user-cog mr-2"></i> Staff
                 </a>
