@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Helpers\ActivityLogger;
 
 class StaffController extends Controller
 {
@@ -35,10 +36,9 @@ class StaffController extends Controller
             'email' => 'nullable|email|unique:users',
             'username' => 'required|string|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            
         ]);
 
-        User::create([
+        $staff = User::create([
             'nama' => $request->nama,
             'email' => $request->email,
             'username' => $request->username,
@@ -47,8 +47,17 @@ class StaffController extends Controller
             'id_cabang' => $user->id_cabang,
         ]);
 
+        ActivityLogger::log(
+            kategori: 'staff',
+            aksi: 'create',
+            deskripsi: "Menambahkan staf baru: {$staff->nama} (ID: {$staff->id_users})",
+            dataLama: null,
+            dataBaru: $staff->toArray()
+        );
+
         return redirect()->route('admin.staff.index')->with('success', 'Staff berhasil ditambahkan.');
     }
+
 
     public function show(User $staff)
     {
@@ -70,6 +79,8 @@ class StaffController extends Controller
             'id_cabang' => 'nullable|exists:cabang,id_cabang',
         ]);
 
+        $dataLama = $staff->toArray();
+
         $staff->update([
             'nama' => $request->nama,
             'email' => $request->email,
@@ -78,12 +89,32 @@ class StaffController extends Controller
             'password' => $request->password ? Hash::make($request->password) : $staff->password,
         ]);
 
+        ActivityLogger::log(
+            kategori: 'staff',
+            aksi: 'update',
+            deskripsi: "Memperbarui staf: {$staff->nama} (ID: {$staff->id_users})",
+            dataLama: $dataLama,
+            dataBaru: $staff->toArray()
+        );
+
         return redirect()->route('admin.staff.index')->with('success', 'Staff berhasil diperbarui.');
     }
 
+
     public function destroy(User $staff)
     {
+        $dataLama = $staff->toArray();
         $staff->delete();
+
+        ActivityLogger::log(
+            kategori: 'staff',
+            aksi: 'delete',
+            deskripsi: "Menghapus staf: {$dataLama['nama']} (ID: {$dataLama['id_users']})",
+            dataLama: $dataLama,
+            dataBaru: null
+        );
+
         return redirect()->route('admin.staff.index')->with('success', 'Staff berhasil dihapus.');
     }
+
 }
