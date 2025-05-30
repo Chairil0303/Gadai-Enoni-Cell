@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cabang;
 use Illuminate\Http\Request;
 use App\Models\SaldoCabang;
+use App\Helpers\ActivityLogger;
 
 class CabangController extends Controller
 {
@@ -41,23 +42,32 @@ class CabangController extends Controller
             'saldo_awal' => 'required|numeric|min:0',
         ]);
 
-        // Pisahkan saldo
         $saldo_awal = $validated['saldo_awal'];
         unset($validated['saldo_awal']);
 
-        // Simpan cabang
         $cabang = Cabang::create($validated);
 
-        // Simpan saldo awal
-        SaldoCabang::create([
+        $saldo = SaldoCabang::create([
             'id_cabang' => $cabang->id_cabang,
             'saldo_awal' => $saldo_awal,
             'saldo_saat_ini' => $saldo_awal,
         ]);
 
+        ActivityLogger::log(
+            kategori: 'cabang',
+            aksi: 'create',
+            deskripsi: "Menambahkan cabang baru: {$cabang->nama_cabang} dengan saldo awal",
+            dataLama: null,
+            dataBaru: [
+                'cabang' => $cabang->toArray(),
+                'saldo' => $saldo->toArray(),
+            ]
+        );
+
         return redirect()->route('superadmin.admins.create', ['id_cabang' => $cabang->id_cabang])
                         ->with('message', 'Cabang berhasil ditambahkan beserta saldo awal. Silakan buat admin.');
     }
+
 
 
     public function edit(Cabang $cabang)
@@ -74,17 +84,40 @@ class CabangController extends Controller
             'kontak' => 'required|string|max:255',
         ]);
 
+        $dataLama = $cabang->toArray();
+
         $cabang->update($request->all());
+
+        ActivityLogger::log(
+            kategori: 'cabang',
+            aksi: 'update',
+            deskripsi: "Memperbarui data cabang: {$cabang->nama_cabang}",
+            dataLama: $dataLama,
+            dataBaru: $cabang->toArray()
+        );
 
         return redirect()->route('superadmin.cabang.index')->with('success', 'Cabang berhasil diperbarui');
     }
 
+
     public function destroy(Cabang $cabang)
     {
+        $dataLama = $cabang->toArray();
+        $namaCabang = $cabang->nama_cabang;
+
         $cabang->delete();
+
+        ActivityLogger::log(
+            kategori: 'cabang',
+            aksi: 'delete',
+            deskripsi: "Menghapus cabang: {$namaCabang}",
+            dataLama: $dataLama,
+            dataBaru: null
+        );
 
         return redirect()->route('superadmin.cabang.index')->with('success', 'Cabang berhasil dihapus');
     }
+
 
     
 }

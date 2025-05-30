@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Cabang;
 use Illuminate\Support\Facades\Hash;
+use App\Helpers\ActivityLogger;
 
 class AdminController extends Controller
 {
@@ -27,12 +28,11 @@ class AdminController extends Controller
 
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'nullable|email|unique:users,email',
             'username' => 'required|unique:users,username',
-            'password' => 'required|string|min:6', // hapus 'confirmed' kalau gak dipakai
+            'password' => 'required|string|min:6',
             'id_cabang' => 'nullable|exists:cabang,id_cabang',
         ]);
 
@@ -45,8 +45,17 @@ class AdminController extends Controller
             'id_cabang' => $validated['id_cabang'],
         ]);
 
+        ActivityLogger::log(
+            kategori: 'admin',
+            aksi: 'create',
+            deskripsi: "Menambahkan admin baru: {$user->nama}",
+            dataLama: null,
+            dataBaru: $user->toArray()
+        );
+
         return redirect()->route('superadmin.admins.index')->with('success', 'Admin berhasil ditambahkan.');
     }
+
 
 
 
@@ -71,6 +80,8 @@ class AdminController extends Controller
             'password' => 'nullable|string|min:6|confirmed',
         ]);
 
+        $dataLama = $admin->toArray();
+
         $admin->nama = $request->nama;
         $admin->email = $request->email;
         $admin->username = $request->username;
@@ -82,13 +93,35 @@ class AdminController extends Controller
 
         $admin->save();
 
+        ActivityLogger::log(
+            kategori: 'admin',
+            aksi: 'update',
+            deskripsi: "Memperbarui data admin: {$admin->nama}",
+            dataLama: $dataLama,
+            dataBaru: $admin->toArray()
+        );
+
         return redirect()->route('superadmin.admins.index')->with('success', 'Admin berhasil diperbarui.');
     }
 
 
+
     public function destroy($id)
     {
-        User::findOrFail($id)->delete();
+        $admin = User::findOrFail($id);
+        $dataLama = $admin->toArray();
+
+        $admin->delete();
+
+        ActivityLogger::log(
+            kategori: 'admin',
+            aksi: 'delete',
+            deskripsi: "Menghapus admin: {$dataLama['nama']}",
+            dataLama: $dataLama,
+            dataBaru: null
+        );
+
         return back()->with('success', 'Admin berhasil dihapus');
     }
+
 }

@@ -72,6 +72,14 @@ class SuperAdminDashboardController extends Controller
             $chartPendapatan[] = $pendapatanSum;
         }
 
+                // Query aktivitas terbaru
+                $aktivitasTerbaru = DB::table('log_aktivitas')
+                ->join('users', 'log_aktivitas.id_users', '=', 'users.id_users')
+                ->select('log_aktivitas.*', 'users.nama')
+                ->orderByDesc('log_aktivitas.waktu_aktivitas')  // pakai kolom waktu_aktivitas sebagai waktu
+                ->limit(5)
+            ->get();
+
         return view('components.dashboard.superadmin', compact(
             'totalCabang',
             'totalGadaiAktif',
@@ -82,7 +90,8 @@ class SuperAdminDashboardController extends Controller
             'topCabang',
             'chartLabels',
             'chartTransaksi',
-            'chartPendapatan'
+            'chartPendapatan',
+            'aktivitasTerbaru'  // jangan lupa tambahkan variabel baru di sini
         ));
     }
 }
