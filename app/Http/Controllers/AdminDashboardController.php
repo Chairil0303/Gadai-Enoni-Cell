@@ -8,6 +8,7 @@ use Carbon\CarbonPeriod;
 use App\Models\BarangGadai;
 use App\Models\Transaksi;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
@@ -75,17 +76,27 @@ class AdminDashboardController extends Controller
                 ->sum('jumlah');
         }
 
-        return view('components.dashboard.admin', compact(
-            'totalGadaiAktif',
-            'totalNilaiGadai',
-            'jumlahBarangGadai',
-            'transaksiHariIni',
-            'pendapatanHariIni',
-            'barangPopuler',
-            'staffCabang',
-            'chartLabels',
-            'chartTransaksi',
-            'chartPendapatan'
-        ));
+        // Aktivitas terbaru cabang ini, join users
+        $aktivitasTerbaru = DB::table('log_aktivitas')
+        ->join('users', 'log_aktivitas.id_users', '=', 'users.id_users')
+        ->where('log_aktivitas.id_cabang', $idCabang)
+        ->select('log_aktivitas.*', 'users.nama')
+        ->orderBy('log_aktivitas.waktu_aktivitas', 'desc')
+        ->limit(5)
+        ->get();
+
+    return view('components.dashboard.admin', compact(
+        'totalGadaiAktif',
+        'totalNilaiGadai',
+        'jumlahBarangGadai',
+        'transaksiHariIni',
+        'pendapatanHariIni',
+        'barangPopuler',
+        'staffCabang',
+        'chartLabels',
+        'chartTransaksi',
+        'chartPendapatan',
+        'aktivitasTerbaru' // jangan lupa kirim ke view
+    ));
     }
 }

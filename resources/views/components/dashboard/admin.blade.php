@@ -34,6 +34,40 @@
         </div>
     </div>
 
+    {{-- Aktivitas Terbaru --}}
+    <div class="card shadow mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="fas fa-history"></i> Aktivitas Terbaru Cabang</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0">
+                    <thead class="table-info text-center">
+                        <tr>
+                            <th>Nama</th>
+                            <th>Aktivitas</th>
+                            <th>Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($aktivitasTerbaru as $aktivitas)
+                        <tr>
+                            <td>{{ $aktivitas->nama }}</td>
+                            <td>{{ $aktivitas->deskripsi ?? $aktivitas->aksi }}</td>
+                            <td class="text-center">{{ \Carbon\Carbon::parse($aktivitas->waktu_aktivitas)->diffForHumans() }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-4">Tidak ada aktivitas terbaru.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
     {{-- Statistik Utama --}}
     <div class="row mb-4">
         <div class="col-md-4 mb-3">
