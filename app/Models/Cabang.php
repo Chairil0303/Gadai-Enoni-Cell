@@ -28,4 +28,8 @@ class Cabang extends Model
     {
         return $this->hasMany(Transaksi::class);
     }
+    public function saldoCabang()
+    {
+        return $this->hasOne(SaldoCabang::class, 'id_cabang', 'id_cabang');
+    }
 }

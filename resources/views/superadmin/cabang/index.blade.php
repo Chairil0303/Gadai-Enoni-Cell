@@ -80,6 +80,16 @@
                                             @endif
                                         </p>
                                         <p><strong>Dibuat pada:</strong> {{ $cabang->created_at->format('d M Y H:i') }}</p>
+
+                                        <hr>
+
+                                        <h6>Saldo Cabang</h6>
+                                        @if ($cabang->saldoCabang)
+                                            <p><strong>Saldo Awal:</strong> Rp {{ number_format($cabang->saldoCabang->saldo_awal, 2, ',', '.') }}</p>
+                                            <p><strong>Saldo Saat Ini:</strong> Rp {{ number_format($cabang->saldoCabang->saldo_saat_ini, 2, ',', '.') }}</p>
+                                        @else
+                                            <p><em>Saldo cabang belum diatur.</em></p>
+                                        @endif
                                     </div>
                                     <div class="modal-footer justify-content-between">
                                         <a href="{{ route('superadmin.cabang.edit', $cabang->id_cabang) }}" class="btn btn-success">

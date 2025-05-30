@@ -32,6 +32,10 @@
                                 </div>
                             </div>
                             <div class="col-md-6 d-flex flex-column justify-content-between" style="min-height: 200px;">
+                            <div class="mb-3">
+                                <label for="saldo_awal" class="form-label"><i class="fas fa-wallet"></i> Saldo Awal</label>
+                                <input type="number" min="0" step="0.01" class="form-control" id="saldo_awal" name="saldo_awal" placeholder="Masukkan saldo awal cabang" required>
+                            </div>
                                 <div class="mb-3">
                                     <label for="google_maps_link" class="form-label"><i class="fas fa-map"></i> Link Google Maps</label>
                                     <input type="url" autocomplete="off" class="form-control" id="google_maps_link" name="google_maps_link" placeholder="https://goo.gl/maps/..." value="{{ old('google_maps_link') }}">

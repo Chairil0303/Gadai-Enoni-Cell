@@ -7,19 +7,25 @@ namespace App\Http\Controllers\Superadmin;
 use App\Http\Controllers\Controller;
 use App\Models\Cabang;
 use Illuminate\Http\Request;
+use App\Models\SaldoCabang;
 
 class CabangController extends Controller
 {
     public function index(Request $request)
     {
         $search = $request->input('search');
-
-        $cabangs = Cabang::when($search, function($query, $search) {
-            return $query->where('nama_cabang', 'like', "%{$search}%");
-        })->orderBy('nama_cabang')->paginate(10);
-
+    
+        $cabangs = Cabang::with('saldoCabang') // eager load saldoCabang
+            ->when($search, function($query, $search) {
+                return $query->where('nama_cabang', 'like', "%{$search}%");
+            })
+            ->orderBy('nama_cabang')
+            ->paginate(10);
+    
         return view('superadmin.cabang.index', compact('cabangs'));
     }
+    
+    
     public function create()
     {
         return view('superadmin.cabang.create');
@@ -32,16 +38,27 @@ class CabangController extends Controller
             'alamat' => 'required|string',
             'kontak' => 'required|string|max:20',
             'google_maps_link' => 'nullable|url',
+            'saldo_awal' => 'required|numeric|min:0',
         ]);
 
+        // Pisahkan saldo
+        $saldo_awal = $validated['saldo_awal'];
+        unset($validated['saldo_awal']);
+
+        // Simpan cabang
         $cabang = Cabang::create($validated);
 
-        // Redirect ke form tambah admin, kirim id_cabang
-        return redirect()->route('superadmin.admins.create', ['id_cabang' => $cabang->id_cabang])
-                         ->with('message', 'Cabang berhasil ditambahkan. Silakan buat admin.');
-        // return redirect()->route('superadmin.admins.create', ['id_cabang' => $cabang->id_cabang]);
+        // Simpan saldo awal
+        SaldoCabang::create([
+            'id_cabang' => $cabang->id_cabang,
+            'saldo_awal' => $saldo_awal,
+            'saldo_saat_ini' => $saldo_awal,
+        ]);
 
+        return redirect()->route('superadmin.admins.create', ['id_cabang' => $cabang->id_cabang])
+                        ->with('message', 'Cabang berhasil ditambahkan beserta saldo awal. Silakan buat admin.');
     }
+
 
     public function edit(Cabang $cabang)
     {
@@ -68,4 +85,6 @@ class CabangController extends Controller
 
         return redirect()->route('superadmin.cabang.index')->with('success', 'Cabang berhasil dihapus');
     }
+
+    
 }
