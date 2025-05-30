@@ -45,79 +45,75 @@ class BarangGadaiController extends Controller
     }
 
     public function ubahStatusLelang($no_bon)
-{
-    $barang = BarangGadai::findOrFail($no_bon);
+    {
+        $barang = BarangGadai::findOrFail($no_bon);
 
-    // Ubah status barang menjadi 'Dilelang'
-    $barang->status = 'Dilelang';
-    $barang->save();
+        // Ubah status barang menjadi 'Dilelang'
+        $barang->status = 'Dilelang';
+        $barang->save();
 
-    return redirect()->back()->with('success', 'Status barang berhasil diubah menjadi Dilelang.');
-}
-
-public function getDetail($no_bon)
-{
-    $barang = BarangGadai::with(['kategori', 'nasabah', 'bungaTenor'])
-        ->where('no_bon', $no_bon)
-        ->first();
-
-    if (!$barang) {
-        return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        return redirect()->back()->with('success', 'Status barang berhasil diubah menjadi Dilelang.');
     }
 
-    return response()->json([
-        'no_bon' => $barang->no_bon,
-        'kategori' => $barang->kategori->nama_kategori ?? '-',
-        'nama_barang' => $barang->nama_barang,
-        'atas_nama' => $barang->nasabah->nama ?? '-',
-        'tenor' => $barang->bungaTenor->tenor ?? '-',
-        'harga_gadai' => $barang->harga_gadai,
-        'created_at' => $barang->created_at->format('d-m-Y')
-    ]);
-}
+public function getDetail($no_bon)
+    {
+        $barang = BarangGadai::with(['kategori', 'nasabah', 'bungaTenor'])
+            ->where('no_bon', $no_bon)
+            ->first();
+
+        if (!$barang) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'no_bon' => $barang->no_bon,
+            'kategori' => $barang->kategori->nama_kategori ?? '-',
+            'nama_barang' => $barang->nama_barang,
+            'atas_nama' => $barang->nasabah->nama ?? '-',
+            'tenor' => $barang->bungaTenor->tenor ?? '-',
+            'harga_gadai' => $barang->harga_gadai,
+            'created_at' => $barang->created_at->format('d-m-Y')
+        ]);
+    }
 
 
     public function lelangIndex(Request $request)
-{
-    $user = auth()->user();
-    $status = $request->input('status');
-    $noBon = $request->input('no_bon');
+    {
+        $user = auth()->user();
+        $status = $request->input('status');
+        $noBon = $request->input('no_bon');
 
-    // Ambil barang yang tempo-nya sudah lewat
-    $query = BarangGadai::with('nasabah.user', 'kategori')
-        ->whereDate('tempo', '<', now());
+        // Ambil barang yang tempo-nya sudah lewat
+        $query = BarangGadai::with('nasabah.user', 'kategori')
+            ->whereDate('tempo', '<', now());
 
-    // Jika bukan superadmin (user id ≠ 1)
-    if ($user->id !== 1) {
-        // Cek apakah kolom id_cabang tersedia
-        if (Schema::hasColumn('barang_gadai', 'id_cabang')) {
-            // Jika user punya id_cabang → filter cabang
-            if (!is_null($user->id_cabang)) {
-                $query->where('id_cabang', $user->id_cabang);
+        // Jika bukan superadmin (user id ≠ 1)
+        if ($user->id !== 1) {
+            // Cek apakah kolom id_cabang tersedia
+            if (Schema::hasColumn('barang_gadai', 'id_cabang')) {
+                // Jika user punya id_cabang → filter cabang
+                if (!is_null($user->id_cabang)) {
+                    $query->where('id_cabang', $user->id_cabang);
+                }
+                // Jika user tidak punya id_cabang → biarkan tanpa filter (lihat semua cabang)
+            } else {
+                return view('lelang.index', ['barangGadai' => collect()]);
             }
-            // Jika user tidak punya id_cabang → biarkan tanpa filter (lihat semua cabang)
-        } else {
-            return view('lelang.index', ['barangGadai' => collect()]);
         }
+
+        // Filter tambahan (opsional)
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($noBon) {
+            $query->where('no_bon', 'like', '%' . $noBon . '%');
+        }
+
+        $barangGadai = $query->get();
+
+        return view('lelang.index', compact('barangGadai'));
     }
-
-    // Filter tambahan (opsional)
-    if ($status) {
-        $query->where('status', $status);
-    }
-
-    if ($noBon) {
-        $query->where('no_bon', 'like', '%' . $noBon . '%');
-    }
-
-    $barangGadai = $query->get();
-
-    return view('lelang.index', compact('barangGadai'));
-}
-
-
-
-
 
 
     public function tampilBarangDiperpanjangDenganDm()
@@ -134,9 +130,6 @@ public function getDetail($no_bon)
         return view('transaksi_gadai.ubahnobon', compact('barangGadai'));
     }
 
-
-
-
     public function create()
     {
         $nasabah = Nasabah::all();
@@ -151,49 +144,47 @@ public function getDetail($no_bon)
     }
 
     public function store(Request $request)
-{
-    $validTenors = BungaTenor::pluck('tenor')->toArray();
+    {
+        $validTenors = BungaTenor::pluck('tenor')->toArray();
 
-    // Validasi input
-    $request->validate([
-        'id_nasabah'   => 'required|exists:nasabah,id_nasabah',
-        'nama_barang'  => 'required|string|max:255',
-        'deskripsi'    => 'nullable|string',
-        'imei'         => 'required|string|unique:barang_gadai,imei',
-        'tenor'        => 'required|in:' . implode(',', $validTenors),
-        'harga_gadai'  => 'required|numeric|min:0',
-        'status'       => 'required|in:Tergadai,Ditebus,Dilelang',
-        'id_kategori'  => 'nullable|exists:kategori_barang,id_kategori',
-    ]);
+        // Validasi input
+        $request->validate([
+            'id_nasabah'   => 'required|exists:nasabah,id_nasabah',
+            'nama_barang'  => 'required|string|max:255',
+            'deskripsi'    => 'nullable|string',
+            'imei'         => 'required|string|unique:barang_gadai,imei',
+            'tenor'        => 'required|in:' . implode(',', $validTenors),
+            'harga_gadai'  => 'required|numeric|min:0',
+            'status'       => 'required|in:Tergadai,Ditebus,Dilelang',
+            'id_kategori'  => 'nullable|exists:kategori_barang,id_kategori',
+        ]);
 
-    // Konversi tenor ke integer
-    $tenor = (int) $request->tenor;
-    $tempo = Carbon::now()->addDays($tenor)->format('Y-m-d');
+        // Konversi tenor ke integer
+        $tenor = (int) $request->tenor;
+        $tempo = Carbon::now()->addDays($tenor)->format('Y-m-d');
 
-    // Ambil bunga berdasarkan tenor yang dipilih
-    $bungaTenor = BungaTenor::where('tenor', $tenor)->first();
-    $bungaPercent = $bungaTenor ? $bungaTenor->bunga_percent : 0; // default 0 kalau tidak ketemu
+        // Ambil bunga berdasarkan tenor yang dipilih
+        $bungaTenor = BungaTenor::where('tenor', $tenor)->first();
+        $bungaPercent = $bungaTenor ? $bungaTenor->bunga_percent : 0; // default 0 kalau tidak ketemu
 
-    BarangGadai::create([
-        'id_user'      => auth()->id(),
-        'no_bon'       => $request->no_bon,
-        'id_nasabah'   => $request->id_nasabah,
-        'nama_barang'  => $request->nama_barang,
-        'deskripsi'    => $request->deskripsi,
-        'imei'         => $request->imei,
-        'tenor'        => $request->tenor,
-        'bunga'        => $bungaPercent,
-        'tempo'        => $tempo,
-        'telat'        => 0,
-        'harga_gadai'  => $request->harga_gadai,
-        'status'       => $request->status,
-        'id_kategori'  => $request->id_kategori,
-    ]);
+        BarangGadai::create([
+            'id_user'      => auth()->id(),
+            'no_bon'       => $request->no_bon,
+            'id_nasabah'   => $request->id_nasabah,
+            'nama_barang'  => $request->nama_barang,
+            'deskripsi'    => $request->deskripsi,
+            'imei'         => $request->imei,
+            'tenor'        => $request->tenor,
+            'bunga'        => $bungaPercent,
+            'tempo'        => $tempo,
+            'telat'        => 0,
+            'harga_gadai'  => $request->harga_gadai,
+            'status'       => $request->status,
+            'id_kategori'  => $request->id_kategori,
+        ]);
 
-    return redirect()->route('barang_gadai.index')->with('success', 'Barang Gadai berhasil ditambahkan!');
-}
-
-
+        return redirect()->route('barang_gadai.index')->with('success', 'Barang Gadai berhasil ditambahkan!');
+    }
 
     public function show(BarangGadai $barangGadai)
     {

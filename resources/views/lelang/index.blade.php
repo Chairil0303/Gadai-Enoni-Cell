@@ -18,15 +18,15 @@
                         <thead class="table-dark">
                             <tr>
                                 @if (auth()->user()->isSuperadmin())
-                                <th>Cabang</th>
+                                    <th>Cabang</th>
                                 @endif
                                 <th>Tipe Barang</th>
                                 <th>Tempo</th>
                                 <th>Telat</th>
                                 <th>Detail</th>
 
-                                @if (auth()->user()->isSuperadmin())
-                                <th>Aksi</th>
+                                @if (auth()->user()->isSuperadmin() || auth()->user()->isAdmin())
+                                    <th>Aksi</th>
                                 @endif
                             </tr>
                         </thead>
@@ -34,11 +34,9 @@
                             @foreach($barangGadai as $barang)
                             <tr>
                                 @if (auth()->user()->isSuperadmin())
-                                <td>{{$barang->cabang->nama_cabang}}</td>
+                                    <td>{{ $barang->cabang->nama_cabang }}</td>
                                 @endif
                                 <td>{{ $barang->nama_barang }}</td>
-
-
                                 <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
                                 <td>
                                     @if($barang->telat > 0)
@@ -47,24 +45,22 @@
                                         <span style="color: black;">Sisa {{ $barang->sisa_hari }} hari</span>
                                     @endif
                                 </td>
-
-                                <td><button class="btn btn-info btn-sm" onclick="showDetail('{{ $barang->no_bon }}')">
-                                        <i class="fas fa-info-circle"></i> Detail
-                                    </button></td>
-
-                                @if (auth()->user()->isSuperadmin())
                                 <td>
-                                    @if (auth()->user()->isSuperadmin() && $barang->status !== 'Dilelang')
-                                    <a href="{{ route('lelang.create', $barang->no_bon) }}" class="btn btn-success btn-sm">
-                                        <i class="fas fa-gavel"></i> Lelang
-                                    </a>
+                                    <button class="btn btn-info btn-sm" onclick="showDetail('{{ $barang->no_bon }}')">
+                                        <i class="fas fa-info-circle"></i> Detail
+                                    </button>
+                                </td>
+                                @if (auth()->user()->isSuperadmin() || auth()->user()->isAdmin())
+                                <td>
+                                    @if ($barang->status !== 'Dilelang')
+                                        <a href="{{ route('lelang.create', $barang->no_bon) }}" class="btn btn-success btn-sm">
+                                            <i class="fas fa-gavel"></i> Lelang
+                                        </a>
+                                    @else
+                                        <a href="{{ route('lelang.edit', $barang->no_bon) }}" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
                                     @endif
-                                    @if (auth()->user()->isSuperadmin() && $barang->status === 'Dilelang')
-                                    <a href="{{ route('lelang.edit', $barang->no_bon) }}" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </a>
-                                    @endif
-
                                 </td>
                                 @endif
                             </tr>
@@ -116,4 +112,3 @@
     }
 </script>
 @endsection
-

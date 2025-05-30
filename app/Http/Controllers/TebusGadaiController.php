@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\TransaksiTebus;
 use Carbon\Carbon;
 use App\Models\Transaksi;
+use App\Models\Lelang;
 
 class TebusGadaiController extends Controller
 {
@@ -135,6 +136,10 @@ public function cari(Request $request)
         // Update status barang menjadi 'Ditebus'
         $barangGadai->status = 'Ditebus';
         $barangGadai->save();
+
+        // 🔥 Update status lelang jadi 'Tebus'
+        Lelang::where('barang_gadai_no_bon', $barangGadai->no_bon)
+        ->update(['status' => 'Tebus']);
 
         return redirect()->route('barang_gadai.index')->with('success', 'Barang berhasil ditebus dan transaksi dicatat.');
     }

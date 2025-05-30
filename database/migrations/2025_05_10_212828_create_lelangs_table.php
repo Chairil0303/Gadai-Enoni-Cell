@@ -20,6 +20,7 @@ public function up()
             $table->text('keterangan')->nullable();
             $table->json('foto_barang')->nullable(); // <-- Multiple Foto
             $table->decimal('harga_lelang', 15, 2)->nullable();
+            $table->enum('status', ['Aktif', 'Tebus'])->default('Aktif');
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BarangGadai;
 use App\Models\Lelang;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class LelangController extends Controller
@@ -12,9 +13,34 @@ class LelangController extends Controller
 
     public function index()
     {
-        $barangLelang = Lelang::with('barangGadai')->get();
-        return view('nasabah.lelang.index', compact('barangLelang'));
+        $user = auth()->user();
+
+        $query = BarangGadai::with(['nasabah.user', 'kategori', 'cabang'])
+            ->whereNotIn('status', ['Tebus', 'Lunas', 'Dilelang'])  // status aktif
+            ->whereDate('tempo', '<', now());  // yang sudah lewat tempo
+
+        // Jika user bukan superadmin dan ada kolom id_cabang, filter cabang
+        if ($user->id !== 1 && Schema::hasColumn('barang_gadai', 'id_cabang')) {
+            if (!is_null($user->id_cabang)) {
+                $query->where('id_cabang', $user->id_cabang);
+            }
+        }
+
+        $barangGadai = $query->get()->map(function ($barang) {
+            $tempo = Carbon::parse($barang->tempo);
+            $selisih = now()->diffInDays($tempo, false);
+
+            $barang->telat = $selisih < 0 ? abs($selisih) : 0;
+            $barang->sisa_hari = $selisih >= 0 ? $selisih : 0;
+
+            return $barang;
+        })->filter(function ($barang) {
+            return $barang->telat > 0; // hanya yang telat
+        });
+
+        return view('nasabah.lelang.index', compact('barangGadai'));
     }
+
 
     public function create($no_bon)
     {
