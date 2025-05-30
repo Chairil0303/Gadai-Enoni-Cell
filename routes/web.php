@@ -106,6 +106,7 @@ Route::post('/admin/whatsapp-template/{id}/deactivate', [WhatsappTemplateControl
         // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
     Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
         Route::get('/dashboard', [NasabahController::class, 'show'])->name('profile');
+        Route::put('/update-password', [NasabahController::class, 'updatePassword'])->name('nasabah.update-password');
     });
 
     // profil nasabah
@@ -242,6 +243,7 @@ Route::get('/barang-gadai/detail/{no_bon}', [BarangGadaiController::class, 'getD
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::put('/nasabah/update-password', [NasabahController::class, 'updatePassword'])->name('nasabah.update-password');
 
     // Halaman form input gadai
     Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
