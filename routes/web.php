@@ -70,7 +70,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/admin', [AdminDashboardController::class, 'index'])->name('dashboard.admin');
     });
 
-    
+    Route::get('/my-profile', [NasabahController::class, 'profile'])->name('nasabah.my-profile');
+
+
+
     Route::middleware(RoleMiddleware::class . ':Staf')->group(function () {
         Route::get('/dashboard/staff', [StaffDashboardController::class, 'index'])->name('dashboard.staff');
     });
@@ -103,12 +106,13 @@ Route::post('/admin/whatsapp-template/{id}/deactivate', [WhatsappTemplateControl
         // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
     Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
         Route::get('/dashboard', [NasabahController::class, 'show'])->name('profile');
+        Route::put('/update-password', [NasabahController::class, 'updatePassword'])->name('nasabah.update-password');
     });
 
     // profil nasabah
     route::get('/nasabah/profil', [NasabahController::class, 'profil'])->name('nasabah.profil');
 
-    // Laporan harian dan bulanan 
+    // Laporan harian dan bulanan
     Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
 
     });
@@ -239,6 +243,7 @@ Route::post('/admin/terms', [AdminTermsController::class, 'update'])->name('admi
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::put('/nasabah/update-password', [NasabahController::class, 'updatePassword'])->name('nasabah.update-password');
 
     // Halaman form input gadai
     Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');
