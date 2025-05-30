@@ -9,7 +9,7 @@
 
     <form method="GET" action="{{ route('superadmin.nasabah.index') }}" class="mb-4">
         <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Cari nama/NIK/telepon..." value="{{ request('search') }}">
+            <input autocomplete="off" type="text" name="search" class="form-control" placeholder="Cari nama/NIK/telepon..." value="{{ request('search') }}">
             <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
         </div>
     </form>
@@ -71,6 +71,12 @@
                         @endforelse
                     </tbody>
                 </table>
+
+                {{-- PAGINATION --}}
+                <div class="p-3">
+                    {{ $nasabah->links('pagination::bootstrap-5') }}
+                </div>
+
             </div>
         </div>
     </div>
