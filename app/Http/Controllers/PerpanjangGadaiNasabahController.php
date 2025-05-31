@@ -248,12 +248,13 @@ class perpanjangGadaiNasabahController extends Controller
         ]);
 
         Transaksi::create([
-            'jenis_transaksi' => $type === 'cicil' ? 'cicilan_perpanjang_gadai_Nasabah' : 'perpanjang_gadai_Nasabah',
-            'arah' => 'masuk',
-            'nominal' => $total,
+            'no_bon' => $barangGadai->no_bon,
+            'id_nasabah' => $barangGadai->id_nasabah,
             'id_cabang' => auth()->user()->id_cabang,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'jenis_transaksi' => $type === 'cicil' ? 'cicilan_perpanjang' : 'perpanjang',
+            'jumlah' => $total,
+            'arus_kas' => 'masuk',
+            'id_user' => auth()->id(),
         ]);
 
 

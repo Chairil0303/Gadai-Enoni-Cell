@@ -14,32 +14,13 @@ class LelangController extends Controller
 
     public function index()
     {
-        $user = auth()->user();
+        // Get all active auctions with their related barang gadai data
+        $barangLelang = Lelang::with(['barangGadai.nasabah.user', 'barangGadai.kategori'])
+            ->where('status', 'Aktif')
+            ->latest()
+            ->get();
 
-        $query = BarangGadai::with(['nasabah.user', 'kategori', 'cabang'])
-            ->whereNotIn('status', ['Tebus', 'Lunas', 'Dilelang'])  // status aktif
-            ->whereDate('tempo', '<', now());  // yang sudah lewat tempo
-
-        // Jika user bukan superadmin dan ada kolom id_cabang, filter cabang
-        if ($user->id !== 1 && Schema::hasColumn('barang_gadai', 'id_cabang')) {
-            if (!is_null($user->id_cabang)) {
-                $query->where('id_cabang', $user->id_cabang);
-            }
-        }
-
-        $barangGadai = $query->get()->map(function ($barang) {
-            $tempo = Carbon::parse($barang->tempo);
-            $selisih = now()->diffInDays($tempo, false);
-
-            $barang->telat = $selisih < 0 ? abs($selisih) : 0;
-            $barang->sisa_hari = $selisih >= 0 ? $selisih : 0;
-
-            return $barang;
-        })->filter(function ($barang) {
-            return $barang->telat > 0; // hanya yang telat
-        });
-
-        return view('nasabah.lelang.index', compact('barangGadai'));
+        return view('nasabah.lelang.index', compact('barangLelang'));
     }
 
 
@@ -59,14 +40,14 @@ class LelangController extends Controller
             'foto_barang' => 'nullable|array',
             'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-    
+
         $fotoPaths = [];
         if ($request->hasFile('foto_barang')) {
             foreach ($request->file('foto_barang') as $file) {
                 $fotoPaths[] = $file->store('lelang_foto', 'public');
             }
         }
-    
+
         // ✅ Simpan ke dalam variabel $lelang
         $lelang = Lelang::create([
             'barang_gadai_no_bon' => $request->barang_gadai_no_bon,
@@ -75,11 +56,11 @@ class LelangController extends Controller
             'harga_lelang' => $request->harga_lelang,
             'foto_barang' => json_encode($fotoPaths),
         ]);
-    
+
         BarangGadai::where('no_bon', $request->barang_gadai_no_bon)->update([
             'status' => 'Dilelang',
         ]);
-    
+
         // Logging aktivitas
         ActivityLogger::log(
             kategori: 'lelang',
@@ -88,10 +69,10 @@ class LelangController extends Controller
             dataLama: null,
             dataBaru: $lelang->toArray()
         );
-    
+
         return redirect()->route('dashboard')->with('success', 'Data lelang berhasil ditambahkan.');
     }
-    
+
 
 
 
@@ -123,16 +104,16 @@ class LelangController extends Controller
             'foto_barang' => 'nullable|array',
             'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-    
+
         $lelang = Lelang::where('barang_gadai_no_bon', $no_bon)->first();
         if (!$lelang) {
             return redirect()->route('dashboard')->with('error', 'Data lelang tidak ditemukan.');
         }
-    
+
         $dataLama = $lelang->toArray(); // Simpan data sebelum update
-    
+
         $fotoPaths = json_decode($lelang->foto_barang, true) ?? [];
-    
+
         if ($request->has('delete_foto')) {
             foreach ($request->delete_foto as $foto) {
                 if (in_array($foto, $fotoPaths)) {
@@ -143,22 +124,22 @@ class LelangController extends Controller
                 }
             }
         }
-    
+
         if ($request->hasFile('foto_barang')) {
             foreach ($request->file('foto_barang') as $file) {
                 $filePath = $file->store('lelang_foto', 'public');
                 $fotoPaths[] = $filePath;
             }
         }
-    
+
         $lelang->kondisi_barang = $request->kondisi_barang;
         $lelang->keterangan = $request->keterangan;
         $lelang->harga_lelang = $request->harga_lelang;
         $lelang->foto_barang = json_encode($fotoPaths);
         $lelang->save();
-    
+
         $dataBaru = $lelang->toArray(); // Simpan data setelah update
-    
+
         // Logging aktivitas
         ActivityLogger::log(
             kategori: 'lelang',
@@ -167,10 +148,10 @@ class LelangController extends Controller
             dataLama: $dataLama,
             dataBaru: $dataBaru
         );
-    
+
         return redirect()->route('dashboard')->with('success', 'Data lelang berhasil diperbarui.');
     }
-    
+
 
 
 

@@ -307,7 +307,7 @@ function resumeSnap() {
     const payment = stored ? JSON.parse(stored) : null;
     const snapToken = latestSnapToken || (payment && payment.snap_token);
 
-    if (snapToken) {
+    if (snapToken && payment && payment.order_id) {
         snap.pay(snapToken, {
             onSuccess: function(result) {
                 Swal.fire({
@@ -333,7 +333,7 @@ function resumeSnap() {
                 });
             },
             onClose: function() {
-                handlePaymentCancel(data.order_id);
+                handlePaymentCancel(payment.order_id);
             }
         });
     }
@@ -381,6 +381,35 @@ document.addEventListener('DOMContentLoaded', function () {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     });
 });
+
+function handlePaymentCancel(orderId) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Batalkan Pembayaran?',
+        text: 'Transaksi akan dibatalkan jika Anda keluar.',
+        showCancelButton: true,
+        confirmButtonText: 'Batalkan',
+        cancelButtonText: 'Lanjutkan Pembayaran'
+    }).then(result => {
+        if (result.isConfirmed) {
+            // Batalkan pembayaran
+            fetch('/nasabah/cancel-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ order_id: orderId })
+            }).then(() => {
+                localStorage.removeItem('pending_payment');
+                Swal.fire('Dibatalkan', 'Pembayaran telah dibatalkan.', 'info');
+            });
+        } else {
+            // Lanjutkan pembayaran
+            showContinueButton();
+        }
+    });
+}
 </script>
 
 @endsection

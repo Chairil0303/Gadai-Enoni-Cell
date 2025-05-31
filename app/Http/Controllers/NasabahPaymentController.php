@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use App\Models\PendingPayment;
 use App\Models\PerpanjanganGadai;
 use App\Models\Transaksi;
+use App\Models\LogAktivitas;
 
 
 class NasabahPaymentController extends Controller
@@ -138,16 +139,19 @@ class NasabahPaymentController extends Controller
         ];
 
         $snapToken = Snap::getSnapToken($params);
+        $redirectUrl = "https://app.sandbox.midtrans.com/snap/v2/vtweb/" . $snapToken;
 
-            // Simpan data transaksi pending
-            PendingPayment::create([
-                'order_id' => $orderId,
-                'no_bon' => $barangGadai->no_bon,
-                'id_nasabah' => $nasabah->id_nasabah,
-                'id_cabang' => optional($nasabah->user->cabang)->id_cabang,
-                'jumlah_pembayaran' => (int) $totalBayar,
-                'status' => 'pending',
-            ]);
+        // Simpan data transaksi pending
+        PendingPayment::create([
+            'order_id' => $orderId,
+            'no_bon' => $barangGadai->no_bon,
+            'id_nasabah' => $nasabah->id_nasabah,
+            'id_cabang' => optional($nasabah->user->cabang)->id_cabang,
+            'jumlah_pembayaran' => (int) $totalBayar,
+            'status' => 'pending',
+            'snap_token' => $snapToken,
+            'redirect_url' => $redirectUrl,
+        ]);
 
 
         return response()->json([
@@ -253,6 +257,7 @@ class NasabahPaymentController extends Controller
 
             // Mendapatkan Snap Token
             $snapToken = Snap::getSnapToken($params);
+            $redirectUrl = "https://app.sandbox.midtrans.com/snap/v2/vtweb/" . $snapToken;
 
             // Simpan data transaksi pending
             PendingPayment::create([
@@ -262,17 +267,19 @@ class NasabahPaymentController extends Controller
                 'id_cabang' => optional($nasabah->user->cabang)->id_cabang,
                 'jumlah_pembayaran' => (int) $totalTebus,
                 'status' => 'pending',
+                'snap_token' => $snapToken,
+                'redirect_url' => $redirectUrl,
             ]);
 
             Transaksi::create([
-                'jenis_transaksi' => 'tebus_gadai_Nasabah',
-                'arah' => 'masuk',
-                'nominal' => $totalTebus,
+                'no_bon' => $barangGadai->no_bon,
+                'id_nasabah' => $barangGadai->id_nasabah,
                 'id_cabang' => auth()->user()->id_cabang,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'jenis_transaksi' => 'tebus',
+                'jumlah' => $totalTebus,
+                'arus_kas' => 'masuk',
+                'id_user' => auth()->id(),
             ]);
-
             return response()->json([
                 'snap_token' => $snapToken,
                 'total_bayar' => $totalTebus,
@@ -301,34 +308,38 @@ public function handleNotificationJson(Request $request)
     $noBon = explode('-', $orderId)[0];
     $isPerpanjang = str_contains($orderId, 'perpanjang');
 
-    // Ambil data barang gadai beserta relasi ke nasabah, user, dan cabang
     $barang = BarangGadai::with('nasabah.user.cabang')->where('no_bon', $noBon)->first();
-
     if (!$barang) {
         return response()->json(['message' => 'Barang tidak ditemukan'], 404);
     }
 
-    // Cek status pembayaran di pending payments
     $pending = PendingPayment::where('order_id', $orderId)->first();
     if (!$pending) {
         return response()->json(['message' => 'Transaksi tidak valid atau tidak ditemukan di pending payments.']);
     }
 
-    // Jika pembayaran berhasil
+    $user = $barang->nasabah->user ?? null;
+    $kategori = $isPerpanjang ? 'perpanjang' : 'tebus';
+    $dataLama = $barang->toArray();
+    $dataBaru = null;
+    $aksi = '';
+    $deskripsi = '';
+
     if (in_array($transaction, ['settlement', 'capture'])) {
         $pending->status = 'paid';
         $pending->save();
 
         $nasabah = $barang->nasabah;
-        $noHp = preg_replace('/^0/', '62', $nasabah->telepon); // 08xx → 62xx
+        $noHp = preg_replace('/^0/', '62', $nasabah->telepon);
         $id_cabang = optional($nasabah->user->cabang)->id_cabang;
 
         if ($isPerpanjang) {
-            // ================= PERPANJANG =================
+            $aksi = 'perpanjang_berhasil';
+            $deskripsi = 'Pembayaran perpanjang berhasil untuk bon: ' . $barang->no_bon;
             $barang->status = 'Diperpanjang';
             $barang->save();
-
-            // 🔥 Kirim WA dengan template "perpanjang"
+            $dataBaru = $barang->toArray();
+            // WA
             try {
                 $responseWA = WhatsappHelper::send($noHp, 'perpanjang', [
                     'no_bon' => $barang->no_bon,
@@ -343,10 +354,11 @@ public function handleNotificationJson(Request $request)
                 $responseWA = 'Gagal kirim WA';
             }
         } else {
-            // ================= TEBUS =================
+            $aksi = 'tebus_berhasil';
+            $deskripsi = 'Pembayaran tebus berhasil untuk bon: ' . $barang->no_bon;
             $barang->status = 'Ditebus';
             $barang->save();
-
+            $dataBaru = $barang->toArray();
             // Simpan histori transaksi tebus
             TransaksiTebus::create([
                 'no_bon' => $barang->no_bon,
@@ -356,8 +368,7 @@ public function handleNotificationJson(Request $request)
                 'jumlah_pembayaran' => (int) $grossAmount,
                 'status' => 'Berhasil',
             ]);
-
-            // 🔥 Kirim WA dengan template "tebus"
+            // WA
             try {
                 $responseWA = WhatsappHelper::send($noHp, 'tebus', [
                     'no_bon' => $barang->no_bon,
@@ -374,14 +385,33 @@ public function handleNotificationJson(Request $request)
         }
     }
 
-    // Status lainnya
     if ($transaction === 'expire') {
         $pending->status = 'expired';
         $pending->save();
+        $aksi = 'pembayaran_expired';
+        $deskripsi = 'Pembayaran expired untuk bon: ' . $barang->no_bon;
+        $dataBaru = $barang->toArray();
     } elseif ($transaction === 'cancel') {
         $pending->status = 'cancelled';
         $pending->save();
+        $aksi = 'pembayaran_cancelled';
+        $deskripsi = 'Pembayaran dibatalkan untuk bon: ' . $barang->no_bon;
+        $dataBaru = $barang->toArray();
     }
+
+    // Catat aktivitas
+    LogAktivitas::create([
+        'id_users'       => $user->id_users ?? null,
+        'id_cabang'      => $user->id_cabang ?? null,
+        'kategori'       => $kategori,
+        'aksi'           => $aksi,
+        'deskripsi'      => $deskripsi,
+        'data_lama'      => json_encode($dataLama),
+        'data_baru'      => json_encode($dataBaru),
+        'ip_address'     => request()->ip(),
+        'user_agent'     => request()->header('User-Agent'),
+        'waktu_aktivitas'=> now(),
+    ]);
 
     return response()->json(['message' => 'Notifikasi diproses.', 'wa_notif' => $responseWA ?? 'Tidak ada WA']);
 }
@@ -552,6 +582,7 @@ public function processPaymentPerpanjangJson(Request $request)
     ];
 
     $snapToken = Snap::getSnapToken($params);
+    $redirectUrl = "https://app.sandbox.midtrans.com/snap/v2/vtweb/" . $snapToken;
 
     PendingPayment::create([
         'order_id' => $orderId,
@@ -560,6 +591,8 @@ public function processPaymentPerpanjangJson(Request $request)
         'id_cabang' => optional($nasabah->user->cabang)->id_cabang,
         'jumlah_pembayaran' => (int) $totalPerpanjang,
         'status' => 'pending',
+        'snap_token' => $snapToken,
+        'redirect_url' => $redirectUrl,
     ]);
 
     return response()->json([
