@@ -14,21 +14,17 @@ class BarangGadaiController extends Controller
 {
     public function index(Request $request)
     {
-        $userId = auth()->id();
+        $user = auth()->user();
         $status = $request->input('status');
         $noBon = $request->input('no_bon');
 
-        if ($userId == 1) {
-            // Superadmin: ambil semua data
-            $query = BarangGadai::with('nasabah.user', 'kategori');
-        } else {
-            if (Schema::hasColumn('barang_gadai', 'id_cabang')) {
-                $query = BarangGadai::with('nasabah.user', 'kategori')
-                    ->where('id_cabang', auth()->user()->id_cabang);
-            } else {
-                $barangGadai = collect(); // Kolom tidak tersedia
-                return view('barang_gadai.index', compact('barangGadai'));
+        $query = BarangGadai::with(['nasabah.user', 'kategori', 'cabang']);
+
+        if ($user->id !== 1) {
+            if (!Schema::hasColumn('barang_gadai', 'id_cabang')) {
+                return view('barang_gadai.index', ['barangGadai' => collect()]);
             }
+            $query->where('id_cabang', $user->id_cabang);
         }
 
         if ($status) {
@@ -39,10 +35,11 @@ class BarangGadaiController extends Controller
             $query->where('no_bon', 'like', '%' . $noBon . '%');
         }
 
-        $barangGadai = $query->get();
+        $barangGadai = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return view('barang_gadai.index', compact('barangGadai'));
     }
+
 
     public function ubahStatusLelang($no_bon)
     {
