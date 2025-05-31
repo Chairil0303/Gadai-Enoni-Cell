@@ -55,30 +55,31 @@ class NasabahController extends Controller
 
     public function show()
     {
-
-    $user = Auth::user()->cabang;
-    $nasabah = Nasabah::all();
-
-        // return view('nasabah.profile'); // Pastikan path view kamu benar, misalnya resources/views/nasabah/profile.blade.php
-        // Mendapatkan data nasabah berdasarkan user yang sedang login
-        $nasabah = Nasabah::where('id_user', Auth::id())->first(); // Sesuaikan relasi jika berbeda
+        $user = Auth::user();
+        $nasabah = Nasabah::where('id_user', $user->id_users)->first();
 
         if (!$nasabah) {
             return redirect()->route('dashboard.nasabah')->with('error', 'Data nasabah tidak ditemukan.');
         }
-        $barangGadai = $nasabah->barangGadai;
 
+        // Get all barang gadai for this nasabah
+        $barangGadai = $nasabah->barangGadai()
+            ->where('status', 'tergadai')
+            ->with(['nasabah', 'bungaTenor'])
+            ->get();
 
-        return view('nasabah.dashboard', compact('nasabah', 'barangGadai','user'));
+        return view('nasabah.dashboard', compact('nasabah', 'barangGadai', 'user'));
     }
 
     public function myProfile()
     {
-        $nasabah = Nasabah::where('id_users', auth()->user()->id_users)->firstOrFail();
+        $nasabah = Nasabah::where('id_users', auth()->user()->id_users)
+            ->with(['barangGadai' => function($query) {
+                $query->where('status', 'tergadai');
+            }])
+            ->firstOrFail();
 
-        return view('components.dashboard.nasabah', compact('nasabah'));
-
-
+        return view('nasabah.profile', compact('nasabah'));
     }
 
     public function create()

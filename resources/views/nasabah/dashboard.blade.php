@@ -69,6 +69,28 @@
             <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-4 lg:max-w-4xl">
                 <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-4">
 
+                    <!-- Profile Section -->
+                    <a href="{{ route('nasabah.my-profile') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
+                        <dt class="text-base font-semibold text-gray-900 flex items-center space-x-4">
+                            <div class="absolute top-4 left-7 flex size-10 items-center justify-center rounded-lg bg-green-600 group-hover:bg-green-700 transition">
+                                <i class="fas fa-user-circle text-white text-xl"></i>
+                            </div>
+                            <span class="pl-12">Profil Saya</span>
+                        </dt>
+                        <dd class="mt-2 pt-3 text-base text-gray-600">Lihat dan kelola informasi profil Anda.</dd>
+                    </a>
+
+                    <!-- Syarat & Ketentuan Section -->
+                    <a href="{{ route('nasabah.terms') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
+                        <dt class="text-base font-semibold text-gray-900 flex items-center space-x-4">
+                            <div class="absolute top-4 left-7 flex size-10 items-center justify-center rounded-lg bg-green-600 group-hover:bg-green-700 transition">
+                                <i class="fas fa-file-contract text-white text-xl"></i>
+                            </div>
+                            <span class="pl-12">Syarat & Ketentuan</span>
+                        </dt>
+                        <dd class="mt-2 pt-3 text-base text-gray-600">Baca syarat dan ketentuan layanan gadai.</dd>
+                    </a>
+
                     @foreach($barangGadai as $barang)
                     <!-- Tebus Gadai -->
                     <a href="{{ route('nasabah.konfirmasi', $barang->no_bon) }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">

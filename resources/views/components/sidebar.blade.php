@@ -38,6 +38,7 @@
         @endif
         @if(auth()->user()->isNasabah())
 
+
         <li>
             <a href="{{ route('nasabah.my-profile') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('nasabah.my-profile') ? 'bg-green-600 font-semibold text-white' : '' }}">
                 <i class="fa fa-user-circle"></i> <span class="ml-2">Profil Saya</span>
@@ -48,7 +49,12 @@
                <i class="fa fa-file-contract"></i> <span class="ml-2"> Syarat & Ketentuan </span>
             </a>
         </li>
-        @endif
+        <li>
+            <a href="{{ route('nasabah.lelang') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('nasabah.lelang') ? 'bg-green-600 font-semibold text-white' : '' }}">
+               <i class="fas fa-balance-scale"></i> <span class="ml-2">Lelangan</span>
+            </a>
+        </li>
+    @endif
 
 
         {{-- Khusus Superadmin --}}
