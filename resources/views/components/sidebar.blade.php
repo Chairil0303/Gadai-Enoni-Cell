@@ -29,11 +29,13 @@
 
     <ul class="mt-4 space-y-1 px-2">
         {{-- Semua Role Bisa Akses Notifikasi --}}
+        @if(auth()->user()->role != 'Nasabah')
         <li>
-            <a href="{{ route('notifikasi.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('notifikasi.index') ? 'bg-green-600 font-semibold' : '' }}">
-                <i class="fas fa-bell mr-2"></i> Notifikasi
+            <a href="{{ route('activities.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('activities.index') ? 'bg-green-600 font-semibold' : '' }}">
+                <i class="fas fa-history mr-2"></i> Aktivitas
             </a>
         </li>
+        @endif
         @if(auth()->user()->isNasabah())
 
         <li>

@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\LaporanKeuanganController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\SuperAdminDashboardController;
 use App\Http\Controllers\StaffDashboardController;
+use App\Http\Controllers\ActivityController;
 
 
 
@@ -264,5 +265,7 @@ Route::post('/admin/terms', [AdminTermsController::class, 'update'])->name('admi
 Route::post('/nasabah/process-tebus-payment', [NasabahPaymentController::class, 'processPaymentJson']);
 Route::post('/nasabah/cancel-payment', [NasabahPaymentController::class, 'cancelPayment']);
 Route::post('/nasabah/validate-pending-payment', [NasabahPaymentController::class, 'validatePending']);
+
+Route::get('/activities', [ActivityController::class, 'index'])->name('activities.index');
 
 require __DIR__.'/auth.php';
