@@ -225,29 +225,29 @@ public function getDetail($no_bon)
     }
 
     public function updateNobon(Request $request, $no_bon)
-{
-    // Ambil data barang gadai berdasarkan no_bon
-    $barangGadai = BarangGadai::where('no_bon', $no_bon)->firstOrFail();
+    {
+        // Ambil data barang gadai berdasarkan no_bon
+        $barangGadai = BarangGadai::where('no_bon', $no_bon)->firstOrFail();
 
-    // Validasi input no_bon agar unik, kecuali untuk barang gadai yang sedang di-update
-    $request->validate([
-        'no_bon' => [
-            'required',
-            'string',
-            Rule::unique('barang_gadai', 'no_bon')->ignore($barangGadai->no_bon, 'no_bon'),
-        ],
-    ]);
+        // Validasi input no_bon agar unik, kecuali untuk barang gadai yang sedang di-update
+        $request->validate([
+            'no_bon' => [
+                'required',
+                'string',
+                Rule::unique('barang_gadai', 'no_bon')->ignore($barangGadai->no_bon, 'no_bon'),
+            ],
+        ]);
 
-    // Update no_bon dengan nilai yang diberikan admin
-    $barangGadai->update([
-        'no_bon' => $request->no_bon,
-    ]);
+        // Update no_bon dengan nilai yang diberikan admin
+        $barangGadai->update([
+            'no_bon' => $request->no_bon,
+        ]);
 
-    // Redirect ke halaman index dengan pesan sukses
-    return redirect()->route('barang_gadai.diperpanjang_dm')->with('success', 'Nomor Bon berhasil diperbarui.');
+        // Redirect ke halaman index dengan pesan sukses
+        return redirect()->route('barang_gadai.diperpanjang_dm')->with('success', 'Nomor Bon berhasil diperbarui.');
 
-    // return redirect()->route('tampilBarangDiperpanjangDenganDm')->with('success', 'Nomor Bon berhasil diperbarui.');
-}
+        // return redirect()->route('tampilBarangDiperpanjangDenganDm')->with('success', 'Nomor Bon berhasil diperbarui.');
+    }
 
 
 
