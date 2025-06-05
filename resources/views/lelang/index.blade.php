@@ -14,59 +14,61 @@
                             {{ session('success') }}
                         </div>
                     @endif
-                    <table class="table table-striped table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                @if (auth()->user()->isSuperadmin())
-                                    <th>Cabang</th>
-                                @endif
-                                <th>Tipe Barang</th>
-                                <th>Tempo</th>
-                                <th>Telat</th>
-                                <th>Detail</th>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    @if (auth()->user()->isSuperadmin())
+                                        <th>Cabang</th>
+                                    @endif
+                                    <th>Tipe Barang</th>
+                                    <th>Tempo</th>
+                                    <th>Telat</th>
+                                    <th>Detail</th>
 
-                                @if (auth()->user()->isSuperadmin() || auth()->user()->isAdmin())
-                                    <th>Aksi</th>
-                                @endif
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($barangGadai as $barang)
-                            <tr>
-                                @if (auth()->user()->isSuperadmin())
-                                    <td>{{ $barang->cabang->nama_cabang }}</td>
-                                @endif
-                                <td>{{ $barang->nama_barang }}</td>
-                                <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
-                                <td>
-                                    @if($barang->telat > 0)
-                                        <span style="color: red;">Telat {{ $barang->telat }} hari</span>
-                                    @else
-                                        <span style="color: black;">Sisa {{ $barang->sisa_hari }} hari</span>
+                                    @if (auth()->user()->isSuperadmin() || auth()->user()->isAdmin())
+                                        <th>Aksi</th>
                                     @endif
-                                </td>
-                                <td>
-                                    <button class="btn btn-info btn-sm" onclick="showDetail('{{ $barang->no_bon }}')">
-                                        <i class="fas fa-info-circle"></i> Detail
-                                    </button>
-                                </td>
-                                @if (auth()->user()->isSuperadmin() || auth()->user()->isAdmin())
-                                <td>
-                                    @if ($barang->status !== 'Dilelang')
-                                        <a href="{{ route('lelang.create', $barang->no_bon) }}" class="btn btn-success btn-sm">
-                                            <i class="fas fa-gavel"></i> Lelang
-                                        </a>
-                                    @else
-                                        <a href="{{ route('lelang.edit', $barang->no_bon) }}" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($barangGadai as $barang)
+                                <tr>
+                                    @if (auth()->user()->isSuperadmin())
+                                        <td>{{ $barang->cabang->nama_cabang }}</td>
                                     @endif
-                                </td>
-                                @endif
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                    <td>{{ $barang->nama_barang }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
+                                    <td>
+                                        @if($barang->telat > 0)
+                                            <span class="text-danger">Telat {{ $barang->telat }} hari</span>
+                                        @else
+                                            <span class="text-dark">Sisa {{ $barang->sisa_hari }} hari</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-info btn-sm" onclick="showDetail('{{ $barang->no_bon }}')">
+                                            <i class="fas fa-info-circle"></i> Detail
+                                        </button>
+                                    </td>
+                                    @if (auth()->user()->isSuperadmin() || auth()->user()->isAdmin())
+                                    <td>
+                                        @if ($barang->status !== 'Dilelang')
+                                            <a href="{{ route('lelang.create', $barang->no_bon) }}" class="btn btn-success btn-sm">
+                                                <i class="fas fa-gavel"></i> Lelang
+                                            </a>
+                                        @else
+                                            <a href="{{ route('lelang.edit', $barang->no_bon) }}" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                        @endif
+                                    </td>
+                                    @endif
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,7 +101,12 @@
 <script>
     function showDetail(noBon) {
         fetch(`/barang-gadai/detail/${noBon}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 document.getElementById('noBon').innerText = data.no_bon;
                 document.getElementById('kategori').innerText = data.kategori;
@@ -107,7 +114,13 @@
                 document.getElementById('tenor').innerText = data.tenor;
                 document.getElementById('hargaGadai').innerText = new Intl.NumberFormat().format(data.harga_gadai);
                 document.getElementById('createdAt').innerText = data.created_at;
-                new bootstrap.Modal(document.getElementById('detailModal')).show();
+                // Pastikan modal Bootstrap diinisialisasi dan ditampilkan
+                const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
+                detailModal.show();
+            })
+            .catch(error => {
+                console.error('Error fetching detail:', error);
+                alert('Gagal memuat detail barang. Silakan cek konsol browser untuk informasi lebih lanjut.');
             });
     }
 </script>
