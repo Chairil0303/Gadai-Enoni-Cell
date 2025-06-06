@@ -8,21 +8,35 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\ActivityLogger;
+use Illuminate\Support\Facades\Auth;
 
 class LelangController extends Controller
 {
 
-    public function index()
+    
+    public function index(Request $request)
     {
-        // Get all active auctions with their related barang gadai data
-        $barangLelang = Lelang::with(['barangGadai.nasabah.user', 'barangGadai.kategori'])
-            ->where('status', 'Aktif')
-            ->latest()
-            ->get();
+        $view = $request->get('view', 'telat');
+        $user = Auth::user();
 
-        return view('nasabah.lelang.index', compact('barangLelang'));
+        if ($view === 'lelang') {
+            $query = BarangGadai::where('status', 'Dilelang');
+        } else {
+            $query = BarangGadai::where('status', '!=', 'Dilelang');
+        }
+
+        // Filter cabang jika bukan superadmin
+        if (!$user->isSuperadmin()) {
+            $query->where('id_cabang', $user->id_cabang);
+        }
+
+        $data = $query->get();
+
+        return view('lelang.index', [
+            'view' => $view,
+            $view === 'lelang' ? 'barangLelang' : 'barangGadai' => $data
+        ]);
     }
-
 
     public function create($no_bon)
     {
