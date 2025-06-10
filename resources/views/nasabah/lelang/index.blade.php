@@ -8,7 +8,7 @@
         </a>
     </div>
     <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold text-primary">Daftar Barang Lelang</h1>
+        <h1 class="display-4 fw-bold text-success">Daftar Barang Lelang</h1>
         <p class="lead text-muted">Temukan barang unik dengan harga terbaik</p>
     </div>
 
@@ -21,16 +21,25 @@
     @else
         <div class="row g-4">
             @foreach($barangLelang as $barang)
+                @php
+                    $fotoArray = json_decode($barang->foto_barang, true);
+                @endphp
                 <div class="col-md-4">
                     <div class="card h-100 shadow-sm hover-shadow transition-all">
                         <div class="position-relative">
                             <div style="height: 250px; overflow: hidden;">
-                                <img
-                                    src="{{ asset('storage/' . json_decode($barang->foto_barang)[0]) }}"
-                                    class="card-img-top img-fluid h-100 w-100"
-                                    alt="Foto Barang"
-                                    style="object-fit: cover;"
-                                >
+                                @if(!empty($fotoArray) && isset($fotoArray[0]))
+                                    <img
+                                        src="{{ asset('storage/' . $fotoArray[0]) }}"
+                                        class="card-img-top img-fluid h-100 w-100"
+                                        alt="Foto Barang"
+                                        style="object-fit: cover;"
+                                    >
+                                @else
+                                    <div class="d-flex align-items-center justify-content-center bg-light text-muted h-100 w-100" style="height: 250px;">
+                                        Tidak ada gambar
+                                    </div>
+                                @endif
                             </div>
                             <div class="position-absolute top-0 end-0 m-3">
                                 <span class="badge bg-primary">Lelang</span>
@@ -46,7 +55,7 @@
                             <p class="card-text fw-bold text-primary mb-3">
                                 Rp {{ number_format($barang->harga_lelang, 0, ',', '.') }}
                             </p>
-                            <button class="btn btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#barangLelangModal{{ $barang->id }}">
+                            <button class="btn btn-success mt-auto" data-bs-toggle="modal" data-bs-target="#barangLelangModal{{ $barang->id }}">
                                 <i class="fas fa-eye me-1"></i> Lihat Detail
                             </button>
                         </div>
@@ -66,25 +75,31 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <div id="carousel{{ $barang->id }}" class="carousel slide mb-4" data-bs-ride="carousel">
-                                            <div class="carousel-inner">
-                                                @foreach(json_decode($barang->foto_barang) as $index => $foto)
-                                                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                                                        <img src="{{ asset('storage/' . $foto) }}" class="d-block w-100 rounded" alt="Foto Barang Lelang" style="height: 300px; object-fit: cover;">
-                                                    </div>
-                                                @endforeach
+                                        @if(!empty($fotoArray))
+                                            <div id="carousel{{ $barang->id }}" class="carousel slide mb-4" data-bs-ride="carousel">
+                                                <div class="carousel-inner">
+                                                    @foreach($fotoArray as $index => $foto)
+                                                        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                                                            <img src="{{ asset('storage/' . $foto) }}" class="d-block w-100 rounded" alt="Foto Barang Lelang" style="height: 300px; object-fit: cover;">
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                @if(count($fotoArray) > 1)
+                                                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ $barang->id }}" data-bs-slide="prev">
+                                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                        <span class="visually-hidden">Previous</span>
+                                                    </button>
+                                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ $barang->id }}" data-bs-slide="next">
+                                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                        <span class="visually-hidden">Next</span>
+                                                    </button>
+                                                @endif
                                             </div>
-                                            @if(count(json_decode($barang->foto_barang)) > 1)
-                                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ $barang->id }}" data-bs-slide="prev">
-                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                    <span class="visually-hidden">Previous</span>
-                                                </button>
-                                                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ $barang->id }}" data-bs-slide="next">
-                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                    <span class="visually-hidden">Next</span>
-                                                </button>
-                                            @endif
-                                        </div>
+                                        @else
+                                            <div class="bg-light text-center text-muted d-flex align-items-center justify-content-center" style="height: 300px;">
+                                                Tidak ada gambar
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="col-md-6">
                                         <h4 class="fw-bold mb-3">{{ $barang->barangGadai->nama_barang }}</h4>
