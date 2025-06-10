@@ -69,6 +69,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | WhatsApp Admin Number
+    |--------------------------------------------------------------------------
+    |
+    | This value is the WhatsApp number for the admin, used for direct communication.
+    |
+    */
+
+    'whatsapp_admin_number' => env('WHATSAPP_ADMIN_NUMBER', '6281234567890'), // Default number
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |

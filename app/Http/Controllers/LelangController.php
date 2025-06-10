@@ -15,7 +15,7 @@ class LelangController extends Controller
     public function index()
     {
         // Get all active auctions with their related barang gadai data
-        $barangLelang = Lelang::with(['barangGadai.nasabah.user', 'barangGadai.kategori'])
+        $barangLelang = Lelang::with(['barangGadai.nasabah.user', 'barangGadai.kategori', 'barangGadai.cabang'])
             ->where('status', 'Aktif')
             ->latest()
             ->get();
