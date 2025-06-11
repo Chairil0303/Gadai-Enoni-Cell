@@ -122,8 +122,8 @@
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                     <i class="fas fa-times me-1"></i> Tutup
                                 </button>
-                                <a href="#" class="btn btn-primary">
-                                    <i class="fas fa-gavel me-1"></i> Ikut Lelang
+                                <a href="https://wa.me/{{ $barang->barangGadai->cabang->kontak }}?text=Halo%20Admin%20{{ $barang->barangGadai->cabang->nama_cabang }}%2C%20saya%20tertarik%20dengan%20barang%20lelang%20{{ $barang->barangGadai->nama_barang }}" class="btn btn-primary" target="_blank">
+                                    <i class="fab fa-whatsapp me-1"></i> Hubungi Admin
                                 </a>
                             </div>
                         </div>
