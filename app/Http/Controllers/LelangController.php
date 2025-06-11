@@ -146,12 +146,20 @@ class LelangController extends Controller
         return redirect()->route('dashboard')->with('success', 'Data lelang berhasil diperbarui.');
     }
 
-    public function daftarBarangLelang()
+    public function daftarBarangLelang(Request $request)
     {
-        $barangLelang = Lelang::with(['barangGadai.cabang'])
+        $sort = $request->get('sort', 'created_at');
+
+        $allowedSorts = ['no_bon', 'nama_barang', 'harga_lelang'];
+        $sortField = in_array($sort, $allowedSorts) ? $sort : 'created_at';
+
+        $barangLelang = Lelang::with('barangGadai')
             ->where('status', 'Aktif')
-            ->latest()
-            ->get();
+            ->when($sortField === 'no_bon', fn($q) => $q->join('barang_gadai', 'lelang.barang_gadai_no_bon', '=', 'barang_gadai.no_bon')->orderBy('barang_gadai.no_bon'))
+            ->when($sortField === 'nama_barang', fn($q) => $q->join('barang_gadai', 'lelang.barang_gadai_no_bon', '=', 'barang_gadai.no_bon')->orderBy('barang_gadai.nama_barang'))
+            ->when($sortField === 'harga_lelang', fn($q) => $q->orderBy('harga_lelang'))
+            ->select('lelang.*') // hindari masalah join
+            ->paginate(10);
 
         return view('lelang.baranglelang', compact('barangLelang'));
     }
