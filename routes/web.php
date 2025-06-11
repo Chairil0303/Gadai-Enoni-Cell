@@ -227,6 +227,7 @@ Route::post('/admin/terms', [AdminTermsController::class, 'update'])->name('admi
     Route::put('/lelang/{no_bon}', [LelangController::class, 'update'])->name('lelang.update');
     Route::delete('/lelang/{id}/hapus-foto/{index}', [LelangController::class, 'hapusFoto'])->name('lelang.hapusFoto');
     Route::get('/barang-gadai/detail/{no_bon}', [BarangGadaiController::class, 'getDetail']);
+    Route::get('/admin/barang-lelang', [LelangController::class, 'daftarBarangLelang'])->name('admin.barang-lelang');
 
 
 // Route untuk update (pastikan ini sesuai juga)

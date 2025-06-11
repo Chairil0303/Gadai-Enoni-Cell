@@ -73,12 +73,6 @@ class LelangController extends Controller
         return redirect()->route('dashboard')->with('success', 'Data lelang berhasil ditambahkan.');
     }
 
-
-
-
-
-
-
     public function edit($no_bon)
     {
         $lelang = Lelang::where('barang_gadai_no_bon', $no_bon)->first();
@@ -150,6 +144,16 @@ class LelangController extends Controller
         );
 
         return redirect()->route('dashboard')->with('success', 'Data lelang berhasil diperbarui.');
+    }
+
+    public function daftarBarangLelang()
+    {
+        $barangLelang = Lelang::with(['barangGadai.cabang'])
+            ->where('status', 'Aktif')
+            ->latest()
+            ->get();
+
+        return view('lelang.baranglelang', compact('barangLelang'));
     }
 
 

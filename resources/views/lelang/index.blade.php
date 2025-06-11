@@ -2,6 +2,9 @@
 
 @section('content')
 <div class="container">
+    <a href="{{ route('admin.barang-lelang') }}" class="btn btn-primary mb-3">
+        <i class="fas fa-gavel"></i> Lihat Barang yang Sudah Dilelang
+    </a>
     <div class="row">
         <div class="col-md-12">
             <div class="card shadow-lg">
