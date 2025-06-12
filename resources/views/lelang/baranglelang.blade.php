@@ -17,27 +17,15 @@
             @if($barangLelang->isEmpty())
                 <div class="alert alert-info">Belum ada data barang lelang yang aktif.</div>
             @else
-            
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-hover">
                         <thead class="table-dark">
                             <tr>
-                                <th>
-                                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'no_bon']) }}" class="text-white text-decoration-none">
-                                        No Bon
-                                    </a>
-                                </th>
-                                <th>
-                                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'nama_barang']) }}" class="text-white text-decoration-none">
-                                        Nama Barang
-                                    </a>
-                                </th>
-                                <th>
-                                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'harga_lelang']) }}" class="text-white text-decoration-none">
-                                        Harga Lelang
-                                    </a>
-                                </th>
+                                <th>No Bon</th>
+                                <th>Nama Barang</th>
+                                <th>Harga Lelang</th>
                                 <th>Aksi</th>
+                                <th>Jual</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,11 +39,23 @@
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
                                 </td>
+                                <td>
+                                    @if($item->status === 'Tebus')
+                                        <span class="badge bg-success">Terjual</span>
+                                    @else
+                                        <form action="{{ route('lelang.jual', $item->id) }}" method="POST" class="d-inline form-jual">
+                                            @csrf
+                                            <button type="button" class="btn btn-primary btn-sm btn-confirm-jual" data-id="{{ $item->id }}">
+                                                <i class="fas fa-cash-register"></i> Jual
+                                            </button>
+                                        </form>
+                                    @endif
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    {{-- Pagination --}}
+
                     <div class="d-flex justify-content-center mt-3">
                         {{ $barangLelang->links() }}
                     </div>
@@ -64,4 +64,37 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const jualButtons = document.querySelectorAll('.btn-confirm-jual');
+
+        jualButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                const form = this.closest('form');
+
+                Swal.fire({
+                    title: 'Yakin barang ini terjual?',
+                    text: "Status akan berubah menjadi 'Tebus'.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, jualkan!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
 @endsection

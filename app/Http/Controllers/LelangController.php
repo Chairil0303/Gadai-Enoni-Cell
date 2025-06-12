@@ -190,6 +190,21 @@ class LelangController extends Controller
         return view('lelang.baranglelang', compact('barangLelang'));
     }
 
+    public function jual($id)
+    {
+        $lelang = Lelang::findOrFail($id);
+
+        if ($lelang->status === 'Tebus') {
+            return back()->with('success', 'Barang ini sudah ditandai sebagai terjual.');
+        }
+
+        $lelang->status = 'Tebus';
+        $lelang->save();
+
+        return back()->with('success', 'Barang berhasil ditandai sebagai terjual.');
+    }
+
+
 
 
 
