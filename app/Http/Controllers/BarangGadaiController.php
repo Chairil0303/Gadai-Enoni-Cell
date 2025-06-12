@@ -82,7 +82,8 @@ public function getDetail($no_bon)
 
         // Ambil barang yang tempo-nya sudah lewat
         $query = BarangGadai::with('nasabah.user', 'kategori')
-            ->whereDate('tempo', '<', now());
+            ->whereDate('tempo', '<', now())
+            ->where('status', '!=', 'Ditebus');
 
         // Jika bukan superadmin (user id ≠ 1)
         if ($user->id !== 1) {

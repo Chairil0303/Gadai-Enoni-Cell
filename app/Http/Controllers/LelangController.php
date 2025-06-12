@@ -8,7 +8,12 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\ActivityLogger;
+    
 
+/**
+ * LelangController handles the auction-related functionalities.
+ * It allows users to create, update, and view auctions for pawned items.
+ */
 class LelangController extends Controller
 {
 
@@ -148,19 +153,36 @@ class LelangController extends Controller
 
     public function daftarBarangLelang(Request $request)
     {
-        $sort = $request->get('sort', 'created_at');
-
-        $allowedSorts = ['no_bon', 'nama_barang', 'harga_lelang'];
-        $sortField = in_array($sort, $allowedSorts) ? $sort : 'created_at';
-
-        $barangLelang = Lelang::with('barangGadai')
-            ->where('status', 'Aktif')
-            ->when($sortField === 'no_bon', fn($q) => $q->join('barang_gadai', 'lelang.barang_gadai_no_bon', '=', 'barang_gadai.no_bon')->orderBy('barang_gadai.no_bon'))
-            ->when($sortField === 'nama_barang', fn($q) => $q->join('barang_gadai', 'lelang.barang_gadai_no_bon', '=', 'barang_gadai.no_bon')->orderBy('barang_gadai.nama_barang'))
-            ->when($sortField === 'harga_lelang', fn($q) => $q->orderBy('harga_lelang'))
-            ->select('lelang.*') // hindari masalah join
-            ->paginate(10);
-
+        $query = Lelang::with('barangGadai')
+            ->where('status', 'Aktif');
+    
+        // Filter pencarian
+        if ($search = $request->get('search')) {
+            $query->whereHas('barangGadai', function ($q) use ($search) {
+                $q->where('no_bon', 'like', "%$search%")
+                  ->orWhere('nama_barang', 'like', "%$search%");
+            });
+        }
+    
+        // Sorting
+        if ($sort = $request->get('sort')) {
+            if ($sort === 'no_bon') {
+                $query->join('barang_gadai', 'lelang.barang_gadai_no_bon', '=', 'barang_gadai.no_bon')
+                      ->orderBy('barang_gadai.no_bon')
+                      ->select('lelang.*');
+            } elseif ($sort === 'nama_barang') {
+                $query->join('barang_gadai', 'lelang.barang_gadai_no_bon', '=', 'barang_gadai.no_bon')
+                      ->orderBy('barang_gadai.nama_barang')
+                      ->select('lelang.*');
+            } elseif ($sort === 'harga_lelang') {
+                $query->orderBy('harga_lelang');
+            }
+        } else {
+            $query->latest();
+        }
+    
+        $barangLelang = $query->paginate(10)->appends($request->all());
+    
         return view('lelang.baranglelang', compact('barangLelang'));
     }
 

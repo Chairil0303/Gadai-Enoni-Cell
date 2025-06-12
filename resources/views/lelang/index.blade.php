@@ -2,33 +2,33 @@
 
 @section('content')
 <div class="container">
-    <a href="{{ route('admin.barang-lelang') }}" class="btn btn-primary mb-3">
-        <i class="fas fa-gavel"></i> Lihat Barang yang Sudah Dilelang
-    </a>
     <div class="row">
         <div class="col-md-12">
             <div class="card shadow-lg">
-                <div class="card-header bg-success text-white">
-                    <h4><i class="fas fa-box"></i> Data Barang Telat</h4>
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-box"></i> Data Barang Telat</h4>
+                    <a href="{{ route('admin.barang-lelang') }}" class="btn btn-light text-success">
+                        <i class="fas fa-gavel"></i> Barang Dilelang
+                    </a>
                 </div>
                 <div class="card-body">
                     @if (session('success'))
-                        <div class="mb-4 p-4 bg-green-100 text-green-800 border border-green-400 rounded">
+                        <div class="alert alert-success">
                             {{ session('success') }}
                         </div>
                     @endif
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
+                        <table class="table table-striped table-hover align-middle">
                             <thead class="table-dark">
                                 <tr>
                                     @if (auth()->user()->isSuperadmin())
                                         <th>Cabang</th>
                                     @endif
+                                    <th>No Bon</th>
                                     <th>Tipe Barang</th>
                                     <th>Tempo</th>
                                     <th>Telat</th>
                                     <th>Detail</th>
-
                                     @if (auth()->user()->isSuperadmin() || auth()->user()->isAdmin())
                                         <th>Aksi</th>
                                     @endif
@@ -38,15 +38,16 @@
                                 @foreach($barangGadai as $barang)
                                 <tr>
                                     @if (auth()->user()->isSuperadmin())
-                                        <td>{{ $barang->cabang->nama_cabang }}</td>
+                                        <td>{{ $barang->cabang->nama_cabang ?? '-' }}</td>
                                     @endif
+                                    <td>{{ $barang->no_bon }}</td>
                                     <td>{{ $barang->nama_barang }}</td>
                                     <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
                                     <td>
                                         @if($barang->telat > 0)
-                                            <span class="text-danger">Telat {{ $barang->telat }} hari</span>
+                                            <span class="badge bg-danger">Telat {{ $barang->telat }} hari</span>
                                         @else
-                                            <span class="text-dark">Sisa {{ $barang->sisa_hari }} hari</span>
+                                            <span class="badge bg-secondary">Sisa {{ $barang->sisa_hari }} hari</span>
                                         @endif
                                     </td>
                                     <td>
@@ -71,6 +72,11 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        @if($barangGadai->isEmpty())
+                            <div class="text-center text-muted mt-3">
+                                <em>Tidak ada barang yang telat saat ini.</em>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -117,13 +123,12 @@
                 document.getElementById('tenor').innerText = data.tenor;
                 document.getElementById('hargaGadai').innerText = new Intl.NumberFormat().format(data.harga_gadai);
                 document.getElementById('createdAt').innerText = data.created_at;
-                // Pastikan modal Bootstrap diinisialisasi dan ditampilkan
                 const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
                 detailModal.show();
             })
             .catch(error => {
                 console.error('Error fetching detail:', error);
-                alert('Gagal memuat detail barang. Silakan cek konsol browser untuk informasi lebih lanjut.');
+                alert('Gagal memuat detail barang. Silakan cek konsol browser.');
             });
     }
 </script>
