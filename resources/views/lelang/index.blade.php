@@ -7,8 +7,8 @@
             <div class="card shadow-lg">
                 <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                     <h4 class="mb-0"><i class="fas fa-box"></i> Data Barang Telat</h4>
-                    <a href="{{ route('admin.barang-lelang') }}" class="btn btn-light text-success">
-                        <i class="fas fa-gavel"></i> Barang Dilelang
+                    <a href="{{ route('lelang.pilihan') }}" class="btn btn-light text-success">
+                        Kembali
                     </a>
                 </div>
                 <div class="card-body">

@@ -16,7 +16,11 @@ use App\Helpers\ActivityLogger;
  */
 class LelangController extends Controller
 {
-
+    public function pilihan()
+    {
+        return view('lelang.pilihan');
+    }
+    
     public function index()
     {
         // Get all active auctions with their related barang gadai data

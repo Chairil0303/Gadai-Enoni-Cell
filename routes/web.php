@@ -229,6 +229,8 @@ Route::post('/admin/terms', [AdminTermsController::class, 'update'])->name('admi
     Route::get('/barang-gadai/detail/{no_bon}', [BarangGadaiController::class, 'getDetail']);
     Route::get('/admin/barang-lelang', [LelangController::class, 'daftarBarangLelang'])->name('admin.barang-lelang');
 
+    // Halaman pilihan
+    Route::get('/lelang/pilihan', [LelangController::class, 'pilihan'])->name('lelang.pilihan');
 
 // Route untuk update (pastikan ini sesuai juga)
     Route::put('/barang_gadai/{no_bon}/update-nobon', [BarangGadaiController::class, 'updateNobon'])->name('barang_gadai.update_nobon');

@@ -5,7 +5,7 @@
     <div class="card shadow">
         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
             <h4><i class="fas fa-gavel"></i> Data Barang yang Sudah Dilelang</h4>
-            <a href="{{ route('lelang.index') }}" class="btn btn-secondary btn-sm">
+            <a href="{{ route('lelang.pilihan') }}" class="btn btn-secondary btn-sm">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
         </div>
