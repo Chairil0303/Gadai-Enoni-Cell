@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Transaksi;
 use App\Models\BarangGadai;
 use App\Models\Lelang;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\ActivityLogger;
     
@@ -192,16 +194,41 @@ class LelangController extends Controller
 
     public function jual($id)
     {
-        $lelang = Lelang::findOrFail($id);
+        $lelang = Lelang::with('barangGadai')->findOrFail($id);
+         // Ambil user yang login
+        $user = Auth::user();
 
-        if ($lelang->status === 'Tebus') {
-            return back()->with('success', 'Barang ini sudah ditandai sebagai terjual.');
-        }
+        // Simpan data lama untuk log
+        $dataLama = $lelang->toArray();
 
+        // Update status jadi 'Tebus'
         $lelang->status = 'Tebus';
         $lelang->save();
 
-        return back()->with('success', 'Barang berhasil ditandai sebagai terjual.');
+        // Data baru setelah update
+        $dataBaru = $lelang->toArray();
+
+        // Simpan transaksi ke tabel `transaksi`
+        Transaksi::create([
+            'no_bon'          => $lelang->barang_gadai_no_bon,
+            'id_nasabah'      => $lelang->barangGadai->id_nasabah,
+            'id_user'         => $user->id_users,
+            'id_cabang'       => $user->id_cabang,
+            'jenis_transaksi' => 'tebus',
+            'arus_kas'        => 'masuk',
+            'jumlah'          => $lelang->harga_lelang,
+        ]);
+
+        // Logging aktivitas
+        ActivityLogger::log(
+            kategori: 'transaksi',
+            aksi: 'jual',
+            deskripsi: 'Menjual barang lelang No Bon: ' . $lelang->barang_gadai_no_bon . ' - ' . $lelang->barangGadai->nama_barang,
+            dataLama: json_encode($dataLama),
+            dataBaru: json_encode($dataBaru)
+        );
+
+        return redirect()->back()->with('success', 'Barang berhasil dijual dan transaksi dicatat.');
     }
 
 
