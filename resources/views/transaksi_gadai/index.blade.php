@@ -37,18 +37,7 @@
                     <span class="pl-12">Perpanjang Gadai</span>
                 </dt>
                 <dd class="mt-2 pt-3 text-base text-gray-600">Tambahkan jangka waktu untuk gadai barang.</dd>
-            </a>
-
-            <!-- Terima Jual -->
-            <a href="{{ url('/transaksi_gadai/terima_jual') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">
-                <dt class="text-base font-semibold text-gray-900 flex items-center space-x-4">
-                    <div class="absolute top-4 left-7 flex size-10 items-center justify-center rounded-lg bg-green-600 group-hover:bg-green-700 transition">
-                        <i class="fas fa-store text-white text-lg"></i>
-                    </div>
-                    <span class="pl-12">Terima Jual</span>
-                </dt>
-                <dd class="mt-2 pt-3 text-base text-gray-600">Jual barang langsung ke koperasi dengan harga terbaik.</dd>
-            </a>
+            </a>  
 
             <!-- Lelangan -->
             <a href="{{ route('lelang.index') }}" class="no-underline group relative pl-16 block hover:bg-gray-100 p-4 rounded-lg transition">

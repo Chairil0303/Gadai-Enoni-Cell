@@ -18,7 +18,7 @@
 @endsection
 
 @section('content')
-<div class="container mt-4">
+<!-- <div class="container mt-4">
     <h4 class="mb-4 text-success"><i class="fas fa-user-cog"></i> Dashboard Staff</h4>
 
     {{-- Statistik Hari Ini --}}
@@ -93,7 +93,7 @@
             <canvas id="chartStaff" height="100"></canvas>
         </div>
     </div>
-</div>
+</div> -->
 @endsection
 
 @section('scripts')
