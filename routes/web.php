@@ -250,6 +250,7 @@ Route::post('/admin/terms', [AdminTermsController::class, 'update'])->name('admi
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::put('/nasabah/update-password', [NasabahController::class, 'updatePassword'])->name('nasabah.update-password');
+    Route::post('/nasabah/validate-password', [NasabahController::class, 'validatePassword'])->name('nasabah.validate-password');
 
     // Halaman form input gadai
     Route::get('/gadai/create', [GadaiController::class, 'create'])->name('gadai.create');

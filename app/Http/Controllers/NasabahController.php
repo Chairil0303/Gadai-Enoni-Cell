@@ -197,11 +197,38 @@ class NasabahController extends Controller
             return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai']);
         }
 
+        // Check if new password is different from current password
+        if (Hash::check($request->new_password, $user->password)) {
+            return back()->withErrors(['new_password' => 'Password baru tidak boleh sama dengan password saat ini']);
+        }
+
         // Update password
         $user->update([
             'password' => Hash::make($request->new_password)
         ]);
 
         return back()->with('success', 'Password berhasil diperbarui');
+    }
+
+    public function validatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+        ]);
+
+        $user = auth()->user();
+
+        // Verify current password
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Password saat ini tidak sesuai'
+            ]);
+        }
+
+        return response()->json([
+            'valid' => true,
+            'message' => 'Password valid'
+        ]);
     }
 }
