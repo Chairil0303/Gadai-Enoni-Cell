@@ -82,7 +82,7 @@ public function getDetail($no_bon)
 
         // Ambil barang yang tempo-nya sudah lewat
         $query = BarangGadai::with('nasabah.user', 'kategori')
-            ->whereDate('tempo', '<', now())
+            ->whereDate('tempo', '<', now())    
             ->where('status', '!=', 'Ditebus');
 
         // Jika bukan superadmin (user id ≠ 1)
@@ -250,14 +250,11 @@ public function getDetail($no_bon)
         // return redirect()->route('tampilBarangDiperpanjangDenganDm')->with('success', 'Nomor Bon berhasil diperbarui.');
     }
 
-
-
-
-
-
     public function destroy(BarangGadai $barangGadai)
     {
-        if ($barangGadai->id_user !== auth()->id()) {
+        $user = auth()->user();
+
+        if (!$user->isSuperadmin() && $barangGadai->id_user !== $user->id) {
             abort(403, 'Unauthorized action.');
         }
 
