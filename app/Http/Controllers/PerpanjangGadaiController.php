@@ -160,20 +160,15 @@ class PerpanjangGadaiController extends Controller
         return redirect()->route('barang_gadai.index')->with('success', 'Perpanjangan berhasil disimpan.');
     }
 
-
-
-
     public function konfirmasi()
-{
-    $data = session('konfirmasi_data');
+    {
+        $data = session('konfirmasi_data');
 
-    if (!$data) {
-        return redirect()->route('perpanjang_gadai.create')->with('error', 'Data tidak ditemukan. Silakan isi ulang formulir.');
+        if (!$data) {
+            return redirect()->route('perpanjang_gadai.create')->with('error', 'Data tidak ditemukan. Silakan isi ulang formulir.');
+        }
+        return view('perpanjang_gadai.detail', $data); // tampilkan view konfirmasi
     }
-    return view('perpanjang_gadai.detail', $data); // tampilkan view konfirmasi
-}
-
-
 
     public function submitForm(Request $request)
     {

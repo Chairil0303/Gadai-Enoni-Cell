@@ -74,7 +74,7 @@
                     <i class="fas fa-percentage mr-2"></i> Bunga & Tenor
                 </a>
             </li>
-            <li><a href="{{ route('lelang.index') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('lelang.index') ? 'bg-green-600 font-semibold' : '' }}"><i class="fas fa-balance-scale mr-2"></i> Lelang</a></li>
+            <li><a href="{{ route('lelang.pilihan') }}" class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white {{ request()->routeIs('lelang.index') ? 'bg-green-600 font-semibold' : '' }}"><i class="fas fa-balance-scale mr-2"></i> Lelang</a></li>
             <li>
                 <a href="{{ route('superadmin.laporan.index') }}"
                 class="py-2 no-underline block px-4 rounded hover:bg-gray-700 text-white

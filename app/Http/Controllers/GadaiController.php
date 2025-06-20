@@ -18,10 +18,10 @@ class GadaiController extends Controller
 {
 
     public function index()
-{
-    $barangGadai = BarangGadai::with(['kategori', 'nasabah'])->get();
-    return view('barang_gadai.index', compact('barangGadai'));
-}
+    {
+        $barangGadai = BarangGadai::with(['kategori', 'nasabah'])->get();
+        return view('barang_gadai.index', compact('barangGadai'));
+    }
 
     public function create()
     {

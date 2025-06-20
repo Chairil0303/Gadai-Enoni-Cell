@@ -25,9 +25,15 @@ class LelangController extends Controller
     
     public function index()
     {
-        // Get all active auctions with their related barang gadai data
+        $user = Auth::user();
+
         $barangLelang = Lelang::with(['barangGadai.nasabah.user', 'barangGadai.kategori', 'barangGadai.cabang'])
             ->where('status', 'Aktif')
+            ->when($user->role !== 'Superadmin', function ($query) use ($user) {
+                $query->whereHas('barangGadai', function ($q) use ($user) {
+                    $q->where('id_cabang', $user->id_cabang);
+                });
+            })
             ->latest()
             ->get();
 
@@ -159,9 +165,15 @@ class LelangController extends Controller
 
     public function daftarBarangLelang(Request $request)
     {
+        $user = Auth::user();
+
         $query = Lelang::with('barangGadai')
-            ->where('status', 'Aktif');
-    
+            ->where('status', 'Aktif')
+            ->when($user->role !== 'Superadmin', function ($query) use ($user) {
+                $query->whereHas('barangGadai', function ($q) use ($user) {
+                    $q->where('id_cabang', $user->id_cabang);
+                });
+            });
         // Filter pencarian
         if ($search = $request->get('search')) {
             $query->whereHas('barangGadai', function ($q) use ($search) {
