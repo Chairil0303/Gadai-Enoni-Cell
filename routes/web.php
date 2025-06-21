@@ -102,12 +102,19 @@ Route::middleware(['auth'])->group(function () {
     Route::post('whatsapp_template', [WhatsappTemplateController::class, 'store'])->name('admin.whatsapp_template.store');
     Route::delete('whatsapp_template/{id}', [WhatsappTemplateController::class, 'destroy'])->name('admin.whatsapp_template.destroy');
     Route::post('/admin/whatsapp-template/{id}/activate', [WhatsappTemplateController::class, 'activate'])->name('admin.whatsapp_template.activate');
-Route::post('/admin/whatsapp-template/{id}/deactivate', [WhatsappTemplateController::class, 'deactivate'])->name('admin.whatsapp_template.deactivate');
+    Route::post('/admin/whatsapp-template/{id}/deactivate', [WhatsappTemplateController::class, 'deactivate'])->name('admin.whatsapp_template.deactivate');
 
         // ketika login user dari nasabah di arahin kesini jadi langsung ke profile
     Route::middleware(['auth', RoleMiddleware::class .':Nasabah'])->prefix('nasabah')->group(function () {
         Route::get('/dashboard', [NasabahController::class, 'show'])->name('profile');
         Route::put('/update-password', [NasabahController::class, 'updatePassword'])->name('nasabah.update-password');
+
+        // Routes untuk alert dan pembayaran pending
+        Route::get('/check-pending-payments', [NasabahPaymentController::class, 'checkPendingPayments'])->name('nasabah.check-pending-payments');
+        Route::post('/reprocess-payment', [NasabahPaymentController::class, 'reprocessPayment'])->name('nasabah.reprocess-payment');
+        Route::get('/check-resumable-payment', [NasabahPaymentController::class, 'checkResumablePayment'])->name('nasabah.check-resumable-payment');
+        Route::post('/resume-payment', [NasabahPaymentController::class, 'resumePayment'])->name('nasabah.resume-payment');
+        Route::post('/create-new-payment', [NasabahPaymentController::class, 'createNewPayment'])->name('nasabah.create-new-payment');
     });
 
     // profil nasabah

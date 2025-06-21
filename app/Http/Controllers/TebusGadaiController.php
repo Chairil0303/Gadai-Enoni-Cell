@@ -133,7 +133,7 @@ public function cari(Request $request)
             'arus_kas' => 'masuk',
             'id_user' => auth()->id(),
         ]);
-        
+
         // Update status barang menjadi 'Ditebus'
         $barangGadai->status = 'Ditebus';
         $barangGadai->save();
@@ -156,7 +156,7 @@ public function cari(Request $request)
                 'denda' => $denda,
             ]
         );
-        
+
 
         return redirect()->route('barang_gadai.index')->with('success', 'Barang berhasil ditebus dan transaksi dicatat.');
     }
