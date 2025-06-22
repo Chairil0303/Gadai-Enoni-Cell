@@ -20,5 +20,10 @@ class PendingPayment extends Model
     {
         return $this->belongsTo(Cabang::class, 'id_cabang');
     }
+
+    public function barangGadai()
+    {
+        return $this->belongsTo(BarangGadai::class, 'no_bon', 'no_bon');
+    }
 }
 

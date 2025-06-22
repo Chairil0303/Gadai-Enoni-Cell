@@ -93,27 +93,33 @@
             @endif
 
             <div id="passwordForm" class="hidden">
-                <form id="updatePasswordForm" action="{{ route('nasabah.update-password') }}" method="POST">
+                <form id="updatePasswordForm" action="{{ route('nasabah.update-password') }}" method="POST" autocomplete="new-password">
                     @csrf
                     @method('PUT')
                     <div class="space-y-4">
                         <div>
                             <label for="current_password" class="block text-sm font-medium text-gray-700">Password Saat Ini</label>
-                            <input type="password" name="current_password" id="current_password" required
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            <input type="password" name="current_password" id="current_password" required autocomplete="off"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                onblur="validateCurrentPassword()">
+                            <div id="current_password_error" class="hidden text-red-600 text-sm mt-1"></div>
                         </div>
                         <div>
                             <label for="new_password" class="block text-sm font-medium text-gray-700">Password Baru</label>
-                            <input type="password" name="new_password" id="new_password" required
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            <input type="password" name="new_password" id="new_password" required autocomplete="off"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                onblur="validateNewPassword()">
+                            <div id="new_password_error" class="hidden text-red-600 text-sm mt-1"></div>
                         </div>
                         <div>
                             <label for="new_password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Password Baru</label>
-                            <input type="password" name="new_password_confirmation" id="new_password_confirmation" required
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            <input type="password" name="new_password_confirmation" id="new_password_confirmation" required autocomplete="off"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                onblur="validatePasswordConfirmation()">
+                            <div id="confirm_password_error" class="hidden text-red-600 text-sm mt-1"></div>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <button type="submit" class="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                            <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                                 Simpan Password Baru
                             </button>
                             <button type="button" onclick="cancelPasswordForm()" class="w-full sm:w-auto bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
@@ -142,14 +148,228 @@ function togglePasswordForm() {
 function cancelPasswordForm() {
     document.getElementById('passwordForm').classList.add('hidden');
     document.getElementById('togglePasswordBtn').style.display = '';
+    // Reset form and errors
+    document.getElementById('updatePasswordForm').reset();
+
+    // Reset all error messages
+    document.getElementById('current_password_error').classList.add('hidden');
+    document.getElementById('new_password_error').classList.add('hidden');
+    document.getElementById('confirm_password_error').classList.add('hidden');
+
+    // Reset all input field styles
+    const inputs = ['current_password', 'new_password', 'new_password_confirmation'];
+    inputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        input.classList.remove('border-red-500', 'border-green-500');
+        input.classList.add('border-gray-300');
+    });
+}
+
+// Function to validate current password with AJAX
+function validateCurrentPassword() {
+    const currentPassword = document.getElementById('current_password').value;
+    const errorDiv = document.getElementById('current_password_error');
+    const inputField = document.getElementById('current_password');
+
+    if (currentPassword.trim() === '') {
+        errorDiv.textContent = 'Password saat ini harus diisi';
+        errorDiv.classList.remove('hidden');
+        inputField.classList.remove('border-gray-300');
+        inputField.classList.add('border-red-500');
+        return false;
+    }
+
+    // Show loading state
+    errorDiv.textContent = 'Memverifikasi password...';
+    errorDiv.classList.remove('hidden');
+    errorDiv.classList.remove('text-red-600');
+    errorDiv.classList.add('text-blue-600');
+
+    // Make AJAX request to validate password
+    fetch('{{ route("nasabah.validate-password") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            current_password: currentPassword
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.valid) {
+            errorDiv.textContent = '✓ Password valid';
+            errorDiv.classList.remove('text-blue-600', 'text-red-600');
+            errorDiv.classList.add('text-green-600');
+            inputField.classList.remove('border-red-500');
+            inputField.classList.add('border-green-500');
+        } else {
+            errorDiv.textContent = data.message;
+            errorDiv.classList.remove('text-blue-600', 'text-green-600');
+            errorDiv.classList.add('text-red-600');
+            inputField.classList.remove('border-gray-300', 'border-green-500');
+            inputField.classList.add('border-red-500');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        errorDiv.textContent = 'Terjadi kesalahan saat memverifikasi password';
+        errorDiv.classList.remove('text-blue-600', 'text-green-600');
+        errorDiv.classList.add('text-red-600');
+        inputField.classList.remove('border-gray-300', 'border-green-500');
+        inputField.classList.add('border-red-500');
+    });
+
+    return true;
+}
+
+// Function to validate new password
+function validateNewPassword() {
+    const newPassword = document.getElementById('new_password').value;
+    const currentPassword = document.getElementById('current_password').value;
+    const errorDiv = document.getElementById('new_password_error');
+    const inputField = document.getElementById('new_password');
+
+    if (newPassword.trim() === '') {
+        errorDiv.textContent = 'Password baru harus diisi';
+        errorDiv.classList.remove('hidden');
+        inputField.classList.remove('border-gray-300', 'border-green-500');
+        inputField.classList.add('border-red-500');
+        return false;
+    }
+
+    if (newPassword.length < 6) {
+        errorDiv.textContent = 'Password baru minimal 6 karakter';
+        errorDiv.classList.remove('hidden');
+        inputField.classList.remove('border-gray-300', 'border-green-500');
+        inputField.classList.add('border-red-500');
+        return false;
+    }
+
+    // Check if new password is same as current password
+    if (currentPassword && newPassword === currentPassword) {
+        errorDiv.textContent = 'Password baru tidak boleh sama dengan password saat ini';
+        errorDiv.classList.remove('hidden');
+        inputField.classList.remove('border-gray-300', 'border-green-500');
+        inputField.classList.add('border-red-500');
+        return false;
+    }
+
+    errorDiv.classList.add('hidden');
+    inputField.classList.remove('border-red-500');
+    inputField.classList.add('border-green-500');
+    return true;
+}
+
+// Function to validate password confirmation
+function validatePasswordConfirmation() {
+    const newPassword = document.getElementById('new_password').value;
+    const confirmPassword = document.getElementById('new_password_confirmation').value;
+    const errorDiv = document.getElementById('confirm_password_error');
+    const inputField = document.getElementById('new_password_confirmation');
+
+    if (confirmPassword.trim() === '') {
+        errorDiv.textContent = 'Konfirmasi password harus diisi';
+        errorDiv.classList.remove('hidden');
+        inputField.classList.remove('border-gray-300', 'border-green-500');
+        inputField.classList.add('border-red-500');
+        return false;
+    }
+
+    if (newPassword !== confirmPassword) {
+        errorDiv.textContent = 'Konfirmasi password tidak sama';
+        errorDiv.classList.remove('hidden');
+        inputField.classList.remove('border-gray-300', 'border-green-500');
+        inputField.classList.add('border-red-500');
+        return false;
+    }
+
+    errorDiv.classList.add('hidden');
+    inputField.classList.remove('border-red-500');
+    inputField.classList.add('border-green-500');
+    return true;
 }
 
 // Add event listener for form submission
-document.getElementById('updatePasswordForm').addEventListener('submit', function() {
+document.getElementById('updatePasswordForm').addEventListener('submit', function(e) {
+    let isValid = true;
+
+    // Validate current password
+    if (!validateCurrentPassword()) {
+        isValid = false;
+    }
+
+    // Validate new password
+    if (!validateNewPassword()) {
+        isValid = false;
+    }
+
+    // Validate password confirmation
+    if (!validatePasswordConfirmation()) {
+        isValid = false;
+    }
+
+    if (!isValid) {
+        e.preventDefault();
+        alert('Mohon perbaiki kesalahan pada form sebelum melanjutkan!');
+        return false;
+    }
+
     setTimeout(() => {
         document.getElementById('passwordForm').classList.add('hidden');
         document.getElementById('togglePasswordBtn').style.display = '';
     }, 100);
+});
+
+// Add real-time validation for current password
+let passwordValidationTimeout;
+document.getElementById('current_password').addEventListener('input', function() {
+    clearTimeout(passwordValidationTimeout);
+
+    if (this.value.trim() !== '') {
+        // Add debounce to avoid too many AJAX requests
+        passwordValidationTimeout = setTimeout(() => {
+            validateCurrentPassword();
+        }, 500);
+    } else {
+        document.getElementById('current_password_error').classList.add('hidden');
+        this.classList.remove('border-red-500', 'border-green-500');
+        this.classList.add('border-gray-300');
+    }
+});
+
+// Add onblur validation for immediate feedback
+document.getElementById('current_password').addEventListener('blur', function() {
+    if (this.value.trim() !== '') {
+        validateCurrentPassword();
+    }
+});
+
+// Add real-time validation for new password
+document.getElementById('new_password').addEventListener('input', function() {
+    if (this.value.trim() !== '') {
+        validateNewPassword();
+        // Also validate confirmation if it has value
+        if (document.getElementById('new_password_confirmation').value.trim() !== '') {
+            validatePasswordConfirmation();
+        }
+    } else {
+        document.getElementById('new_password_error').classList.add('hidden');
+        this.classList.remove('border-red-500', 'border-green-500');
+        this.classList.add('border-gray-300');
+    }
+});
+
+// Add real-time validation for password confirmation
+document.getElementById('new_password_confirmation').addEventListener('input', function() {
+    if (this.value.trim() !== '') {
+        validatePasswordConfirmation();
+    } else {
+        document.getElementById('confirm_password_error').classList.add('hidden');
+        this.classList.remove('border-red-500', 'border-green-500');
+        this.classList.add('border-gray-300');
+    }
 });
 </script>
 @endsection
