@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KategoriBarangSeeder::class,
             NasabahSeeder::class,
-            BarangGadaiSeeder::class,
+            BarangGadaiSeeder::class, // dikomentari agar tidak ikut seeding
             WhatsappTemplateSeeder::class,
             TermsConditionSeeder::class,
         ]);

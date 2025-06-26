@@ -47,6 +47,7 @@
                             <th>IMEI</th>
                             <th>Deskripsi</th>
                             <th>Tenor</th>
+                            <th>Tgl Gadai</th>
                             <th>Tempo</th>
                             <th>Sisa Hari</th>
                             <th>Harga Gadai</th>
@@ -67,6 +68,7 @@
                                 <td>{{ $barang->imei ?? '-' }}</td>
                                 <td>{{ $barang->deskripsi }}</td>
                                 <td>{{ $barang->bungaTenor->tenor }} hari</td>
+                                <td>{{ \Carbon\Carbon::parse($barang->created_at)->format('d, m, Y') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($barang->tempo)->format('d, m, Y') }}</td>
                                 <td>
                                     @if($barang->telat > 0)

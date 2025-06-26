@@ -18,9 +18,11 @@ class NasabahSeeder extends Seeder
         $nasabah2 = DB::table('users')->where('username', 'nasabah2')->value('id_users');
         $nasabah3 = DB::table('users')->where('username', 'nasabah3')->value('id_users');
         $nasabah4 = DB::table('users')->where('username', 'nasabah4')->value('id_users');
+        $nasabah5 = DB::table('users')->where('username', 'nasabah5')->value('id_users'); // Asumsi user dengan ID 5 adalah nasabah tambahan
+        $nasabah6 = DB::table('users')->where('username', 'nasabah6')->value('id_users'); // Asumsi user dengan ID 6 adalah nasabah tambahan
 
         // Cek apakah user ditemukan, jika tidak hentikan seeder ini
-        if (!$nasabah1 || !$nasabah2 || !$nasabah3) {
+        if (!$nasabah1 || !$nasabah2 || !$nasabah3 || !$nasabah4 || !$nasabah5 || !$nasabah6) {
             dd("User Nasabah1 atau Nasabah2 tidak ditemukan. Pastikan seeder UsersSeeder sudah dijalankan.");
         }
 
@@ -61,6 +63,26 @@ class NasabahSeeder extends Seeder
                 'nik' => '2201010101010005',
                 'alamat' => 'Jl. Kelapa dua No.3, Tangerang',
                 'telepon' => '081299898890',
+                'status_blacklist' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id_user' => $nasabah5, // Asumsi user dengan ID 5 adalah nasabah tambahan
+                'nama' => 'Nasabah Lima',
+                'nik' => '3201010101010004',
+                'alamat' => 'Jl. Cempaka No.4, Bekasi',
+                'telepon' => '081234567893',
+                'status_blacklist' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id_user' => $nasabah6, // Asumsi user dengan ID 6 adalah nasabah tambahan
+                'nama' => 'Nasabah Enam',
+                'nik' => '3201010101010005',
+                'alamat' => 'Jl. Flamboyan No.5, Bandung',
+                'telepon' => '081234567894',
                 'status_blacklist' => false,
                 'created_at' => now(),
                 'updated_at' => now(),

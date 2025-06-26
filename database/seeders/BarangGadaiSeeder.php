@@ -4,111 +4,104 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class BarangGadaiSeeder extends Seeder
 {
     public function run()
     {
-        // Nonaktifkan foreign key check sementara
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-
-        // Hapus data sebelumnya
         DB::table('barang_gadai')->truncate();
+        DB::table('nasabah')->truncate();
+        DB::table('users')->where('role', 'Nasabah')->delete();
 
-        // Ambil ID nasabah
-        $nasabah1 = DB::table('nasabah')->where('nama', 'Nasabah Satu')->value('id_nasabah');
-        $nasabah2 = DB::table('nasabah')->where('nama', 'Nasabah Dua')->value('id_nasabah');
-        $nasabah3 = DB::table('nasabah')->where('nama', 'Nasabah Tiga')->value('id_nasabah'); // Kapitalisasi konsisten
-        $nasabah4 = DB::table('nasabah')->where('nama', 'Nasabah Empat')->value('id_nasabah'); // Kapitalisasi konsisten
-
-
-        // Ambil ID bunga_tenor berdasarkan tenor
-        $tenor7 = DB::table('bunga_tenor')->where('tenor', 7)->value('id');
+        $tenor7  = DB::table('bunga_tenor')->where('tenor', 7)->value('id');
         $tenor14 = DB::table('bunga_tenor')->where('tenor', 14)->value('id');
         $tenor30 = DB::table('bunga_tenor')->where('tenor', 30)->value('id');
-
-        // Tanggal dan waktu
-        $now = Carbon::now();
-        $tempoTelat = $now->copy()->subDays(7);
-        $hariTelat = $now->diffInDays($tempoTelat);
-
-        // Data barang gadai
-        $barangGadaiData = [
-            [
-                'no_bon' => 'BON001',
-                'id_nasabah' => $nasabah1,
-                'id_cabang' => 1,
-                'id_kategori' => 1,
-                'id_bunga_tenor' => $tenor30,
-                'nama_barang' => 'Laptop Asus ROG',
-                'deskripsi' => 'high-end.',
-                'imei' => '123456789012345',
-                'tempo' => $now->copy()->addDays(30),
-                'telat' => 0,
-                'harga_gadai' => 1500000.00,
-                'status' => 'Tergadai',
-                'bunga' => 15,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'no_bon' => 'BON002',
-                'id_nasabah' => $nasabah2,
-                'id_cabang' => 2,
-                'id_kategori' => 2,
-                'id_bunga_tenor' => $tenor14,
-                'nama_barang' => 'Samsung Galaxy J2',
-                'deskripsi' => 'RAM 8GB, dan memori internal 128GB.',
-                'imei' => '987654321098765',
-                'tempo' => $now->copy()->addDays(14),
-                'telat' => 0,
-                'harga_gadai' => 800000.00,
-                'status' => 'Tergadai',
-                'bunga' => 10,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'no_bon' => 'BON003',
-                'id_nasabah' => $nasabah3,
-                'id_cabang' => 2,
-                'id_kategori' => 2,
-                'id_bunga_tenor' => $tenor14,
-                'nama_barang' => 'Samsung Galaxy J3',
-                'deskripsi' => 'RAM 8GB, dan memori internal 128GB.',
-                'imei' => '987654321098765',
-                'tempo' => $now->copy()->addDays(14),
-                'telat' => 0,
-                'harga_gadai' => 800000.00,
-                'status' => 'Tergadai',
-                'bunga' => 10,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
-            [
-                'no_bon' => 'BON004',
-                'id_nasabah' => $nasabah4,
-                'id_cabang' => 1,
-                'id_kategori' => 2,
-                'id_bunga_tenor' => $tenor14,
-                'nama_barang' => 'Realme 5 Pro',
-                'deskripsi' => 'Smartphone yang tempo-nya sudah telat.',
-                'imei' => '321654987654321',
-                'tempo' => $tempoTelat,
-                'telat' => $hariTelat,
-                'harga_gadai' => 900000.00,
-                'status' => 'Tergadai',
-                'bunga' => 10,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ],
+        $tenors = [
+            ['id' => $tenor7, 'hari' => 7, 'bunga' => 5],
+            ['id' => $tenor14, 'hari' => 14, 'bunga' => 10],
+            ['id' => $tenor30, 'hari' => 30, 'bunga' => 15],
         ];
 
-        // Masukkan ke database
-        DB::table('barang_gadai')->insert($barangGadaiData);
+        $startDate = Carbon::create(2025, 6, 14);
+        $endDate = Carbon::now();
+        $bonCounter = 1;
+        $nasabahCounter = 1;
 
-        // Aktifkan kembali foreign key check
+        $now = Carbon::now();
+        $users = [];
+        $nasabahs = [];
+        $barangGadaiData = [];
+        $userId = DB::table('users')->max('id_users') + 1;
+
+        for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+            $jumlahTransaksi = rand(3, 7);
+
+            for ($i = 0; $i < $jumlahTransaksi; $i++) {
+                // 1. Users & Nasabah
+                $users[] = [
+                    'id_users' => $userId,
+                    'nama' => "Nasabah Dummy $nasabahCounter",
+                    'email' => "nasabah$nasabahCounter@example.com",
+                    'username' => "nasabah$nasabahCounter",
+                    'password' => Hash::make('password'),
+                    'role' => 'Nasabah',
+                    'id_cabang' => rand(1, 3),
+                    'created_at' => $date->copy(),
+                    'updated_at' => $date->copy(),
+                ];
+                $nasabahs[] = [
+                    'id_user' => $userId,
+                    'nama' => "Nasabah Dummy $nasabahCounter",
+                    'nik' => str_pad($nasabahCounter, 16, '0', STR_PAD_LEFT),
+                    'alamat' => "Alamat Dummy $nasabahCounter",
+                    'telepon' => '08' . rand(1000000000, 9999999999),
+                    'status_blacklist' => false,
+                    'created_at' => $date->copy(),
+                    'updated_at' => $date->copy(),
+                ];
+
+                // 2. Barang Gadai
+                $tenor = $tenors[array_rand($tenors)];
+                $tempo = $date->copy()->addDays($tenor['hari']);
+                $barangGadaiData[] = [
+                    'no_bon' => 'BON' . str_pad($bonCounter++, 5, '0', STR_PAD_LEFT),
+                    'id_nasabah' => $nasabahCounter, // nanti akan sesuai urutan insert
+                    'id_cabang' => rand(1, 3),
+                    'id_kategori' => rand(1, 5),
+                    'id_bunga_tenor' => $tenor['id'],
+                    'nama_barang' => 'Barang ' . $bonCounter,
+                    'deskripsi' => 'Deskripsi barang ' . $bonCounter,
+                    'imei' => rand(100000000000000, 999999999999999),
+                    'bunga' => $tenor['bunga'],
+                    'harga_gadai' => rand(1000000, 5000000),
+                    'status' => 'Tergadai',
+                    'created_at' => $date->copy(),
+                    'updated_at' => $date->copy(),
+                    'tempo' => $tempo,
+                    'telat' => $now->gt($tempo) ? $now->diffInDays($tempo) : 0,
+                ];
+
+                $userId++;
+                $nasabahCounter++;
+            }
+        }
+
+        // Batch insert
+        foreach (array_chunk($users, 500) as $batch) {
+            DB::table('users')->insert($batch);
+        }
+
+        foreach (array_chunk($nasabahs, 500) as $batch) {
+            DB::table('nasabah')->insert($batch);
+        }
+
+        foreach (array_chunk($barangGadaiData, 500) as $batch) {
+            DB::table('barang_gadai')->insert($batch);
+        }
+
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
