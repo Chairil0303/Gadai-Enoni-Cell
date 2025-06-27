@@ -66,7 +66,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($mendekatiTempo as $item)
+                        {{-- @forelse($mendekatiTempo as $item)
                         <tr>
                             <td>{{ $item->no_bon }}</td>
                             <td>{{ $item->nama_barang }}</td>
@@ -77,7 +77,7 @@
                         <tr>
                             <td colspan="4" class="text-center text-muted py-4">Tidak ada data barang mendekati tempo.</td>
                         </tr>
-                        @endforelse
+                        @endforelse --}}
                     </tbody>
                 </table>
             </div>
