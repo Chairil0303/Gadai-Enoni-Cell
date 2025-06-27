@@ -12,7 +12,7 @@
                 <p><strong>Saldo Awal:</strong> Rp {{ number_format($saldo->saldo_awal, 0, ',', '.') }}</p>
                 <p><strong>Kas Masuk:</strong> <span class="text-success fw-semibold">Rp {{ number_format($totalMasuk, 0, ',', '.') }}</span></p>
                 <p><strong>Kas Keluar:</strong> <span class="text-danger fw-semibold">Rp {{ number_format($totalKeluar, 0, ',', '.') }}</span></p>
-                <p><strong>Saldo Saat Ini:</strong> <span class="fw-bold text-primary">Rp {{ number_format($saldo->saldo_saat_ini, 0, ',', '.') }}</span></p>
+                <p><strong>Saldo Saat Ini:</strong> <span class="fw-bold text-primary">Rp {{ number_format($saldo->saldo_saat_ini - $totalKeluar, 0, ',', '.') }}</span></p>
             </div>
 
             {{-- Tabel Transaksi --}}

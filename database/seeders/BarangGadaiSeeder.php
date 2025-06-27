@@ -11,1646 +11,524 @@ class BarangGadaiSeeder extends Seeder
 {
     public function run()
     {
+        // Disable foreign key checks for truncation
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        // Truncate all relevant tables
         DB::table('transaksi')->truncate();
         DB::table('barang_gadai')->truncate();
         DB::table('nasabah')->truncate();
         DB::table('log_aktivitas')->truncate();
-        DB::table('users')->where('role', 'Nasabah')->delete();
+        DB::table('users')->where('role', 'Nasabah')->delete(); // Only delete Nasabah users
+
+        // Enable foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
+        // Fetch a random tenor ID once
         $tenorOptions = [7, 14, 30];
         $selectedTenor = $tenorOptions[array_rand($tenorOptions)];
         $tenorId = DB::table('bunga_tenor')->where('tenor', $selectedTenor)->value('id');
-        
-        $tanggal = Carbon::create(2025, 6, 14);
+
+        // Define a base branch ID
         $idCabang = 1;
 
-        // ========== Transaksi 1 ==========
-        $userId1 = 1001;
-        $nasabahId1 = 1;
-        $nama1 = "Dewi Kartika";
-        $nik1 = "3201121401980001";
-        $telp1 = "0812345678912";
-        $username1 = "dewikartika12";
-        $password1 = substr($nik1, 0, 6);
-        $noBon1 = "KLS0001";
-
-        DB::table('users')->insert([
-            'id_users' => $userId1,
-            'nama' => $nama1,
-            'email' => "dewi.kartika@example.com",
-            'username' => $username1,
-            'password' => Hash::make($password1),
-            'role' => 'Nasabah',
-            'id_cabang' => $idCabang,
-            'created_at' => $tanggal,
-            'updated_at' => $tanggal,
-        ]);
-
-        DB::table('nasabah')->insert([
-            'id_user' => $userId1,
-            'nama' => $nama1,
-            'nik' => $nik1,
-            'alamat' => "Jl. Raya Parung, Kab. Bogor",
-            'telepon' => $telp1,
-            'status_blacklist' => false,
-            'created_at' => $tanggal,
-            'updated_at' => $tanggal,
-        ]);
-
-        DB::table('barang_gadai')->insert([
-            'no_bon' => $noBon1,
-            'id_nasabah' => $nasabahId1,
-            'id_cabang' => $idCabang,
-            'id_kategori' => 1, // Laptop
-            'id_bunga_tenor' => $tenorId,
-            'nama_barang' => "Laptop ASUS",
-            'deskripsi' => "Kondisi sangat baik",
-            'imei' => "352099000001111",
-            'bunga' => 5,
-            'harga_gadai' => 1750000,
-            'status' => 'Tergadai',
-            'tempo' => $tanggal->copy()->addDays($selectedTenor),
-            'telat' => 0,
-            'created_at' => $tanggal,
-            'updated_at' => $tanggal,
-        ]);
-
-        DB::table('transaksi')->insert([
-            'no_bon' => $noBon1,
-            'id_nasabah' => $nasabahId1,
-            'id_user' => $userId1,
-            'id_cabang' => $idCabang,
-            'jenis_transaksi' => 'terima',
-            'arus_kas' => 'keluar',
-            'jumlah' => 1750000,
-            'created_at' => $tanggal,
-            'updated_at' => $tanggal,
-        ]);
-
-        DB::table('log_aktivitas')->insert([
-            'id_users' => 3,
-            'id_cabang' => $idCabang,
-            'kategori' => 'transaksi',
-            'aksi' => 'terima',
-            'deskripsi' => "Transaksi terima untuk no bon $noBon1",
-            'data_lama' => null,
-            'data_baru' => json_encode([
-                'no_bon' => $noBon1,
-                'id_nasabah' => $nasabahId1,
-                'harga_gadai' => 1750000,
-                'tanggal' => $tanggal->toDateString(),
-                'status' => 'Tergadai'
-            ]),
-            'ip_address' => '192.168.1.10',
-            'user_agent' => 'SeederScript/1.0',
-            'waktu_aktivitas' => $tanggal,
-            'created_at' => $tanggal,
-            'updated_at' => $tanggal,
-        ]);
-
-        // ========== Transaksi 2 ==========
-        $userId2 = 1002;
-        $nasabahId2 = 2;
-        $nama2 = "Ahmad Rizki";
-        $nik2 = "3201132305900002";
-        $telp2 = "0823456789123";
-        $username2 = "ahmadrizki23";
-        $password2 = substr($nik2, 0, 6);
-        $noBon2 = "KLS0002";
-
-        DB::table('users')->insert([
-            'id_users' => $userId2,
-            'nama' => $nama2,
-            'email' => "ahmad.rizki@example.com",
-            'username' => $username2,
-            'password' => Hash::make($password2),
-            'role' => 'Nasabah',
-            'id_cabang' => $idCabang,
-            'created_at' => $tanggal,
-            'updated_at' => $tanggal,
-        ]);
-
-        DB::table('nasabah')->insert([
-            'id_user' => $userId2,
-            'nama' => $nama2,
-            'nik' => $nik2,
-            'alamat' => "Kp. Ciseeng, Kab. Bogor",
-            'telepon' => $telp2,
-            'status_blacklist' => false,
-            'created_at' => $tanggal,
-            'updated_at' => $tanggal,
-        ]);
-
-        DB::table('barang_gadai')->insert([
-            'no_bon' => $noBon2,
-            'id_nasabah' => $nasabahId2,
-            'id_cabang' => $idCabang,
-            'id_kategori' => 2, // Handphone
-            'id_bunga_tenor' => $tenorId,
-            'nama_barang' => "HP Samsung",
-            'deskripsi' => "Kondisi normal, lecet ringan",
-            'imei' => "352099000002222",
-            'bunga' => 5,
-            'harga_gadai' => 1200000,
-            'status' => 'Tergadai',
-            'tempo' => $tanggal->copy()->addDays($selectedTenor),
-            'telat' => 0,
-            'created_at' => $tanggal,
-            'updated_at' => $tanggal,
-        ]);
-
-        DB::table('transaksi')->insert([
-            'no_bon' => $noBon2,
-            'id_nasabah' => $nasabahId2,
-            'id_user' => $userId2,
-            'id_cabang' => $idCabang,
-            'jenis_transaksi' => 'terima',
-            'arus_kas' => 'keluar',
-            'jumlah' => 1200000,
-            'created_at' => $tanggal,
-            'updated_at' => $tanggal,
-        ]);
-
-        DB::table('log_aktivitas')->insert([
-            'id_users' => 3,
-            'id_cabang' => $idCabang,
-            'kategori' => 'transaksi',
-            'aksi' => 'terima',
-            'deskripsi' => "Transaksi terima untuk no bon $noBon2",
-            'data_lama' => null,
-            'data_baru' => json_encode([
-                'no_bon' => $noBon2,
-                'id_nasabah' => $nasabahId2,
-                'harga_gadai' => 1200000,
-                'tanggal' => $tanggal->toDateString(),
-                'status' => 'Tergadai'
-            ]),
-            'ip_address' => '192.168.1.10',
-            'user_agent' => 'SeederScript/1.0',
-            'waktu_aktivitas' => $tanggal,
-            'created_at' => $tanggal,
-            'updated_at' => $tanggal,
-        ]);
-        
-// ========== Tanggal 15 Juni 2025 ==========
-
-$tanggal = Carbon::create(2025, 6, 15);
-
-// ---------- Transaksi 1 ----------
-$userId3 = 1003;
-$nasabahId3 = 3;
-$nama3 = "Siti Nurhaliza";
-$nik3 = "3201141202980003";
-$telp3 = "0838123456789";
-$username3 = "sitinurhaliza89";
-$password3 = substr($nik3, 0, 6);
-$noBon3 = "KLS0003";
-
-DB::table('users')->insert([
-    'id_users' => $userId3,
-    'nama' => $nama3,
-    'email' => "siti.nurhaliza@example.com",
-    'username' => $username3,
-    'password' => Hash::make($password3),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId3,
-    'nama' => $nama3,
-    'nik' => $nik3,
-    'alamat' => "Desa Kemang, Kab. Bogor",
-    'telepon' => $telp3,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon3,
-    'id_nasabah' => $nasabahId3,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 2, // Handphone
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "HP Oppo",
-    'deskripsi' => "Layar mulus, baterai bagus",
-    'imei' => "352099000003333",
-    'bunga' => 5,
-    'harga_gadai' => 1000000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon3,
-    'id_nasabah' => $nasabahId3,
-    'id_user' => $userId3,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 1000000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon3",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon3,
-        'id_nasabah' => $nasabahId3,
-        'harga_gadai' => 1000000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// ---------- Transaksi 2 ----------
-$userId4 = 1004;
-$nasabahId4 = 4;
-$nama4 = "Rizky Hidayat";
-$nik4 = "3201150101990004";
-$telp4 = "0815987654321";
-$username4 = "rizkyhidayat21";
-$password4 = substr($nik4, 0, 6);
-$noBon4 = "KLS0004";
-
-DB::table('users')->insert([
-    'id_users' => $userId4,
-    'nama' => $nama4,
-    'email' => "rizky.hidayat@example.com",
-    'username' => $username4,
-    'password' => Hash::make($password4),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId4,
-    'nama' => $nama4,
-    'nik' => $nik4,
-    'alamat' => "Jl. Raya Ciseeng, Kab. Bogor",
-    'telepon' => $telp4,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon4,
-    'id_nasabah' => $nasabahId4,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 3, // TV
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "TV Polytron",
-    'deskripsi' => "Masih normal, layar bersih",
-    'imei' => "352099000004444",
-    'bunga' => 5,
-    'harga_gadai' => 800000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon4,
-    'id_nasabah' => $nasabahId4,
-    'id_user' => $userId4,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 800000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon4",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon4,
-        'id_nasabah' => $nasabahId4,
-        'harga_gadai' => 800000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// ---------- Transaksi 3 ----------
-$userId5 = 1005;
-$nasabahId5 = 5;
-$nama5 = "Yuli Andriani";
-$nik5 = "3201162705950005";
-$telp5 = "0878123456700";
-$username5 = "yuliandriani00";
-$password5 = substr($nik5, 0, 6);
-$noBon5 = "KLS0005";
-
-DB::table('users')->insert([
-    'id_users' => $userId5,
-    'nama' => $nama5,
-    'email' => "yuli.andriani@example.com",
-    'username' => $username5,
-    'password' => Hash::make($password5),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId5,
-    'nama' => $nama5,
-    'nik' => $nik5,
-    'alamat' => "Cibinong, Kab. Bogor",
-    'telepon' => $telp5,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon5,
-    'id_nasabah' => $nasabahId5,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 1, // Laptop
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "Laptop Lenovo",
-    'deskripsi' => "Baret tipis, masih cepat",
-    'imei' => "352099000005555",
-    'bunga' => 5,
-    'harga_gadai' => 1500000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon5,
-    'id_nasabah' => $nasabahId5,
-    'id_user' => $userId5,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 1500000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon5",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon5,
-        'id_nasabah' => $nasabahId5,
-        'harga_gadai' => 1500000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// ========== Tanggal 16 Juni 2025 ==========
-
-$tanggal = Carbon::create(2025, 6, 16);
-
-// ---------- Transaksi 1 ----------
-$userId6 = 1006;
-$nasabahId6 = 6;
-$nama6 = "Dedi Supriyadi";
-$nik6 = "3201171010920006";
-$telp6 = "0821123456789";
-$username6 = "dedisupriyadi89";
-$password6 = substr($nik6, 0, 6);
-$noBon6 = "KLS0006";
-
-DB::table('users')->insert([
-    'id_users' => $userId6,
-    'nama' => $nama6,
-    'email' => "dedi.supriyadi@example.com",
-    'username' => $username6,
-    'password' => Hash::make($password6),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId6,
-    'nama' => $nama6,
-    'nik' => $nik6,
-    'alamat' => "Parung, Kab. Bogor",
-    'telepon' => $telp6,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon6,
-    'id_nasabah' => $nasabahId6,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 3, // TV
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "TV Samsung",
-    'deskripsi' => "Layar bersih, remote tidak ada",
-    'imei' => "352099000006666",
-    'bunga' => 5,
-    'harga_gadai' => 900000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon6,
-    'id_nasabah' => $nasabahId6,
-    'id_user' => $userId6,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 900000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon6",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon6,
-        'id_nasabah' => $nasabahId6,
-        'harga_gadai' => 900000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// ---------- Transaksi 2 ----------
-$userId7 = 1007;
-$nasabahId7 = 7;
-$nama7 = "Ani Marlina";
-$nik7 = "3201182205980007";
-$telp7 = "0896123456798";
-$username7 = "animarlina98";
-$password7 = substr($nik7, 0, 6);
-$noBon7 = "KLS0007";
-
-DB::table('users')->insert([
-    'id_users' => $userId7,
-    'nama' => $nama7,
-    'email' => "ani.marlina@example.com",
-    'username' => $username7,
-    'password' => Hash::make($password7),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId7,
-    'nama' => $nama7,
-    'nik' => $nik7,
-    'alamat' => "Gunung Sindur, Kab. Bogor",
-    'telepon' => $telp7,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon7,
-    'id_nasabah' => $nasabahId7,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 2, // Handphone
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "HP Xiaomi",
-    'deskripsi' => "Kondisi normal, casing lecet",
-    'imei' => "352099000007777",
-    'bunga' => 5,
-    'harga_gadai' => 850000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon7,
-    'id_nasabah' => $nasabahId7,
-    'id_user' => $userId7,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 850000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon7",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon7,
-        'id_nasabah' => $nasabahId7,
-        'harga_gadai' => 850000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// ========== Tanggal 17 Juni 2025 ==========
-$tanggal = Carbon::create(2025, 6, 17);
-
-// ---------- Transaksi 1 ----------
-$userId8 = 1008;
-$nasabahId8 = 8;
-$nama8 = "Rina Apriani";
-$nik8 = "3201192302930008";
-$telp8 = "0813123456789";
-$username8 = "rinaapriani89";
-$password8 = substr($nik8, 0, 6);
-$noBon8 = "KLS0008";
-
-DB::table('users')->insert([
-    'id_users' => $userId8,
-    'nama' => $nama8,
-    'email' => "rina.apriani@example.com",
-    'username' => $username8,
-    'password' => Hash::make($password8),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId8,
-    'nama' => $nama8,
-    'nik' => $nik8,
-    'alamat' => "Ciseeng, Kab. Bogor",
-    'telepon' => $telp8,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon8,
-    'id_nasabah' => $nasabahId8,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 2,
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "HP Nokia",
-    'deskripsi' => "Body kusam, layar normal",
-    'imei' => "352099000008888",
-    'bunga' => 5,
-    'harga_gadai' => 500000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon8,
-    'id_nasabah' => $nasabahId8,
-    'id_user' => $userId8,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 500000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon8",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon8,
-        'id_nasabah' => $nasabahId8,
-        'harga_gadai' => 500000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// ---------- Transaksi 2 ----------
-$userId9 = 1009;
-$nasabahId9 = 9;
-$nama9 = "Asep Mulyana";
-$nik9 = "3201202509870009";
-$telp9 = "0899988776655";
-$username9 = "asepmulyana55";
-$password9 = substr($nik9, 0, 6);
-$noBon9 = "KLS0009";
-
-DB::table('users')->insert([
-    'id_users' => $userId9,
-    'nama' => $nama9,
-    'email' => "asep.mulyana@example.com",
-    'username' => $username9,
-    'password' => Hash::make($password9),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId9,
-    'nama' => $nama9,
-    'nik' => $nik9,
-    'alamat' => "Kemang, Kab. Bogor",
-    'telepon' => $telp9,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon9,
-    'id_nasabah' => $nasabahId9,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 2,
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "HP Samsung J2",
-    'deskripsi' => "Layar retak sedikit, masih nyala",
-    'imei' => "352099000009999",
-    'bunga' => 5,
-    'harga_gadai' => 700000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon9,
-    'id_nasabah' => $nasabahId9,
-    'id_user' => $userId9,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 700000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon9",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon9,
-        'id_nasabah' => $nasabahId9,
-        'harga_gadai' => 700000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// ========== Tanggal 18 Juni 2025 ==========
-$tanggal = Carbon::create(2025, 6, 18);
-
-// ---------- Transaksi 1 ----------
-$userId10 = 1010;
-$nasabahId10 = 10;
-$nama10 = "Yuliani Sari";
-$nik10 = "3201213101980010";
-$telp10 = "0812345678910";
-$username10 = "yulianisari10";
-$password10 = substr($nik10, 0, 6);
-$noBon10 = "KLS0010";
-
-DB::table('users')->insert([
-    'id_users' => $userId10,
-    'nama' => $nama10,
-    'email' => "yuliani.sari@example.com",
-    'username' => $username10,
-    'password' => Hash::make($password10),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId10,
-    'nama' => $nama10,
-    'nik' => $nik10,
-    'alamat' => "Cigombong, Kab. Bogor",
-    'telepon' => $telp10,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon10,
-    'id_nasabah' => $nasabahId10,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 1,
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "Laptop Asus",
-    'deskripsi' => "Bodi mulus, baterai soak",
-    'imei' => "352099000001010",
-    'bunga' => 5,
-    'harga_gadai' => 1200000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon10,
-    'id_nasabah' => $nasabahId10,
-    'id_user' => $userId10,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 1200000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon10",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon10,
-        'id_nasabah' => $nasabahId10,
-        'harga_gadai' => 1200000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// ---------- Transaksi 2 ----------
-$userId11 = 1011;
-$nasabahId11 = 11;
-$nama11 = "Dedi Kurniawan";
-$nik11 = "3201221205800011";
-$telp11 = "0898765432101";
-$username11 = "dedikurniawan01";
-$password11 = substr($nik11, 0, 6);
-$noBon11 = "KLS0011";
-
-DB::table('users')->insert([
-    'id_users' => $userId11,
-    'nama' => $nama11,
-    'email' => "dedi.kurniawan@example.com",
-    'username' => $username11,
-    'password' => Hash::make($password11),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId11,
-    'nama' => $nama11,
-    'nik' => $nik11,
-    'alamat' => "Parung, Kab. Bogor",
-    'telepon' => $telp11,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon11,
-    'id_nasabah' => $nasabahId11,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 3,
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "TV Sharp",
-    'deskripsi' => "Gores di sisi, gambar normal",
-    'imei' => "352099000001011",
-    'bunga' => 5,
-    'harga_gadai' => 1000000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon11,
-    'id_nasabah' => $nasabahId11,
-    'id_user' => $userId11,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 1000000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon11",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon11,
-        'id_nasabah' => $nasabahId11,
-        'harga_gadai' => 1000000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// ========== Tanggal 19 Juni 2025 ==========
-$tanggal = Carbon::create(2025, 6, 19);
-
-// ---------- Transaksi 1 ----------
-$userId12 = 1012;
-$nasabahId12 = 12;
-$nama12 = "Rina Marlina";
-$nik12 = "3201230504930012";
-$telp12 = "0899123456712";
-$username12 = "rinamarlina12";
-$password12 = substr($nik12, 0, 6);
-$noBon12 = "KLS0012";
-
-DB::table('users')->insert([
-    'id_users' => $userId12,
-    'nama' => $nama12,
-    'email' => "rina.marlina@example.com",
-    'username' => $username12,
-    'password' => Hash::make($password12),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId12,
-    'nama' => $nama12,
-    'nik' => $nik12,
-    'alamat' => "Cibinong, Kab. Bogor",
-    'telepon' => $telp12,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon12,
-    'id_nasabah' => $nasabahId12,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 2,
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "Samsung note 7",
-    'deskripsi' => "Layar gores, fungsi normal",
-    'imei' => "352099000001012",
-    'bunga' => 5,
-    'harga_gadai' => 400000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon12,
-    'id_nasabah' => $nasabahId12,
-    'id_user' => $userId12,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 400000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon12",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon12,
-        'id_nasabah' => $nasabahId12,
-        'harga_gadai' => 400000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// ---------- Transaksi 2 ----------
-$userId13 = 1013;
-$nasabahId13 = 13;
-$nama13 = "Fajar Pratama";
-$nik13 = "3201241207810013";
-$telp13 = "0899554433213";
-$username13 = "fajarpratama13";
-$password13 = substr($nik13, 0, 6);
-$noBon13 = "KLS0013";
-
-DB::table('users')->insert([
-    'id_users' => $userId13,
-    'nama' => $nama13,
-    'email' => "fajar.pratama@example.com",
-    'username' => $username13,
-    'password' => Hash::make($password13),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId13,
-    'nama' => $nama13,
-    'nik' => $nik13,
-    'alamat' => "Ciawi, Kab. Bogor",
-    'telepon' => $telp13,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon13,
-    'id_nasabah' => $nasabahId13,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 2,
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "Xiaomi note 9",
-    'deskripsi' => "Baterai cepat habis",
-    'imei' => "352099000001013",
-    'bunga' => 5,
-    'harga_gadai' => 500000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon13,
-    'id_nasabah' => $nasabahId13,
-    'id_user' => $userId13,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 500000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon13",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon13,
-        'id_nasabah' => $nasabahId13,
-        'harga_gadai' => 500000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// ---------- Transaksi 3 ----------
-$userId14 = 1014;
-$nasabahId14 = 14;
-$nama14 = "Mulyadi Rahman";
-$nik14 = "3201252506780014";
-$telp14 = "0899111223314";
-$username14 = "mulyadirahman14";
-$password14 = substr($nik14, 0, 6);
-$noBon14 = "KLS0014";
-
-DB::table('users')->insert([
-    'id_users' => $userId14,
-    'nama' => $nama14,
-    'email' => "mulyadi.rahman@example.com",
-    'username' => $username14,
-    'password' => Hash::make($password14),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId14,
-    'nama' => $nama14,
-    'nik' => $nik14,
-    'alamat' => "Parung, Kab. Bogor",
-    'telepon' => $telp14,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon14,
-    'id_nasabah' => $nasabahId14,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 2,
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "Samsung Galaxy S8",
-    'deskripsi' => "Casing retak, tombol keras",
-    'imei' => "352099000001014",
-    'bunga' => 5,
-    'harga_gadai' => 450000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon14,
-    'id_nasabah' => $nasabahId14,
-    'id_user' => $userId14,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 450000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon14",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon14,
-        'id_nasabah' => $nasabahId14,
-        'harga_gadai' => 450000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-
-// tanggal 20 
-$tanggal = Carbon::create(2025, 6, 20);
-
-// --- Transaksi 1 ---
-$userId15 = 1015;
-$nasabahId15 = 15;
-$nama15 = "Tia Nurhaliza";
-$nik15 = "3201261501990015";
-$telp15 = "0888123412315";
-$username15 = "tianurhaliza15";
-$password15 = substr($nik15, 0, 6);
-$noBon15 = "KLS0015";
-
-DB::table('users')->insert([
-    'id_users' => $userId15,
-    'nama' => $nama15,
-    'email' => "tia.nurhaliza@example.com",
-    'username' => $username15,
-    'password' => Hash::make($password15),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId15,
-    'nama' => $nama15,
-    'nik' => $nik15,
-    'alamat' => "Dramaga, Kab. Bogor",
-    'telepon' => $telp15,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon15,
-    'id_nasabah' => $nasabahId15,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 2,
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "Oppo A12",
-    'deskripsi' => "Masih mulus, sedikit lecet",
-    'imei' => "352099000001015",
-    'bunga' => 5,
-    'harga_gadai' => 700000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon15,
-    'id_nasabah' => $nasabahId15,
-    'id_user' => $userId15,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 700000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon15",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon15,
-        'id_nasabah' => $nasabahId15,
-        'harga_gadai' => 700000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// --- Transaksi 2 ---
-$userId16 = 1016;
-$nasabahId16 = 16;
-$nama16 = "Ilham Setiawan";
-$nik16 = "3201271203940016";
-$telp16 = "0898445567816";
-$username16 = "ilhamsetiawan16";
-$password16 = substr($nik16, 0, 6);
-$noBon16 = "KLS0016";
-
-DB::table('users')->insert([
-    'id_users' => $userId16,
-    'nama' => $nama16,
-    'email' => "ilham.setiawan@example.com",
-    'username' => $username16,
-    'password' => Hash::make($password16),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId16,
-    'nama' => $nama16,
-    'nik' => $nik16,
-    'alamat' => "Cisarua, Kab. Bogor",
-    'telepon' => $telp16,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon16,
-    'id_nasabah' => $nasabahId16,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 2,
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "Samsung A10",
-    'deskripsi' => "Layar agak buram",
-    'imei' => "352099000001016",
-    'bunga' => 5,
-    'harga_gadai' => 600000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon16,
-    'id_nasabah' => $nasabahId16,
-    'id_user' => $userId16,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 600000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon16",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon16,
-        'id_nasabah' => $nasabahId16,
-        'harga_gadai' => 600000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-
-
-// tanggal 21 Juni 2025
-$tanggal = Carbon::create(2025, 6, 21);
-
-// --- Transaksi 1 ---
-$userId17 = 1017;
-$nasabahId17 = 17;
-$nama17 = "Yuliana Sari";
-$nik17 = "3201281101830017";
-$telp17 = "0888432156717";
-$username17 = "yulianasari17";
-$password17 = substr($nik17, 0, 6);
-$noBon17 = "KLS0017";
-
-DB::table('users')->insert([
-    'id_users' => $userId17,
-    'nama' => $nama17,
-    'email' => "yuliana.sari@example.com",
-    'username' => $username17,
-    'password' => Hash::make($password17),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId17,
-    'nama' => $nama17,
-    'nik' => $nik17,
-    'alamat' => "Tajut halang, Kab. Bogor",
-    'telepon' => $telp17,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon17,
-    'id_nasabah' => $nasabahId17,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 2, // HP
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "Xiaomi Redmi 9",
-    'deskripsi' => "Bodi ada lecet, fungsi normal",
-    'imei' => "352099000001017",
-    'bunga' => 5,
-    'harga_gadai' => 550000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon17,
-    'id_nasabah' => $nasabahId17,
-    'id_user' => $userId17,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 550000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon17",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon17,
-        'id_nasabah' => $nasabahId17,
-        'harga_gadai' => 550000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// --- Transaksi 2 ---
-$userId18 = 1018;
-$nasabahId18 = 18;
-$nama18 = "Rahmat Widodo";
-$nik18 = "3201290302800018";
-$telp18 = "0898765432118";
-$username18 = "rahmatwidodo18";
-$password18 = substr($nik18, 0, 6);
-$noBon18 = "KLS0018";
-
-DB::table('users')->insert([
-    'id_users' => $userId18,
-    'nama' => $nama18,
-    'email' => "rahmat.widodo@example.com",
-    'username' => $username18,
-    'password' => Hash::make($password18),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId18,
-    'nama' => $nama18,
-    'nik' => $nik18,
-    'alamat' => "Leuwiliang, Kab. Bogor",
-    'telepon' => $telp18,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon18,
-    'id_nasabah' => $nasabahId18,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 3, // TV
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "TV LED 24 Inch LG",
-    'deskripsi' => "Layar normal, bekas lama",
-    'imei' => "352099000001018",
-    'bunga' => 5,
-    'harga_gadai' => 600000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon18,
-    'id_nasabah' => $nasabahId18,
-    'id_user' => $userId18,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 600000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon18",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon18,
-        'id_nasabah' => $nasabahId18,
-        'harga_gadai' => 600000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-// --- Transaksi 3 ---
-$userId19 = 1019;
-$nasabahId19 = 19;
-$nama19 = "Aris Munandar";
-$nik19 = "3201302402920019";
-$telp19 = "0888999123419";
-$username19 = "arismunandar19";
-$password19 = substr($nik19, 0, 6);
-$noBon19 = "KLS0019";
-
-DB::table('users')->insert([
-    'id_users' => $userId19,
-    'nama' => $nama19,
-    'email' => "aris.munandar@example.com",
-    'username' => $username19,
-    'password' => Hash::make($password19),
-    'role' => 'Nasabah',
-    'id_cabang' => $idCabang,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('nasabah')->insert([
-    'id_user' => $userId19,
-    'nama' => $nama19,
-    'nik' => $nik19,
-    'alamat' => "Kp Poncol, tajur, Kab. Bogor",
-    'telepon' => $telp19,
-    'status_blacklist' => false,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('barang_gadai')->insert([
-    'no_bon' => $noBon19,
-    'id_nasabah' => $nasabahId19,
-    'id_cabang' => $idCabang,
-    'id_kategori' => 2,
-    'id_bunga_tenor' => $tenorId,
-    'nama_barang' => "Pocco F1",
-    'deskripsi' => "Fungsi normal, batre cepat habis",
-    'imei' => "352099000001019",
-    'bunga' => 5,
-    'harga_gadai' => 450000,
-    'status' => 'Tergadai',
-    'tempo' => $tanggal->copy()->addDays($selectedTenor),
-    'telat' => 0,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('transaksi')->insert([
-    'no_bon' => $noBon19,
-    'id_nasabah' => $nasabahId19,
-    'id_user' => $userId19,
-    'id_cabang' => $idCabang,
-    'jenis_transaksi' => 'terima',
-    'arus_kas' => 'keluar',
-    'jumlah' => 450000,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-DB::table('log_aktivitas')->insert([
-    'id_users' => 3,
-    'id_cabang' => $idCabang,
-    'kategori' => 'transaksi',
-    'aksi' => 'terima',
-    'deskripsi' => "Transaksi terima untuk no bon $noBon19",
-    'data_lama' => null,
-    'data_baru' => json_encode([
-        'no_bon' => $noBon19,
-        'id_nasabah' => $nasabahId19,
-        'harga_gadai' => 450000,
-        'tanggal' => $tanggal->toDateString(),
-        'status' => 'Tergadai'
-    ]),
-    'ip_address' => '192.168.1.10',
-    'user_agent' => 'SeederScript/1.0',
-    'waktu_aktivitas' => $tanggal,
-    'created_at' => $tanggal,
-    'updated_at' => $tanggal,
-]);
-
-
-
-
-
+        // Data for all transactions
+        $transactionsData = [
+            // June 14, 2025
+            [
+                'tanggal' => Carbon::create(2025, 6, 14),
+                'userId' => 1001,
+                'nasabahId' => 1,
+                'nama' => "Dewi Kartika",
+                'nik' => "3201121401980001",
+                'telp' => "0812345678912",
+                'email' => "dewi.kartika@example.com",
+                'noBon' => "KLS0001",
+                'kategori' => 1, // Laptop
+                'namaBarang' => "Laptop ASUS",
+                'deskripsiBarang' => "Kondisi sangat baik",
+                'imei' => "352099000001111",
+                'hargaGadai' => 1750000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 14),
+                'userId' => 1002,
+                'nasabahId' => 2,
+                'nama' => "Ahmad Rizki",
+                'nik' => "3201132305900002",
+                'telp' => "0823456789123",
+                'email' => "ahmad.rizki@example.com",
+                'noBon' => "KLS0002",
+                'kategori' => 2, // Handphone
+                'namaBarang' => "HP Samsung",
+                'deskripsiBarang' => "Kondisi normal, lecet ringan",
+                'imei' => "352099000002222",
+                'hargaGadai' => 1200000,
+            ],
+            // June 15, 2025
+            [
+                'tanggal' => Carbon::create(2025, 6, 15),
+                'userId' => 1003,
+                'nasabahId' => 3,
+                'nama' => "Siti Nurhaliza",
+                'nik' => "3201141202980003",
+                'telp' => "0838123456789",
+                'email' => "siti.nurhaliza@example.com",
+                'noBon' => "KLS0003",
+                'kategori' => 2, // Handphone
+                'namaBarang' => "HP Oppo",
+                'deskripsiBarang' => "Layar mulus, baterai bagus",
+                'imei' => "352099000003333",
+                'hargaGadai' => 1000000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 15),
+                'userId' => 1004,
+                'nasabahId' => 4,
+                'nama' => "Rizky Hidayat",
+                'nik' => "3201150101990004",
+                'telp' => "0815987654321",
+                'email' => "rizky.hidayat@example.com",
+                'noBon' => "KLS0004",
+                'kategori' => 3, // TV
+                'namaBarang' => "TV Polytron",
+                'deskripsiBarang' => "Masih normal, layar bersih",
+                'imei' => "352099000004444",
+                'hargaGadai' => 800000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 15),
+                'userId' => 1005,
+                'nasabahId' => 5,
+                'nama' => "Yuli Andriani",
+                'nik' => "3201162705950005",
+                'telp' => "0878123456700",
+                'email' => "yuli.andriani@example.com",
+                'noBon' => "KLS0005",
+                'kategori' => 1, // Laptop
+                'namaBarang' => "Laptop Lenovo",
+                'deskripsiBarang' => "Baret tipis, masih cepat",
+                'imei' => "352099000005555",
+                'hargaGadai' => 1500000,
+            ],
+            // June 16, 2025
+            [
+                'tanggal' => Carbon::create(2025, 6, 16),
+                'userId' => 1006,
+                'nasabahId' => 6,
+                'nama' => "Dedi Supriyadi",
+                'nik' => "3201171010920006",
+                'telp' => "0821123456789",
+                'email' => "dedi.supriyadi@example.com",
+                'noBon' => "KLS0006",
+                'kategori' => 3, // TV
+                'namaBarang' => "TV Samsung",
+                'deskripsiBarang' => "Layar bersih, remote tidak ada",
+                'imei' => "352099000006666",
+                'hargaGadai' => 900000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 16),
+                'userId' => 1007,
+                'nasabahId' => 7,
+                'nama' => "Ani Marlina",
+                'nik' => "3201182205980007",
+                'telp' => "0896123456798",
+                'email' => "ani.marlina@example.com",
+                'noBon' => "KLS0007",
+                'kategori' => 2, // Handphone
+                'namaBarang' => "HP Xiaomi",
+                'deskripsiBarang' => "Kondisi normal, casing lecet",
+                'imei' => "352099000007777",
+                'hargaGadai' => 850000,
+            ],
+            // June 17, 2025
+            [
+                'tanggal' => Carbon::create(2025, 6, 17),
+                'userId' => 1008,
+                'nasabahId' => 8,
+                'nama' => "Rina Apriani",
+                'nik' => "3201192302930008",
+                'telp' => "0813123456789",
+                'email' => "rina.apriani@example.com",
+                'noBon' => "KLS0008",
+                'kategori' => 2, // Handphone
+                'namaBarang' => "HP Nokia",
+                'deskripsiBarang' => "Body kusam, layar normal",
+                'imei' => "352099000008888",
+                'hargaGadai' => 500000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 17),
+                'userId' => 1009,
+                'nasabahId' => 9,
+                'nama' => "Asep Mulyana",
+                'nik' => "3201202509870009",
+                'telp' => "0899988776655",
+                'email' => "asep.mulyana@example.com",
+                'noBon' => "KLS0009",
+                'kategori' => 2, // Handphone
+                'namaBarang' => "HP Samsung J2",
+                'deskripsiBarang' => "Layar retak sedikit, masih nyala",
+                'imei' => "352099000009999",
+                'hargaGadai' => 700000,
+            ],
+            // June 18, 2025
+            [
+                'tanggal' => Carbon::create(2025, 6, 18),
+                'userId' => 1010,
+                'nasabahId' => 10,
+                'nama' => "Yuliani Sari",
+                'nik' => "3201213101980010",
+                'telp' => "0812345678910",
+                'email' => "yuliani.sari@example.com",
+                'noBon' => "KLS0010",
+                'kategori' => 1, // Laptop
+                'namaBarang' => "Laptop Asus",
+                'deskripsiBarang' => "Bodi mulus, baterai soak",
+                'imei' => "352099000001010",
+                'hargaGadai' => 1200000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 18),
+                'userId' => 1011,
+                'nasabahId' => 11,
+                'nama' => "Dedi Kurniawan",
+                'nik' => "3201221205800011",
+                'telp' => "0898765432101",
+                'email' => "dedi.kurniawan@example.com",
+                'noBon' => "KLS0011",
+                'kategori' => 3, // TV
+                'namaBarang' => "TV Sharp",
+                'deskripsiBarang' => "Gores di sisi, gambar normal",
+                'imei' => "352099000001011",
+                'hargaGadai' => 1000000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 19),
+                'userId' => 1012,
+                'nasabahId' => 12,
+                'nama' => "Rina Marlina",
+                'nik' => "3201230504930012",
+                'telp' => "0899123456712",
+                'email' => "rina.marlina@example.com",
+                'noBon' => "KLS0012",
+                'kategori' => 2,
+                'namaBarang' => "Samsung note 7",
+                'deskripsiBarang' => "Layar gores, fungsi normal",
+                'imei' => "352099000001012",
+                'hargaGadai' => 400000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 19),
+                'userId' => 1013,
+                'nasabahId' => 13,
+                'nama' => "Fajar Pratama",
+                'nik' => "3201241207810013",
+                'telp' => "0899554433213",
+                'email' => "fajar.pratama@example.com",
+                'noBon' => "KLS0013",
+                'kategori' => 2,
+                'namaBarang' => "Xiaomi note 9",
+                'deskripsiBarang' => "Baterai cepat habis",
+                'imei' => "352099000001013",
+                'hargaGadai' => 500000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 19),
+                'userId' => 1014,
+                'nasabahId' => 14,
+                'nama' => "Mulyadi Rahman",
+                'nik' => "3201252506780014",
+                'telp' => "0899111223314",
+                'email' => "mulyadi.rahman@example.com",
+                'noBon' => "KLS0014",
+                'kategori' => 2,
+                'namaBarang' => "Samsung Galaxy S8",
+                'deskripsiBarang' => "Casing retak, tombol keras",
+                'imei' => "352099000001014",
+                'hargaGadai' => 450000,
+            ],
+            // June 20, 2025
+            [
+                'tanggal' => Carbon::create(2025, 6, 20),
+                'userId' => 1015,
+                'nasabahId' => 15,
+                'nama' => "Tia Nurhaliza",
+                'nik' => "3201261501990015",
+                'telp' => "0888123412315",
+                'email' => "tia.nurhaliza@example.com",
+                'noBon' => "KLS0015",
+                'kategori' => 2,
+                'namaBarang' => "Oppo A12",
+                'deskripsiBarang' => "Masih mulus, sedikit lecet",
+                'imei' => "352099000001015",
+                'hargaGadai' => 700000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 20),
+                'userId' => 1016,
+                'nasabahId' => 16,
+                'nama' => "Ilham Setiawan",
+                'nik' => "3201271203940016",
+                'telp' => "0898445567816",
+                'email' => "ilham.setiawan@example.com",
+                'noBon' => "KLS0016",
+                'kategori' => 2,
+                'namaBarang' => "Samsung A10",
+                'deskripsiBarang' => "Layar agak buram",
+                'imei' => "352099000001016",
+                'hargaGadai' => 600000,
+            ],
+            // June 21, 2025
+            [
+                'tanggal' => Carbon::create(2025, 6, 21),
+                'userId' => 1017,
+                'nasabahId' => 17,
+                'nama' => "Yuliana Sari",
+                'nik' => "3201281101830017",
+                'telp' => "0888432156717",
+                'email' => "yuliana.sari@example.com",
+                'noBon' => "KLS0017",
+                'kategori' => 2, // HP
+                'namaBarang' => "Xiaomi Redmi 9",
+                'deskripsiBarang' => "Bodi ada lecet, fungsi normal",
+                'imei' => "352099000001017",
+                'hargaGadai' => 550000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 21),
+                'userId' => 1018,
+                'nasabahId' => 18,
+                'nama' => "Rahmat Widodo",
+                'nik' => "3201290302800018",
+                'telp' => "0898765432118",
+                'email' => "rahmat.widodo@example.com",
+                'noBon' => "KLS0018",
+                'kategori' => 3, // TV
+                'namaBarang' => "TV LED 24 Inch LG",
+                'deskripsiBarang' => "Layar normal, bekas lama",
+                'imei' => "352099000001018",
+                'hargaGadai' => 600000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 21),
+                'userId' => 1019,
+                'nasabahId' => 19,
+                'nama' => "Aris Munandar",
+                'nik' => "3201302402920019",
+                'telp' => "0888999123419",
+                'email' => "aris.munandar@example.com",
+                'noBon' => "KLS0019",
+                'kategori' => 2,
+                'namaBarang' => "Pocco F1",
+                'deskripsiBarang' => "Fungsi normal, batre cepat habis",
+                'imei' => "352099000001019",
+                'hargaGadai' => 450000,
+            ],
+            // June 22, 2025
+            [
+                'tanggal' => Carbon::create(2025, 6, 22),
+                'userId' => 1020,
+                'nasabahId' => 20,
+                'nama' => "Linda Susanti",
+                'nik' => "3201311010950020",
+                'telp' => "0811223344520",
+                'email' => "linda.susanti@example.com",
+                'noBon' => "KLS0020",
+                'kategori' => 1, // Laptop
+                'namaBarang' => "Laptop Acer",
+                'deskripsiBarang' => "Kondisi fisik baik, baterai agak drop",
+                'imei' => "352099000001020",
+                'hargaGadai' => 1100000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 22),
+                'userId' => 1021,
+                'nasabahId' => 21,
+                'nama' => "Doni Pratama",
+                'nik' => "3201322011880021",
+                'telp' => "0812345678921",
+                'email' => "doni.pratama@example.com",
+                'noBon' => "KLS0021",
+                'kategori' => 2, // Handphone
+                'namaBarang' => "iPhone 7 Plus",
+                'deskripsiBarang' => "Kondisi mulus, iCloud aman",
+                'imei' => "352099000001021",
+                'hargaGadai' => 900000,
+            ],
+            // June 23, 2025
+            [
+                'tanggal' => Carbon::create(2025, 6, 23),
+                'userId' => 1022,
+                'nasabahId' => 22,
+                'nama' => "Putri Amelia",
+                'nik' => "3201331503900022",
+                'telp' => "0813224466822",
+                'email' => "putri.amelia@example.com",
+                'noBon' => "KLS0022",
+                'kategori' => 2, // Handphone
+                'namaBarang' => "Vivo Y12",
+                'deskripsiBarang' => "Ada retak di backdoor, fungsi normal",
+                'imei' => "352099000001022",
+                'hargaGadai' => 650000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 23),
+                'userId' => 1023,
+                'nasabahId' => 23,
+                'nama' => "Budi Santoso",
+                'nik' => "3201342507850023",
+                'telp' => "0815123456723",
+                'email' => "budi.santoso@example.com",
+                'noBon' => "KLS0023",
+                'kategori' => 3, // TV
+                'namaBarang' => "TV Samsung 32 Inch",
+                'deskripsiBarang' => "Masih bagus, tanpa dus",
+                'imei' => "352099000001023",
+                'hargaGadai' => 1100000,
+            ],
+            // June 24, 2025
+            [
+                'tanggal' => Carbon::create(2025, 6, 24),
+                'userId' => 1024,
+                'nasabahId' => 24,
+                'nama' => "Sari Lestari",
+                'nik' => "3201351204910024",
+                'telp' => "0877112233424",
+                'email' => "sari.lestari@example.com",
+                'noBon' => "KLS0024",
+                'kategori' => 2, // Handphone
+                'namaBarang' => "Realme C11",
+                'deskripsiBarang' => "Kondisi mulus, kelengkapan fullset",
+                'imei' => "352099000001024",
+                'hargaGadai' => 750000,
+            ],
+            [
+                'tanggal' => Carbon::create(2025, 6, 24),
+                'userId' => 1025,
+                'nasabahId' => 25,
+                'nama' => "Joko Susilo",
+                'nik' => "3201362009890025",
+                'telp' => "0857123456725",
+                'email' => "joko.susilo@example.com",
+                'noBon' => "KLS0025",
+                'kategori' => 1, // Laptop
+                'namaBarang' => "MacBook Air M1",
+                'deskripsiBarang' => "Like new, jarang dipakai",
+                'imei' => "352099000001025",
+                'hargaGadai' => 6000000,
+            ],
+        ];
+
+        foreach ($transactionsData as $data) {
+            $username = strtolower(str_replace(' ', '', $data['nama']) . substr($data['nik'], -2));
+            $password = substr($data['nik'], 0, 6);
+
+            DB::table('users')->insert([
+                'id_users' => $data['userId'],
+                'nama' => $data['nama'],
+                'email' => $data['email'],
+                'username' => $username,
+                'password' => Hash::make($password),
+                'role' => 'Nasabah',
+                'id_cabang' => $idCabang,
+                'created_at' => $data['tanggal'],
+                'updated_at' => $data['tanggal'],
+            ]);
+
+            DB::table('nasabah')->insert([
+                'id_user' => $data['userId'],
+                'nama' => $data['nama'],
+                'nik' => $data['nik'],
+                'alamat' => $this->getRandomAddress(), // Using a helper function for random addresses
+                'telepon' => $data['telp'],
+                'status_blacklist' => false,
+                'created_at' => $data['tanggal'],
+                'updated_at' => $data['tanggal'],
+            ]);
+
+            DB::table('barang_gadai')->insert([
+                'no_bon' => $data['noBon'],
+                'id_nasabah' => $data['nasabahId'],
+                'id_cabang' => $idCabang,
+                'id_kategori' => $data['kategori'],
+                'id_bunga_tenor' => $tenorId,
+                'nama_barang' => $data['namaBarang'],
+                'deskripsi' => $data['deskripsiBarang'],
+                'imei' => $data['imei'],
+                'bunga' => 5, // Assuming fixed bunga for now
+                'harga_gadai' => $data['hargaGadai'],
+                'status' => 'Tergadai',
+                'tempo' => $data['tanggal']->copy()->addDays($selectedTenor),
+                'telat' => 0,
+                'created_at' => $data['tanggal'],
+                'updated_at' => $data['tanggal'],
+            ]);
+
+            DB::table('transaksi')->insert([
+                'no_bon' => $data['noBon'],
+                'id_nasabah' => $data['nasabahId'],
+                'id_user' => $data['userId'],
+                'id_cabang' => $idCabang,
+                'jenis_transaksi' => 'terima',
+                'arus_kas' => 'keluar',
+                'jumlah' => $data['hargaGadai'],
+                'created_at' => $data['tanggal'],
+                'updated_at' => $data['tanggal'],
+            ]);
+
+            DB::table('log_aktivitas')->insert([
+                'id_users' => 3, // Assuming this is a static admin/staff user ID
+                'id_cabang' => $idCabang,
+                'kategori' => 'transaksi',
+                'aksi' => 'terima',
+                'deskripsi' => "Transaksi terima untuk no bon {$data['noBon']}",
+                'data_lama' => null,
+                'data_baru' => json_encode([
+                    'no_bon' => $data['noBon'],
+                    'id_nasabah' => $data['nasabahId'],
+                    'harga_gadai' => $data['hargaGadai'],
+                    'tanggal' => $data['tanggal']->toDateString(),
+                    'status' => 'Tergadai'
+                ]),
+                'ip_address' => '192.168.1.10',
+                'user_agent' => 'SeederScript/1.0',
+                'waktu_aktivitas' => $data['tanggal'],
+                'created_at' => $data['tanggal'],
+                'updated_at' => $data['tanggal'],
+            ]);
+        }
+    }
+
+    /**
+     * Helper function to get a random address from a predefined list.
+     * You can expand this list as needed.
+     * @return string
+     */
+    protected function getRandomAddress()
+    {
+        $addresses = [
+            "Jl. Raya Parung, Kab. Bogor",
+            "Kp. Ciseeng, Kab. Bogor",
+            "Desa Kemang, Kab. Bogor",
+            "Jl. Raya Ciseeng, Kab. Bogor",
+            "Cibinong, Kab. Bogor",
+            "Parung, Kab. Bogor",
+            "Gunung Sindur, Kab. Bogor",
+            "Cigombong, Kab. Bogor",
+            "Ciawi, Kab. Bogor",
+            "Dramaga, Kab. Bogor",
+            "Cisarua, Kab. Bogor",
+            "Tajut halang, Kab. Bogor",
+            "Leuwiliang, Kab. Bogor",
+            "Kp Poncol, tajur, Kab. Bogor",
+            "Parung Panjang, Kab. Bogor",
+            "Citeureup, Kab. Bogor",
+            "Sukaraja, Kab. Bogor",
+            "Tanah Sereal, Kab. Bogor",
+            "Ciomas, Kab. Bogor",
+        ];
+        return $addresses[array_rand($addresses)];
     }
 }
