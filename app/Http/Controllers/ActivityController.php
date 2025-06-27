@@ -16,6 +16,7 @@ class ActivityController extends Controller
             ->select('log_aktivitas.*', 'users.nama', 'cabang.nama_cabang')
             ->orderBy('log_aktivitas.waktu_aktivitas', 'desc');
 
+            // dd(auth()->check(), auth()->user(), Auth::guard());
         // If not superadmin, filter by user's cabang
         if (auth()->user()->role !== 'Superadmin') {
             $query->where('log_aktivitas.id_cabang', auth()->user()->id_cabang);
